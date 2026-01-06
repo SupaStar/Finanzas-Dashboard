@@ -16,8 +16,8 @@ class Broker {
     private val brokerId: Long? = null
 
     @Column(nullable = false, length = 100)
-    private var name: String? = null
+    var name: String? = null
 
     @Column(nullable = false, unique = true, length = 50)
-    private var symbol: String? = null
+    var symbol: String? = null
 }
