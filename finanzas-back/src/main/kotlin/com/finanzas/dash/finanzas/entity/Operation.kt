@@ -14,7 +14,8 @@ class Operation {
     private val operationId: Long? = null
 
     @Column(nullable = false, length = 10)
-    private var operationType: OperationTypeEnum? = OperationTypeEnum.BUY // buy | sell
+    @Enumerated(EnumType.STRING)
+    private var operationType: OperationTypeEnum? = OperationTypeEnum.buy // buy | sell
 
     @Column(nullable = false, precision = 15, scale = 6)
     private var quantity: BigDecimal? = null

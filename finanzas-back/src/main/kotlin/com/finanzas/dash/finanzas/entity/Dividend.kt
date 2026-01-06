@@ -15,7 +15,8 @@ class Dividend {
     private val dividendId: Long? = null
 
     @Column(nullable = false, length = 20)
-    private var dividendType: DividendTypeEnum? = DividendTypeEnum.CASH // cash | stock
+    @Enumerated(EnumType.STRING)
+    private var dividendType: DividendTypeEnum? = DividendTypeEnum.cash // cash | stock
 
     @Column(nullable = false, precision = 15, scale = 6)
     private var value: BigDecimal? = null
