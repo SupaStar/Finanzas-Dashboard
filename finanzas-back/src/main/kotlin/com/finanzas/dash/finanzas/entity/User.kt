@@ -9,7 +9,7 @@ import java.time.OffsetDateTime
 class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var userId: Int? = null
+    var userId: Long? = null
 
     @Column(nullable = false, unique = true, length = 100)
     var username: String? = null

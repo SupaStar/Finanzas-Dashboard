@@ -13,7 +13,7 @@ class JwtUtil(private val jwtConfigValues: JwtConfigValues) {
     private val key: SecretKey = Keys.hmacShaKeyFor(jwtConfigValues.secret.toByteArray())
     private val expirationMs: Long = jwtConfigValues.expiration * 15 // 15 minutos
 
-    fun generateToken(id: Int): String {
+    fun generateToken(id: Long): String {
         return Jwts.builder()
             .subject(id.toString())
             .issuedAt(Date())

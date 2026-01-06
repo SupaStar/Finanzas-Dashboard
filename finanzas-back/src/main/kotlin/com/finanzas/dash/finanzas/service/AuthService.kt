@@ -3,9 +3,10 @@ package com.finanzas.dash.finanzas.service
 import com.finanzas.dash.finanzas.config.Encrypter
 import com.finanzas.dash.finanzas.config.exception.BadRequestException
 import com.finanzas.dash.finanzas.config.security.JwtUtil
+import com.finanzas.dash.finanzas.dto.request.auth.LoginRequestDto
 import com.finanzas.dash.finanzas.dto.request.auth.RegisterRequestDto
 import com.finanzas.dash.finanzas.dto.response.JwtResponseDto
-import com.finanzas.dash.finanzas.dto.response.RegisterResponseDto
+import com.finanzas.dash.finanzas.dto.response.AuthResponseDto
 import com.finanzas.dash.finanzas.entity.AuthDevice
 import com.finanzas.dash.finanzas.entity.User
 import com.finanzas.dash.finanzas.entity.UserAuth
@@ -28,7 +29,7 @@ class AuthService(
     private val jwtUtil: JwtUtil
 ) {
     @Transactional
-    fun register(request: RegisterRequestDto): RegisterResponseDto {
+    fun register(request: RegisterRequestDto): AuthResponseDto {
         if (request.password != request.password_confirmation) {
             throw BadRequestException(listOf("Las contraseñas no coinciden"), HttpStatus.BAD_REQUEST)
         }
@@ -59,6 +60,30 @@ class AuthService(
                 this.userAgent = request.agent
             })
         val jwt = jwtUtil.generateToken(user.userId!!)
-        return RegisterResponseDto(true, JwtResponseDto(jwt, authDevice))
+        return AuthResponseDto(true, JwtResponseDto(jwt, authDevice))
+    }
+
+    fun login(requestDto: LoginRequestDto): AuthResponseDto {
+        val user = userRepository.findByUsername(requestDto.username)
+        if (user == null) {
+            throw BadRequestException(listOf("Usuario o password incorrectos"), HttpStatus.UNAUTHORIZED)
+        }
+        val userAuth = userAuthRepository.findByUserUserId(user.userId!!) ?: throw BadRequestException(
+            listOf("Usuario o password incorrectos"),
+            HttpStatus.UNAUTHORIZED
+        )
+        if (!encrypter.matches(requestDto.password, userAuth.passwordHash!!)) {
+            throw BadRequestException(listOf("Usuario o password incorrectos"), HttpStatus.UNAUTHORIZED)
+        }
+        val authDevice = authDeviceRepository.save(
+            AuthDevice().apply {
+                this.auth = userAuth
+                this.deviceId = requestDto.device
+                this.lastUsedAt = OffsetDateTime.now()
+                this.ip = InetAddress.getByName(requestDto.ip)
+                this.userAgent = requestDto.agent
+            })
+        val jwt = jwtUtil.generateToken(user.userId!!)
+        return AuthResponseDto(true, JwtResponseDto(jwt, authDevice))
     }
 }

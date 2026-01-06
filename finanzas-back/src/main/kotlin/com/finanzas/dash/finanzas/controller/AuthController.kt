@@ -1,8 +1,8 @@
 package com.finanzas.dash.finanzas.controller
 
+import com.finanzas.dash.finanzas.dto.request.auth.LoginRequestDto
 import com.finanzas.dash.finanzas.dto.request.auth.RegisterRequestDto
 import com.finanzas.dash.finanzas.dto.response.AuthResponseDto
-import com.finanzas.dash.finanzas.dto.response.RegisterResponseDto
 import com.finanzas.dash.finanzas.service.AuthService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
@@ -19,9 +19,19 @@ class AuthController(private val authService: AuthService) {
     fun register(
         @Validated @RequestBody request: RegisterRequestDto,
         requestData: HttpServletRequest
-    ): ResponseEntity<RegisterResponseDto> {
+    ): ResponseEntity<AuthResponseDto> {
         request.agent = requestData.getHeader("User-Agent")
         val response = authService.register(request)
+        return ResponseEntity(response, org.springframework.http.HttpStatus.OK)
+    }
+
+    @PostMapping("/login")
+    fun login(
+        @Validated @RequestBody request: LoginRequestDto,
+        requestData: HttpServletRequest
+    ): ResponseEntity<AuthResponseDto> {
+        request.agent = requestData.getHeader("User-Agent")
+        val response = authService.login(request)
         return ResponseEntity(response, org.springframework.http.HttpStatus.OK)
     }
 }

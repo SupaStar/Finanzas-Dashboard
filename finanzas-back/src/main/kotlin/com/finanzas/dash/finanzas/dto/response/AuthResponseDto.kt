@@ -1,7 +1,13 @@
 package com.finanzas.dash.finanzas.dto.response
 
-data class AuthResponseDto<T>(
+import com.finanzas.dash.finanzas.entity.AuthDevice
+
+data class AuthResponseDto(
     var estado: Boolean = true,
-    var message: List<T> = emptyList(),
-    var error: List<T> = emptyList()
+    var message: JwtResponseDto
+)
+
+data class JwtResponseDto(
+    var token: String,
+    var device: AuthDevice
 )
