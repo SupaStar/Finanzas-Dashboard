@@ -34,6 +34,7 @@ services:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
       JWT_SIGN: ${JWT_SIGN:-ultra-clave-secreta-obedsosa_de_32_bytes-funcionandoowo}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-180000}
+      STOCK_PY_SERVICE_URL: ${STOCK_PY:-http://localhost:8000}
     depends_on:
       postgres:
         condition: service_healthy
@@ -56,11 +57,16 @@ services:
       - "8000:8000"
     depends_on:
       - redis
+    networks:
+      - finanzas-network
   
   redis:
     image: redis:7
     ports:
       - "6379:6379"
+    container_name: finanzas-dash-redis
+    networks:
+      - finanzas-network
 
 volumes:
   bd_finanzas:
