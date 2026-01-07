@@ -22,8 +22,8 @@ class GlobalExceptionHandler {
         val response = GeneralExceptionResponseDto(errors = errors)
         return ResponseEntity(response, HttpStatus.BAD_REQUEST)
     }
-    @ExceptionHandler(BadRequestException::class)
-    fun handleBadRequest(ex: BadRequestException):ResponseEntity<GeneralExceptionResponseDto<String>>{
+    @ExceptionHandler(GeneralRequestException::class)
+    fun handleBadRequest(ex: GeneralRequestException):ResponseEntity<GeneralExceptionResponseDto<String>>{
         val response = GeneralExceptionResponseDto(
             errors = ex.errors
         )

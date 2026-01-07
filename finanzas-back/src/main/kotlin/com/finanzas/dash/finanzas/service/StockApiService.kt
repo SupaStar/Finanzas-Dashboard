@@ -1,34 +1,41 @@
 package com.finanzas.dash.finanzas.service
 
 import com.finanzas.dash.finanzas.client.StockClientConfig
+import com.finanzas.dash.finanzas.config.exception.GeneralRequestException
 import com.finanzas.dash.finanzas.dto.request.stocks.StockInfoRequestDto
-import com.finanzas.dash.finanzas.dto.response.stock.StockResponseDto
+import com.finanzas.dash.finanzas.dto.response.stock.StockApiResponseDto
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Mono
 
 
 @Service
 class StockApiService(private val stockClient: StockClientConfig) {
-    fun getStock(stock: String): StockResponseDto {
+    fun getStock(stock: String): StockApiResponseDto {
         return stockClient.stockClient().get()
             .uri("/stock/{stock}", stock)
             .retrieve()
-            .bodyToMono(StockResponseDto::class.java)
+            .onStatus({ it.is4xxClientError }) {
+                throw GeneralRequestException(listOf("Error encontrando la accion"), HttpStatus.NOT_FOUND)
+            }
+            .onStatus({ it.is5xxServerError }) {
+                throw GeneralRequestException(listOf("Error procesando la accion"), HttpStatus.INTERNAL_SERVER_ERROR)
+            }
+            .bodyToMono(StockApiResponseDto::class.java)
             .block()
-            ?: throw RuntimeException("Error con api")
+            ?: throw GeneralRequestException(listOf("Error encontrando las acciones"), HttpStatus.BAD_REQUEST)
     }
 
-    fun getStocks(stocks: StockInfoRequestDto): List<StockResponseDto> {
+    fun getStocks(stocks: StockInfoRequestDto): List<StockApiResponseDto> {
         return stockClient.stockClient().post()
             .uri("/stocks/")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(stocks) // WebClient SÍ tiene bodyValue
             .retrieve()
-            .bodyToMono(object : ParameterizedTypeReference<List<StockResponseDto>>() {})
+            .bodyToMono(object : ParameterizedTypeReference<List<StockApiResponseDto>>() {})
             .block() // <--- Importante: Espera el resultado y lo convierte en List
-            ?: throw RuntimeException("Error con api: respuesta vacía")
+            ?: throw GeneralRequestException(listOf("Error encontrando las acciones"), HttpStatus.BAD_REQUEST)
     }
 }
 

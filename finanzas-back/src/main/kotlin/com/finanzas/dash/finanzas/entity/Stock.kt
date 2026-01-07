@@ -10,21 +10,21 @@ import java.time.OffsetDateTime
 class Stock {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private val stockId: Long? = null
+    val stockId: Long? = null
 
     @Column(nullable = false, length = 150)
-    private var name: String? = null
+    var name: String? = null
 
     @Column(nullable = false, length = 50)
-    private var symbol: String? = null
+    var symbol: String? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "broker_id", nullable = false)
-    private val broker: Broker? = null
+    var broker: Broker? = null
 
-    private val closeDay: BigDecimal? = null
-    private val lastFetch: OffsetDateTime? = null
+    var closeDay: BigDecimal? = null
+    var lastFetch: OffsetDateTime? = null
 
     @Column(nullable = false, length = 3)
-    private var currency: String? = null
+    var currency: String? = null
 }

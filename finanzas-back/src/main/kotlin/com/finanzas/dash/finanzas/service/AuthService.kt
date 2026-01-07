@@ -1,7 +1,7 @@
 package com.finanzas.dash.finanzas.service
 
 import com.finanzas.dash.finanzas.config.Encrypter
-import com.finanzas.dash.finanzas.config.exception.BadRequestException
+import com.finanzas.dash.finanzas.config.exception.GeneralRequestException
 import com.finanzas.dash.finanzas.config.security.JwtUtil
 import com.finanzas.dash.finanzas.dto.request.auth.LoginRequestDto
 import com.finanzas.dash.finanzas.dto.request.auth.RegisterRequestDto
@@ -31,7 +31,7 @@ class AuthService(
     @Transactional
     fun register(request: RegisterRequestDto): AuthResponseDto {
         if (request.password != request.password_confirmation) {
-            throw BadRequestException(listOf("Las contraseñas no coinciden"), HttpStatus.BAD_REQUEST)
+            throw GeneralRequestException(listOf("Las contraseñas no coinciden"), HttpStatus.BAD_REQUEST)
         }
         val user = try {
             userRepository.save(
@@ -39,7 +39,7 @@ class AuthService(
                     username = request.username
                 })
         } catch (ex: DataIntegrityViolationException) {
-            throw BadRequestException(listOf("Usuario en uso"), HttpStatus.CONFLICT)
+            throw GeneralRequestException(listOf("Usuario en uso"), HttpStatus.CONFLICT)
         }
 
         val userAuth = userAuthRepository.save(
@@ -66,14 +66,14 @@ class AuthService(
     fun login(requestDto: LoginRequestDto): AuthResponseDto {
         val user = userRepository.findByUsername(requestDto.username)
         if (user == null) {
-            throw BadRequestException(listOf("Usuario o password incorrectos"), HttpStatus.UNAUTHORIZED)
+            throw GeneralRequestException(listOf("Usuario o password incorrectos"), HttpStatus.UNAUTHORIZED)
         }
-        val userAuth = userAuthRepository.findByUserUserId(user.userId!!) ?: throw BadRequestException(
+        val userAuth = userAuthRepository.findByUserUserId(user.userId!!) ?: throw GeneralRequestException(
             listOf("Usuario o password incorrectos"),
             HttpStatus.UNAUTHORIZED
         )
         if (!encrypter.matches(requestDto.password, userAuth.passwordHash!!)) {
-            throw BadRequestException(listOf("Usuario o password incorrectos"), HttpStatus.UNAUTHORIZED)
+            throw GeneralRequestException(listOf("Usuario o password incorrectos"), HttpStatus.UNAUTHORIZED)
         }
         val authDevice = authDeviceRepository.save(
             AuthDevice().apply {

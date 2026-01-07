@@ -69,9 +69,12 @@ CREATE TABLE stock (
     last_fetch TIMESTAMPTZ,
     currency VARCHAR(3) NOT NULL,
 
+
     CONSTRAINT fk_stock_broker
         FOREIGN KEY (broker_id)
-        REFERENCES broker(broker_id)
+        REFERENCES broker(broker_id),
+     CONSTRAINT uk_symbol_broker
+        UNIQUE (symbol, broker_id)
 );
 
 

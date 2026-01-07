@@ -1,20 +1,20 @@
 package com.finanzas.dash.finanzas.dto.response.stock
 
+import com.finanzas.dash.finanzas.entity.Stock
 import java.math.BigDecimal
-import java.math.BigInteger
+import java.time.OffsetDateTime
 
-data class StockResponseDto(
-    var ticker: String,
-    var cached: Boolean, var data: StockData
+data class StockResponseDto (
+    var estado: Boolean = true,
+    var message: StockDto
 )
 
-data class StockData(
-    var symbol: String,
+data class StockDto(
+    var stockId: Long,
     var name: String,
-    var price: BigDecimal,
-    var currency: String,
-    var marketCap: BigInteger?,
-    var sector: String?
+    var symbol: String,
+    var broker: String,
+    var closeDay: BigDecimal,
+    var lastFetch: OffsetDateTime,
+    var currency: String
 )
-
-data class MultipleStockResponseDto(var stocks: List<StockResponseDto>)
