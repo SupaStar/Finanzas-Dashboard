@@ -1,0 +1,70 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: finanzas-dash-postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-finanzas_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-esto_es_un_secreto}
+      POSTGRES_DB: ${POSTGRES_DB:-finanzas}
+    volumes:
+      - bd_finanzas:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-finanzas_admin} -d ${POSTGRES_DB:-finanzas}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - finanzas-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: finanzas-dash-app
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://postgres:5432/finanzas}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-finanzas_admin}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-esto_es_un_secreto}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      JWT_SIGN: ${JWT_SIGN:-ultra-clave-secreta-obedsosa_de_32_bytes-funcionandoowo}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-180000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - finanzas-network
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  
+  py-stock:
+    build:
+      context: ./py-stock
+      dockerfile: Dockerfile
+    container_name: finanzas-dash-pystock
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+  
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+volumes:
+  bd_finanzas:
+
+networks:
+  finanzas-network:
+    driver: bridge

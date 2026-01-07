@@ -1,0 +1,17 @@
+build/
+.gradle/
+.git/
+.gitignore
+.DS_Store
+*.md
+bin/
+.idea/
+*.iml
+target/
+out/
+*.log
+.env
+.env.local
+node_modules/
+.flutter-plugins
+.flutter-plugins-dependencies

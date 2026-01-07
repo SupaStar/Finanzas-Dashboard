@@ -1,0 +1,88 @@
+import json
+import yfinance as yf
+import redis
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+app = FastAPI(title="Stock Info API")
+
+redis_client = redis.Redis(
+    host="redis",
+    port=6379,
+    decode_responses=True
+)
+
+CACHE_TTL = 300  # 5 minutos
+
+@app.get("/stock/{ticker}")
+def get_stock_info(ticker: str):
+    ticker = ticker.upper()
+    cache_key = f"stock:{ticker}"
+    print(f"Fetching data for ticker: {ticker}")
+
+    # 1️⃣ Buscar en Redis
+    cached = redis_client.get(cache_key)
+    if cached:
+        print(f"Cache hit for ticker: {ticker}")
+        return {
+            "ticker": ticker,
+            "cached": True,
+            "data": json.loads(cached)
+        }
+
+    # 2️⃣ Consultar yfinance
+    try:
+        print(f"Cache miss for ticker: {ticker}. Fetching from yfinance.")
+        stock = yf.Ticker(ticker)
+        print(f"yfinance response for {ticker}")
+        info = stock.info
+
+        if not info or "symbol" not in info:
+            raise HTTPException(status_code=404, detail="Ticker no encontrado")
+
+        data = {
+            "symbol": info.get("symbol"),
+            "name": info.get("shortName"),
+            "price": info.get("regularMarketPrice"),
+            "currency": info.get("currency"),
+            "marketCap": info.get("marketCap"),
+            "sector": info.get("sector"),
+        }
+
+        # 3️⃣ Guardar en Redis con TTL
+        redis_client.setex(
+            cache_key,
+            CACHE_TTL,
+            json.dumps(data)
+        )
+        print(f"Data cached for ticker: {ticker}")
+
+        return {
+            "ticker": ticker,
+            "cached": False,
+            "data": data
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class RequestStocks(BaseModel):
+    stocks: list[str]
+
+@app.post("/stocks/")
+def get_multiple_stocks(tickers: RequestStocks):
+    results = []
+    try:
+        for ticker in tickers.stocks:
+            try:
+                result = get_stock_info(ticker)
+                results.append(result)
+            except HTTPException as e:
+                results.append({
+                    "ticker": ticker.upper(),
+                    "error": e.detail
+                })
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
