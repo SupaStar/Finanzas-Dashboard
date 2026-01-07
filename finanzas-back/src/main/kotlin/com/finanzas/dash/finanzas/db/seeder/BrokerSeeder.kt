@@ -13,12 +13,12 @@ class BrokerSeeder(private val brokerRepository: BrokerRepository) : DatabaseSee
                 this.symbol = "CETES"
             })
             brokerRepository.save(Broker().apply {
-                this.name = "Bolsa Mexicana de Valores"
-                this.symbol = "BMV"
+                this.name = "BMV"
+                this.symbol = "MX"
             })
             brokerRepository.save(Broker().apply {
-                this.name = "Bolsa Institucional de Valores:"
-                this.symbol = "BIVA"
+                this.name = "BIVA"
+                this.symbol = "MX"
             })
             brokerRepository.save(Broker().apply {
                 this.name = "NYSE Arca"

@@ -53,7 +53,7 @@ CREATE TABLE auth_devices (
 CREATE TABLE broker (
     broker_id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    symbol VARCHAR(50) NOT NULL UNIQUE
+    symbol VARCHAR(50) NOT NULL
 );
 
 
