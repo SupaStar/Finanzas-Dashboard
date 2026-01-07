@@ -5,7 +5,8 @@ import java.math.BigInteger
 
 data class StockApiResponseDto(
     var ticker: String,
-    var cached: Boolean, var data: StockData
+    var cached: Boolean,
+    var data: StockData
 )
 
 data class StockData(

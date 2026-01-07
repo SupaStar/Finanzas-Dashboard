@@ -2,6 +2,7 @@ package com.finanzas.dash.finanzas.service
 
 import com.finanzas.dash.finanzas.config.exception.GeneralRequestException
 import com.finanzas.dash.finanzas.dto.request.stocks.AddStockRequestDto
+import com.finanzas.dash.finanzas.dto.request.stocks.StockInfoRequestDto
 import com.finanzas.dash.finanzas.dto.response.stock.StockResponseDto
 import com.finanzas.dash.finanzas.entity.Stock
 import com.finanzas.dash.finanzas.repository.BrokerRepository
@@ -40,5 +41,32 @@ class StockService(
             throw GeneralRequestException(listOf("Accion ya registrada"), HttpStatus.CONFLICT)
         }
         return StockResponseDto(estado = true, message = stock.toDto())
+    }
+
+    fun refreshAllStocks() {
+        val now = OffsetDateTime.now()
+
+        val stocks = stockRepository.findAll()
+        val stocksByName = stocks.associateBy { it.name!! }
+
+        val stocksNames = StockInfoRequestDto(
+            stocks = stocks.map { it.name!! }
+        )
+
+        val infoStocks = stockApiService.getStocks(stocksNames)
+
+        infoStocks.forEach { response ->
+            val stock = stocksByName[response.data.symbol] ?: return@forEach
+
+            val expired = stock.lastFetch
+                ?.isBefore(now.minusMinutes(2))
+                ?: true
+
+            if (expired) {
+                stock.closeDay = response.data.price
+                stock.lastFetch = now
+                stockRepository.save(stock)
+            }
+        }
     }
 }
