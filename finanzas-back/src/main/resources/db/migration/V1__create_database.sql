@@ -67,7 +67,7 @@ CREATE TABLE stock (
     broker_id BIGINT NOT NULL,
     close_day NUMERIC(15,6),
     last_fetch TIMESTAMPTZ,
-    currency CHAR(3) NOT NULL,
+    currency VARCHAR(3) NOT NULL,
 
     CONSTRAINT fk_stock_broker
         FOREIGN KEY (broker_id)
@@ -132,7 +132,7 @@ CREATE TABLE dividend (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     modified_at TIMESTAMPTZ,
     paid_date DATE,
-    currency_code CHAR(3) NOT NULL,
+    currency_code VARCHAR(3) NOT NULL,
     tax NUMERIC(15,6) DEFAULT 0,
     net_value NUMERIC(15,6) NOT NULL,
     exchange_rate NUMERIC(15,6),
@@ -142,3 +142,4 @@ CREATE TABLE dividend (
         REFERENCES portfolio(portfolio_id)
         ON DELETE CASCADE
 );
+
