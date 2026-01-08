@@ -27,7 +27,7 @@ class JwtAuthFilter(private val jwtUtil: JwtUtil) : OncePerRequestFilter() {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7)
             if (jwtUtil.validateToken(jwt)) {
-                username = jwtUtil.extractUsername(jwt)
+                username = jwtUtil.extractUserId(jwt)
             }
         }
 

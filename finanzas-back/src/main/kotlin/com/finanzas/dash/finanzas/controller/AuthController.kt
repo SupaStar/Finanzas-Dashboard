@@ -35,4 +35,3 @@ class AuthController(private val authService: AuthService) {
         return ResponseEntity(response, org.springframework.http.HttpStatus.OK)
     }
 }
-//TODO https://www.google.com/search?q=bmv%3Afcfe18
