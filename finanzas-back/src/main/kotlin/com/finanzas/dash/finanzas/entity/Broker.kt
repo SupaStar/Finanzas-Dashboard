@@ -13,7 +13,7 @@ import jakarta.persistence.Table
 class Broker {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private val brokerId: Long? = null
+    val brokerId: Long? = null
 
     @Column(nullable = false, length = 100)
     var name: String? = null

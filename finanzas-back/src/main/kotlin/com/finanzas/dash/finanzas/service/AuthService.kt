@@ -10,6 +10,7 @@ import com.finanzas.dash.finanzas.dto.response.AuthResponseDto
 import com.finanzas.dash.finanzas.entity.AuthDevice
 import com.finanzas.dash.finanzas.entity.User
 import com.finanzas.dash.finanzas.entity.UserAuth
+import com.finanzas.dash.finanzas.enum.UserStatusEnum
 import com.finanzas.dash.finanzas.repository.AuthDeviceRepository
 import com.finanzas.dash.finanzas.repository.UserAuthRepository
 import com.finanzas.dash.finanzas.repository.UserRepository
@@ -72,7 +73,7 @@ class AuthService(
             listOf("Usuario o password incorrectos"),
             HttpStatus.UNAUTHORIZED
         )
-        if (!encrypter.matches(requestDto.password, userAuth.passwordHash!!)) {
+        if (!encrypter.matches(requestDto.password, userAuth.passwordHash!!) || user.status != UserStatusEnum.active) {
             throw GeneralRequestException(listOf("Usuario o password incorrectos"), HttpStatus.UNAUTHORIZED)
         }
         val authDevice = authDeviceRepository.save(
