@@ -134,7 +134,7 @@ CREATE TABLE dividend (
     portfolio_id BIGINT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     modified_at TIMESTAMPTZ,
-    paid_date DATE,
+    paid_date TIMESTAMPTZ,
     currency_code VARCHAR(3) NOT NULL,
     tax NUMERIC(15,6) DEFAULT 0,
     net_value NUMERIC(15,6) NOT NULL,
