@@ -1,146 +1,204 @@
--- =========================
--- QUARTZ SCHEDULER TABLES (PostgreSQL)
--- Added to support Spring Quartz JDBC job store
--- =========================
+DO $$
+  DECLARE DropDb INT := 1; -- Set this to 0 to skip DROP statements, 1 to include them
+BEGIN
+  IF DropDb = 1 THEN
+    SET client_min_messages = WARNING;
+DROP TABLE IF EXISTS qrtz_fired_triggers;
+DROP TABLE IF EXISTS qrtz_paused_trigger_grps;
+DROP TABLE IF EXISTS qrtz_scheduler_state;
+DROP TABLE IF EXISTS qrtz_locks;
+DROP TABLE IF EXISTS qrtz_simprop_triggers;
+DROP TABLE IF EXISTS qrtz_simple_triggers;
+DROP TABLE IF EXISTS qrtz_cron_triggers;
+DROP TABLE IF EXISTS qrtz_blob_triggers;
+DROP TABLE IF EXISTS qrtz_triggers;
+DROP TABLE IF EXISTS qrtz_job_details;
+DROP TABLE IF EXISTS qrtz_calendars;
+SET client_min_messages = NOTICE;
+END IF;
+END $$;
 
-CREATE TABLE qrtz_job_details (
-    sched_name VARCHAR(120) NOT NULL,
-    job_name VARCHAR(200) NOT NULL,
-    job_group VARCHAR(200) NOT NULL,
-    description VARCHAR(250),
-    job_class_name VARCHAR(250) NOT NULL,
-    is_durable BOOLEAN NOT NULL,
-    is_nonconcurrent BOOLEAN NOT NULL,
-    is_update_data BOOLEAN NOT NULL,
-    requests_recovery BOOLEAN NOT NULL,
-    job_data BYTEA,
+CREATE TABLE qrtz_job_details
+(
+    sched_name TEXT NOT NULL,
+    job_name TEXT NOT NULL,
+    job_group TEXT NOT NULL,
+    description TEXT NULL,
+    job_class_name TEXT NOT NULL,
+    is_durable BOOL NOT NULL,
+    is_nonconcurrent BOOL NOT NULL,
+    is_update_data BOOL NOT NULL,
+    requests_recovery BOOL NOT NULL,
+    job_data BYTEA NULL,
     PRIMARY KEY (sched_name, job_name, job_group)
 );
 
-CREATE TABLE qrtz_triggers (
-    sched_name VARCHAR(120) NOT NULL,
-    trigger_name VARCHAR(200) NOT NULL,
-    trigger_group VARCHAR(200) NOT NULL,
-    job_name VARCHAR(200) NOT NULL,
-    job_group VARCHAR(200) NOT NULL,
-    description VARCHAR(250),
-    next_fire_time BIGINT,
-    prev_fire_time BIGINT,
-    priority INTEGER,
-    trigger_state VARCHAR(16) NOT NULL,
-    trigger_type VARCHAR(8) NOT NULL,
+CREATE TABLE qrtz_triggers
+(
+    sched_name TEXT NOT NULL,
+    trigger_name TEXT NOT NULL,
+    trigger_group TEXT NOT NULL,
+    job_name TEXT NOT NULL,
+    job_group TEXT NOT NULL,
+    description TEXT NULL,
+    next_fire_time BIGINT NULL,
+    prev_fire_time BIGINT NULL,
+    priority INTEGER NULL,
+    trigger_state TEXT NOT NULL,
+    trigger_type TEXT NOT NULL,
     start_time BIGINT NOT NULL,
-    end_time BIGINT,
-    calendar_name VARCHAR(200),
-    misfire_instr INTEGER,
-    job_data BYTEA,
+    end_time BIGINT NULL,
+    calendar_name TEXT NULL,
+    misfire_instr SMALLINT NULL,
+    job_data BYTEA NULL,
     PRIMARY KEY (sched_name, trigger_name, trigger_group),
-    FOREIGN KEY (sched_name, job_name, job_group) REFERENCES qrtz_job_details(sched_name, job_name, job_group)
+    FOREIGN KEY (sched_name, job_name, job_group)
+        REFERENCES qrtz_job_details (sched_name, job_name, job_group)
 );
 
-CREATE TABLE qrtz_simple_triggers (
-    sched_name VARCHAR(120) NOT NULL,
-    trigger_name VARCHAR(200) NOT NULL,
-    trigger_group VARCHAR(200) NOT NULL,
-    repeat_count INTEGER NOT NULL,
+CREATE TABLE qrtz_simple_triggers
+(
+    sched_name TEXT NOT NULL,
+    trigger_name TEXT NOT NULL,
+    trigger_group TEXT NOT NULL,
+    repeat_count BIGINT NOT NULL,
     repeat_interval BIGINT NOT NULL,
-    times_triggered INTEGER NOT NULL,
+    times_triggered BIGINT NOT NULL,
     PRIMARY KEY (sched_name, trigger_name, trigger_group),
-    FOREIGN KEY (sched_name, trigger_name, trigger_group) REFERENCES qrtz_triggers(sched_name, trigger_name, trigger_group)
+    FOREIGN KEY (sched_name, trigger_name, trigger_group)
+        REFERENCES qrtz_triggers (sched_name, trigger_name, trigger_group)
+        ON DELETE CASCADE
 );
 
-CREATE TABLE qrtz_cron_triggers (
-    sched_name VARCHAR(120) NOT NULL,
-    trigger_name VARCHAR(200) NOT NULL,
-    trigger_group VARCHAR(200) NOT NULL,
-    cron_expression VARCHAR(120) NOT NULL,
-    time_zone_id VARCHAR(80),
+CREATE TABLE qrtz_simprop_triggers
+(
+    sched_name TEXT NOT NULL,
+    trigger_name TEXT NOT NULL,
+    trigger_group TEXT NOT NULL,
+    str_prop_1 TEXT NULL,
+    str_prop_2 TEXT NULL,
+    str_prop_3 TEXT NULL,
+    int_prop_1 INTEGER NULL,
+    int_prop_2 INTEGER NULL,
+    long_prop_1 BIGINT NULL,
+    long_prop_2 BIGINT NULL,
+    dec_prop_1 NUMERIC NULL,
+    dec_prop_2 NUMERIC NULL,
+    bool_prop_1 BOOL NULL,
+    bool_prop_2 BOOL NULL,
+    time_zone_id TEXT NULL,
     PRIMARY KEY (sched_name, trigger_name, trigger_group),
-    FOREIGN KEY (sched_name, trigger_name, trigger_group) REFERENCES qrtz_triggers(sched_name, trigger_name, trigger_group)
+    FOREIGN KEY (sched_name, trigger_name, trigger_group)
+        REFERENCES qrtz_triggers (sched_name, trigger_name, trigger_group)
+        ON DELETE CASCADE
 );
 
-CREATE TABLE qrtz_blob_triggers (
-    sched_name VARCHAR(120) NOT NULL,
-    trigger_name VARCHAR(200) NOT NULL,
-    trigger_group VARCHAR(200) NOT NULL,
-    blob_data BYTEA,
+CREATE TABLE qrtz_cron_triggers
+(
+    sched_name TEXT NOT NULL,
+    trigger_name TEXT NOT NULL,
+    trigger_group TEXT NOT NULL,
+    cron_expression TEXT NOT NULL,
+    time_zone_id TEXT,
     PRIMARY KEY (sched_name, trigger_name, trigger_group),
-    FOREIGN KEY (sched_name, trigger_name, trigger_group) REFERENCES qrtz_triggers(sched_name, trigger_name, trigger_group)
+    FOREIGN KEY (sched_name, trigger_name, trigger_group)
+        REFERENCES qrtz_triggers (sched_name, trigger_name, trigger_group)
+        ON DELETE CASCADE
 );
 
-CREATE TABLE qrtz_paused_trigger_grps (
-    sched_name VARCHAR(120) NOT NULL,
-    trigger_group VARCHAR(200) NOT NULL,
+CREATE TABLE qrtz_blob_triggers
+(
+    sched_name TEXT NOT NULL,
+    trigger_name TEXT NOT NULL,
+    trigger_group TEXT NOT NULL,
+    blob_data BYTEA NULL,
+    PRIMARY KEY (sched_name, trigger_name, trigger_group),
+    FOREIGN KEY (sched_name, trigger_name, trigger_group)
+        REFERENCES qrtz_triggers (sched_name, trigger_name, trigger_group)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE qrtz_calendars
+(
+    sched_name TEXT NOT NULL,
+    calendar_name TEXT NOT NULL,
+    calendar BYTEA NOT NULL,
+    PRIMARY KEY (sched_name, calendar_name)
+);
+
+CREATE TABLE qrtz_paused_trigger_grps
+(
+    sched_name TEXT NOT NULL,
+    trigger_group TEXT NOT NULL,
     PRIMARY KEY (sched_name, trigger_group)
 );
 
-CREATE TABLE qrtz_fired_triggers (
-    sched_name VARCHAR(120) NOT NULL,
-    entry_id VARCHAR(95) NOT NULL,
-    trigger_name VARCHAR(200) NOT NULL,
-    trigger_group VARCHAR(200) NOT NULL,
-    instance_name VARCHAR(200) NOT NULL,
+CREATE TABLE qrtz_fired_triggers
+(
+    sched_name TEXT NOT NULL,
+    entry_id TEXT NOT NULL,
+    trigger_name TEXT NOT NULL,
+    trigger_group TEXT NOT NULL,
+    instance_name TEXT NOT NULL,
     fired_time BIGINT NOT NULL,
     sched_time BIGINT NOT NULL,
     priority INTEGER NOT NULL,
-    state VARCHAR(16) NOT NULL,
-    job_name VARCHAR(200),
-    job_group VARCHAR(200),
-    is_nonconcurrent BOOLEAN,
-    requests_recovery BOOLEAN,
+    state TEXT NOT NULL,
+    job_name TEXT NULL,
+    job_group TEXT NULL,
+    is_nonconcurrent BOOL NOT NULL,
+    requests_recovery BOOL NULL,
     PRIMARY KEY (sched_name, entry_id)
 );
 
-CREATE TABLE qrtz_scheduler_state (
-    sched_name VARCHAR(120) NOT NULL,
-    instance_name VARCHAR(200) NOT NULL,
+CREATE TABLE qrtz_scheduler_state
+(
+    sched_name TEXT NOT NULL,
+    instance_name TEXT NOT NULL,
     last_checkin_time BIGINT NOT NULL,
     checkin_interval BIGINT NOT NULL,
     PRIMARY KEY (sched_name, instance_name)
 );
 
-CREATE TABLE qrtz_locks (
-    sched_name VARCHAR(120) NOT NULL,
-    lock_name VARCHAR(40) NOT NULL,
+CREATE TABLE qrtz_locks
+(
+    sched_name TEXT NOT NULL,
+    lock_name TEXT NOT NULL,
     PRIMARY KEY (sched_name, lock_name)
 );
 
--- Indexes often used by Quartz
-CREATE INDEX idx_qrtz_j_reqrecovery ON qrtz_job_details(sched_name, requests_recovery);
-CREATE INDEX idx_qrtz_t_nextft ON qrtz_triggers(sched_name, next_fire_time);
-CREATE INDEX idx_qrtz_t_n_state ON qrtz_triggers(sched_name, trigger_name, trigger_group, trigger_state);
+CREATE INDEX idx_qrtz_j_req_recovery ON qrtz_job_details (requests_recovery);
+CREATE INDEX idx_qrtz_t_next_fire_time ON qrtz_triggers (next_fire_time);
+CREATE INDEX idx_qrtz_t_state ON qrtz_triggers (trigger_state);
+CREATE INDEX idx_qrtz_t_nft_st ON qrtz_triggers (next_fire_time, trigger_state);
+CREATE INDEX idx_qrtz_ft_trig_name ON qrtz_fired_triggers (trigger_name);
+CREATE INDEX idx_qrtz_ft_trig_group ON qrtz_fired_triggers (trigger_group);
+CREATE INDEX idx_qrtz_ft_trig_nm_gp ON qrtz_fired_triggers (sched_name, trigger_name, trigger_group);
+CREATE INDEX idx_qrtz_ft_trig_inst_name ON qrtz_fired_triggers (instance_name);
+CREATE INDEX idx_qrtz_ft_job_name ON qrtz_fired_triggers (job_name);
+CREATE INDEX idx_qrtz_ft_job_group ON qrtz_fired_triggers (job_group);
+CREATE INDEX idx_qrtz_ft_job_req_recovery ON qrtz_fired_triggers (requests_recovery);
 
--- End of Quartz tables
 
-
--- =========================
--- SPRING SESSION TABLES (PostgreSQL)
--- Added to support Spring Session with JDBC backend for storing HTTP sessions
--- =========================
-
-CREATE TABLE spring_session (
-    primary_id CHAR(36) NOT NULL,
-    session_id CHAR(36) NOT NULL,
-    creation_time BIGINT NOT NULL,
-    last_accessed_time BIGINT NOT NULL,
-    max_inactive_interval INTEGER NOT NULL,
-    expiry_time BIGINT NOT NULL,
-    principal_name VARCHAR(100),
-    PRIMARY KEY (primary_id)
+CREATE TABLE SPRING_SESSION (
+                                PRIMARY_ID CHAR(36) NOT NULL,
+                                SESSION_ID CHAR(36) NOT NULL,
+                                CREATION_TIME BIGINT NOT NULL,
+                                LAST_ACCESS_TIME BIGINT NOT NULL,
+                                MAX_INACTIVE_INTERVAL INT NOT NULL,
+                                EXPIRY_TIME BIGINT NOT NULL,
+                                PRINCIPAL_NAME VARCHAR(100),
+                                CONSTRAINT SPRING_SESSION_PK PRIMARY KEY (PRIMARY_ID)
 );
 
-CREATE UNIQUE INDEX idx_spring_session_session_id ON spring_session (session_id);
-CREATE INDEX idx_spring_session_expiry_time ON spring_session (expiry_time);
-CREATE INDEX idx_spring_session_principal_name ON spring_session (principal_name);
+CREATE UNIQUE INDEX SPRING_SESSION_IX1 ON SPRING_SESSION (SESSION_ID);
+CREATE INDEX SPRING_SESSION_IX2 ON SPRING_SESSION (EXPIRY_TIME);
+CREATE INDEX SPRING_SESSION_IX3 ON SPRING_SESSION (PRINCIPAL_NAME);
 
-CREATE TABLE spring_session_attributes (
-    session_primary_id CHAR(36) NOT NULL,
-    attribute_name VARCHAR(200) NOT NULL,
-    attribute_bytes BYTEA NOT NULL,
-    PRIMARY KEY (session_primary_id, attribute_name),
-    FOREIGN KEY (session_primary_id) REFERENCES spring_session (primary_id) ON DELETE CASCADE
+CREATE TABLE SPRING_SESSION_ATTRIBUTES (
+                                           SESSION_PRIMARY_ID CHAR(36) NOT NULL,
+                                           ATTRIBUTE_NAME VARCHAR(200) NOT NULL,
+                                           ATTRIBUTE_BYTES BYTEA NOT NULL,
+                                           CONSTRAINT SPRING_SESSION_ATTRIBUTES_PK PRIMARY KEY (SESSION_PRIMARY_ID, ATTRIBUTE_NAME),
+                                           CONSTRAINT SPRING_SESSION_ATTRIBUTES_FK FOREIGN KEY (SESSION_PRIMARY_ID) REFERENCES SPRING_SESSION(PRIMARY_ID) ON DELETE CASCADE
 );
-
-CREATE INDEX idx_spring_session_attributes_session_id ON spring_session_attributes (session_primary_id);
-
--- End of Spring Session tables
