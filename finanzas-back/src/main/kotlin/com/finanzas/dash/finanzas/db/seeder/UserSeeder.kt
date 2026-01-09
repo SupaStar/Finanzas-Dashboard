@@ -38,10 +38,8 @@ class UserSeeder(
             authDeviceRepository.save(
                 AuthDevice().apply {
                     this.auth = userAuth
-                    this.deviceId = "server"
+                    this.platformName = "server"
                     this.lastUsedAt = OffsetDateTime.now()
-                    this.ip = InetAddress.getByName("192.168.1.0")
-                    this.userAgent = "Servidor"
                 })
         }
     }

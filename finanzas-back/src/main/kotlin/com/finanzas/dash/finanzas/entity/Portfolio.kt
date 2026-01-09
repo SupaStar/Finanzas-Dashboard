@@ -27,4 +27,7 @@ class Portfolio {
 
     @OneToMany(mappedBy = "portfolio", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var dividends: MutableList<Dividend> = mutableListOf()
+
+    @OneToMany(mappedBy = "portfolio", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var operations: MutableList<Operation> = mutableListOf()
 }

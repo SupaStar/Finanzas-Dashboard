@@ -17,10 +17,8 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(private val authService: AuthService) {
     @PostMapping("/register")
     fun register(
-        @Validated @RequestBody request: RegisterRequestDto,
-        requestData: HttpServletRequest
+        @Validated @RequestBody request: RegisterRequestDto
     ): ResponseEntity<AuthResponseDto> {
-        request.agent = requestData.getHeader("User-Agent")
         val response = authService.register(request)
         return ResponseEntity(response, org.springframework.http.HttpStatus.OK)
     }
@@ -30,7 +28,6 @@ class AuthController(private val authService: AuthService) {
         @Validated @RequestBody request: LoginRequestDto,
         requestData: HttpServletRequest
     ): ResponseEntity<AuthResponseDto> {
-        request.agent = requestData.getHeader("User-Agent")
         val response = authService.login(request)
         return ResponseEntity(response, org.springframework.http.HttpStatus.OK)
     }

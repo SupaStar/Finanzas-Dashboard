@@ -4,7 +4,6 @@ import com.finanzas.dash.finanzas.config.exception.GeneralRequestException
 import com.finanzas.dash.finanzas.dto.request.portfolio.AddStockPortfolioRequestDto
 import com.finanzas.dash.finanzas.dto.response.portfolio.PortfolioGetAllResponseDto
 import com.finanzas.dash.finanzas.dto.response.portfolio.PortfolioResponseDto
-import com.finanzas.dash.finanzas.entity.Operation
 import com.finanzas.dash.finanzas.entity.Portfolio
 import com.finanzas.dash.finanzas.enum.DividendTypeEnum
 import com.finanzas.dash.finanzas.enum.OperationTypeEnum
@@ -16,7 +15,6 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 @Service
 class PortfolioService(
@@ -56,31 +54,49 @@ class PortfolioService(
     }
 
     @Transactional
-    fun updateValueOperation(operation: Operation) {
+    fun updatePortfolioData(portfolioId: Long) {
         val portfolio =
-            portfolioRepository.findByPortfolioId(operation.portfolio?.portfolioId!!) ?: throw GeneralRequestException(
+            portfolioRepository.findByIdWithDividends(portfolioId) ?: throw GeneralRequestException(
                 listOf("Error al encontrar el portafolio"),
                 HttpStatus.BAD_REQUEST
             )
-        val currentQuantity = portfolio.totalQuantity ?: BigDecimal.ZERO
-        val operationQuantity = operation.quantity ?: BigDecimal.ZERO
-        if (operation.operationType == OperationTypeEnum.buy) {
-            currentQuantity.add(operationQuantity)
-        } else {
-            currentQuantity.subtract(operationQuantity)
-        }
-        val totalReinversionQty = portfolio.dividends
-            .filter { it.dividendType == DividendTypeEnum.reinvested }
-            .map { it.value ?: BigDecimal.ZERO }
-            .reduce { acc, value -> acc.add(value) } ?: BigDecimal.ZERO
-        val newQuantity = currentQuantity.add(operation.quantity ?: BigDecimal.ZERO).subtract(totalReinversionQty)
-        if (newQuantity > BigDecimal.ZERO) {
-            val totalCost = (currentQuantity.multiply(portfolio.avgPrice ?: BigDecimal.ZERO))
-                .add((operation.quantity ?: BigDecimal.ZERO).multiply(operation.price ?: BigDecimal.ZERO))
-
-            portfolio.avgPrice = totalCost.divide(newQuantity, 6, RoundingMode.HALF_UP)
+        val (buyOps, sellOps) = portfolio.operations.partition {
+            it.operationType == OperationTypeEnum.buy
         }
 
-        portfolio.totalQuantity = newQuantity
+        val operationsTotalBuy = buyOps.sumOf {
+            (it.quantity ?: BigDecimal.ZERO)
+        }
+
+        val operationsTotalSell = sellOps.sumOf {
+            (it.quantity ?: BigDecimal.ZERO)
+        }
+
+        val operationsAmountBuy = buyOps.sumOf {
+            (it.quantity ?: BigDecimal.ZERO) * (it.price ?: BigDecimal.ZERO)
+        }
+
+        val operationsAmountSell = sellOps.sumOf {
+            (it.quantity ?: BigDecimal.ZERO) * (it.price ?: BigDecimal.ZERO)
+        }
+
+        val operationsTotal = operationsTotalBuy.subtract(operationsTotalSell)
+        var operationsAmount = operationsAmountBuy.subtract(operationsAmountSell)
+
+        val (dividendsReinvested, dividendsCash) = portfolio.dividends.partition {
+            it.dividendType == DividendTypeEnum.reinvested
+        }
+
+        val totalDividendsRein = dividendsReinvested.sumOf {
+            (it.netValue ?: BigDecimal.ZERO)
+        }
+
+        operationsAmount = operationsAmount.subtract(totalDividendsRein)
+        val avgPrice = operationsAmount / operationsTotal
+
+        portfolio.totalQuantity = operationsTotal
+        portfolio.avgPrice = avgPrice
+
+        portfolioRepository.save(portfolio)
     }
 }

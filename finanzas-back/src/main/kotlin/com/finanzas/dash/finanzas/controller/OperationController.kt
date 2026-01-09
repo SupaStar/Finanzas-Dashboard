@@ -1,6 +1,7 @@
 package com.finanzas.dash.finanzas.controller
 
 import com.finanzas.dash.finanzas.dto.request.operation.AddOperationRequestDto
+import com.finanzas.dash.finanzas.dto.response.operation.OperationAddResponseDto
 import com.finanzas.dash.finanzas.dto.response.operation.OperationDto
 import com.finanzas.dash.finanzas.dto.response.operation.OperationsPortfolioResponseDto
 import com.finanzas.dash.finanzas.service.OperationService
@@ -21,7 +22,7 @@ class OperationController(private val operationService: OperationService) {
     }
 
     @PostMapping("/add")
-    fun addOperation(@RequestBody @Valid requestDto: AddOperationRequestDto) {
-
+    fun addOperation(@RequestBody @Valid requestDto: AddOperationRequestDto): OperationAddResponseDto {
+        return operationService.addOperation(requestDto)
     }
 }

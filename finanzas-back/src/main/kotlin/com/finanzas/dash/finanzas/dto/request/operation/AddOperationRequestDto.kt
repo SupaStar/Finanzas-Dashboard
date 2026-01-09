@@ -17,4 +17,6 @@ data class AddOperationRequestDto (
     val tax: BigDecimal?,
     @field:NotNull(message = "El campo portafolio no puede estar vacio")
     val portfolioId: Long?,
+    @field:NotNull(message = "La fecha de operacion no puede estar vacia")
+    val operationDate: String?,
 )

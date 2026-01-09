@@ -55,10 +55,8 @@ class AuthService(
         val authDevice = authDeviceRepository.save(
             AuthDevice().apply {
                 this.auth = userAuth
-                this.deviceId = request.device
+                this.platformName = request.platform_name
                 this.lastUsedAt = OffsetDateTime.now()
-                this.ip = InetAddress.getByName(request.ip)
-                this.userAgent = request.agent
             })
         val jwt = jwtUtil.generateToken(user.userId!!)
         return AuthResponseDto(true, JwtResponseDto(jwt, authDevice))
@@ -79,10 +77,8 @@ class AuthService(
         val authDevice = authDeviceRepository.save(
             AuthDevice().apply {
                 this.auth = userAuth
-                this.deviceId = requestDto.device
+                this.platformName = requestDto.platform_name
                 this.lastUsedAt = OffsetDateTime.now()
-                this.ip = InetAddress.getByName(requestDto.ip)
-                this.userAgent = requestDto.agent
             })
         val jwt = jwtUtil.generateToken(user.userId!!)
         return AuthResponseDto(true, JwtResponseDto(jwt, authDevice))

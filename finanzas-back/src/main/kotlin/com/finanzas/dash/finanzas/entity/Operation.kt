@@ -36,6 +36,7 @@ class Operation {
     @Column(nullable = false, precision = 15, scale = 6)
     var total: BigDecimal? = null
 
+    var operationDate: OffsetDateTime? = null
     val createdAt: OffsetDateTime = OffsetDateTime.now()
     val modifiedAt: OffsetDateTime? = null
 }

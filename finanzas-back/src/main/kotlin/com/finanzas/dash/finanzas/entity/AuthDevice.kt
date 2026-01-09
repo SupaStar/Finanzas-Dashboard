@@ -17,15 +17,11 @@ class AuthDevice {
     @JoinColumn(name = "auth_id", nullable = false)
     var auth: UserAuth? = null
 
-    @Column(nullable = false)
     @JsonIgnore
-    var ip: InetAddress? = null
-
-    @JsonIgnore
-    var deviceId: String? = null
+    var platformName: String? = null
 
     @Column(columnDefinition = "TEXT")
-    var userAgent: String? = null
+    var refreshToken: String? = null
 
     var lastUsedAt: OffsetDateTime? = null
 }
