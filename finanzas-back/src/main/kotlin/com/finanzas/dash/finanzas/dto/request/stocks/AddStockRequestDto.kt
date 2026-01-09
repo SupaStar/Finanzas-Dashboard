@@ -5,6 +5,6 @@ import java.math.BigInteger
 
 data class AddStockRequestDto(
     @field:NotEmpty(message = "La accion no puede estar vacia")
-    val stockName: String,
+    val stockName: String?,
     val brokerId: Long
 )

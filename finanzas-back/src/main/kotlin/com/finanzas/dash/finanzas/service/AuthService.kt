@@ -46,7 +46,7 @@ class AuthService(
         val userAuth = userAuthRepository.save(
             UserAuth().apply {
                 this.user = user
-                this.passwordHash = encrypter.encrypt(request.password)
+                this.passwordHash = encrypter.encrypt(request.password!!)
                 this.provider = request.provider
                 this.lastLoginAt = OffsetDateTime.now()
                 this.passwordUpdatedAt = OffsetDateTime.now()
@@ -65,7 +65,7 @@ class AuthService(
     }
 
     fun login(requestDto: LoginRequestDto): AuthResponseDto {
-        val user = userRepository.findByUsername(requestDto.username)
+        val user = userRepository.findByUsername(requestDto.username!!)
         if (user == null) {
             throw GeneralRequestException(listOf("Usuario o password incorrectos"), HttpStatus.UNAUTHORIZED)
         }
@@ -73,7 +73,7 @@ class AuthService(
             listOf("Usuario o password incorrectos"),
             HttpStatus.UNAUTHORIZED
         )
-        if (!encrypter.matches(requestDto.password, userAuth.passwordHash!!) || user.status != UserStatusEnum.active) {
+        if (!encrypter.matches(requestDto.password!!, userAuth.passwordHash!!) || user.status != UserStatusEnum.active) {
             throw GeneralRequestException(listOf("Usuario o password incorrectos"), HttpStatus.UNAUTHORIZED)
         }
         val authDevice = authDeviceRepository.save(

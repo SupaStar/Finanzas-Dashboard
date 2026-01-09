@@ -24,4 +24,7 @@ class Portfolio {
 
     @Column(nullable = false, precision = 15, scale = 6)
     var totalQuantity: BigDecimal? = null
+
+    @OneToMany(mappedBy = "portfolio", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var dividends: MutableList<Dividend> = mutableListOf()
 }

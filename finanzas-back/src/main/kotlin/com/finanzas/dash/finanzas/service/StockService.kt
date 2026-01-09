@@ -27,12 +27,12 @@ class StockService(
             listOf("Error al encontrar tu broker."),
             HttpStatus.CONFLICT
         )
-        val stockName = "${requestDto.stockName.uppercase()}.${broker.symbol}"
+        val stockName = "${requestDto.stockName?.uppercase()}.${broker.symbol}"
         val stockInfo = stockApiService.getStock(stockName)
         val stock = try {
             stockRepository.save(Stock().apply {
                 this.name = stockName
-                this.symbol = requestDto.stockName.uppercase()
+                this.symbol = requestDto.stockName?.uppercase()
                 this.broker = broker
                 this.closeDay = stockInfo.data.price
                 this.lastFetch = OffsetDateTime.now()
