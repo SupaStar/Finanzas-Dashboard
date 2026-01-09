@@ -1,10 +1,12 @@
 package com.finanzas.dash.finanzas.utils.extension
 
 import com.finanzas.dash.finanzas.dto.response.broker.BrokerDto
+import com.finanzas.dash.finanzas.dto.response.dividend.DividendDto
 import com.finanzas.dash.finanzas.dto.response.operation.OperationDto
 import com.finanzas.dash.finanzas.dto.response.portfolio.PortfolioDto
 import com.finanzas.dash.finanzas.dto.response.stock.StockDto
 import com.finanzas.dash.finanzas.entity.Broker
+import com.finanzas.dash.finanzas.entity.Dividend
 import com.finanzas.dash.finanzas.entity.Operation
 import com.finanzas.dash.finanzas.entity.Portfolio
 import com.finanzas.dash.finanzas.entity.Stock
@@ -40,4 +42,16 @@ fun Operation.toDto() = OperationDto(
     fee = this.fee!!,
     tax = this.tax!!,
     total = this.total!!,
+)
+
+fun Dividend.toDto() = DividendDto(
+    dividendId = this.dividendId!!,
+    dividendType = this.dividendType!!,
+    value = this.value!!,
+    portfolio = this.portfolio!!.toDto(),
+    paidDate = this.paidDate!!,
+    currencyCode = this.currencyCode!!,
+    tax = this.tax,
+    netValue = this.netValue!!,
+    exchangeRate = this.exchangeRate!!,
 )

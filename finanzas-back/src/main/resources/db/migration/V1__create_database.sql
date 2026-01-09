@@ -129,7 +129,7 @@ CREATE TABLE operation (
 CREATE TABLE dividend (
     dividend_id BIGSERIAL PRIMARY KEY,
     dividend_type VARCHAR(20) NOT NULL
-        CHECK (dividend_type IN ('cash', 'stock')),
+        CHECK (dividend_type IN ('cash', 'stock','reinvested')),
     value NUMERIC(15,6) NOT NULL,
     portfolio_id BIGINT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),

@@ -23,12 +23,12 @@ class Dividend {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portfolio_id", nullable = false)
-    val portfolio: Portfolio? = null
+    var portfolio: Portfolio? = null
 
     val createdAt: OffsetDateTime = OffsetDateTime.now()
-    val modifiedAt: OffsetDateTime? = null
+    var modifiedAt: OffsetDateTime? = null
 
-    val paidDate: LocalDate? = null
+    var paidDate: OffsetDateTime? = null
 
     @Column(nullable = false, length = 3)
     var currencyCode: String? = null
