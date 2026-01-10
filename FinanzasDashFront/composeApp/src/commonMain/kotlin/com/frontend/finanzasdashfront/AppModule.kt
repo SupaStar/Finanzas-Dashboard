@@ -2,7 +2,10 @@ package com.frontend.finanzasdashfront
 
 import com.frontend.finanzasdashfront.api.auth.AuthService
 import com.frontend.finanzasdashfront.api.getEngine
+import com.frontend.finanzasdashfront.config.SecurityManager
+import com.frontend.finanzasdashfront.config.TokenManager
 import com.frontend.finanzasdashfront.viewmodel.auth.LoginViewModel
+import com.frontend.finanzasdashfront.viewmodel.dashboard.DashboardViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.Logger
@@ -31,8 +34,9 @@ object AppModule {
     }
 
     val authService = AuthService(httpClient)
-//    val tokenManager = TokenManager(SettingsFactory().createSettings())
+    val tokenManager = TokenManager(SecurityManager())
 
     // 3. Proveemos el ViewModel
-    fun provideLoginViewModel() = LoginViewModel(authService)
+    fun provideLoginViewModel() = LoginViewModel(authService, tokenManager)
+    fun provideDashboardViewModel() = DashboardViewModel(tokenManager)
 }

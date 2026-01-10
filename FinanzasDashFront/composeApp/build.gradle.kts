@@ -47,6 +47,11 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation("io.ktor:ktor-client-okhttp:${ktorVersion}")
+            implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
+            implementation(libs.androidx.navigation.compose)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -64,9 +69,13 @@ kotlin {
             implementation("io.ktor:ktor-serialization-kotlinx-json:${ktorVersion}")
             implementation("io.ktor:ktor-client-auth:${ktorVersion}")
             implementation("io.ktor:ktor-client-logging:${ktorVersion}")
-            implementation("io.ktor:ktor-client-logging:2.3.x")
 
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+
+            implementation("com.russhwolf:multiplatform-settings:1.1.1")
+            implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.1")
+
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -3,6 +3,7 @@ package com.frontend.finanzasdashfront.api.auth
 import com.frontend.finanzasdashfront.api.Constants
 import com.frontend.finanzasdashfront.dto.auth.LoginRequestDto
 import com.frontend.finanzasdashfront.dto.auth.LoginResponseDto
+import com.frontend.finanzasdashfront.getPlatform
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -19,7 +20,7 @@ class AuthService(private val client: HttpClient) {
     suspend fun login(user: String, pass: String): LoginResponseDto {
         val response = client.post("${Constants.BaseUrl}${login}") {
             contentType(ContentType.Application.Json)
-            setBody(LoginRequestDto(user, pass))
+            setBody(LoginRequestDto(user, pass, getPlatform().name))
         }
 
         val responseBody = response.body<LoginResponseDto>()
