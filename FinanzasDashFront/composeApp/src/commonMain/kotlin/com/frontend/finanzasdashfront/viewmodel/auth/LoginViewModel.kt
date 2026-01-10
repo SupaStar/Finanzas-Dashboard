@@ -2,7 +2,7 @@ package com.frontend.finanzasdashfront.viewmodel.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.frontend.finanzasdashfront.api.auth.AuthService
+import com.frontend.finanzasdashfront.api.services.AuthService
 import com.frontend.finanzasdashfront.config.TokenManager
 import com.frontend.finanzasdashfront.model.auth.LoginUiState
 import kotlinx.coroutines.*

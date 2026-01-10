@@ -1,6 +1,5 @@
-package com.frontend.finanzasdashfront.dto.auth
+package com.frontend.finanzasdashfront.request
 
-import com.frontend.finanzasdashfront.Platform
 import kotlinx.serialization.Serializable
 
 @Serializable
