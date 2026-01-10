@@ -48,10 +48,6 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation("io.ktor:ktor-client-okhttp:${ktorVersion}")
             implementation("androidx.security:security-crypto:1.1.0-alpha06")
-
-            implementation(libs.androidx.navigation.compose)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
