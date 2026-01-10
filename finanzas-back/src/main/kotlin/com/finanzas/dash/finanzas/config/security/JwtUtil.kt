@@ -1,7 +1,5 @@
 package com.finanzas.dash.finanzas.config.security
 
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import org.springframework.stereotype.Component
 import javax.crypto.SecretKey
@@ -13,7 +11,7 @@ class JwtUtil(private val jwtConfigValues: JwtConfigValues) {
     private val key: SecretKey = Keys.hmacShaKeyFor(jwtConfigValues.secret.toByteArray())
     private val expirationMs: Long = jwtConfigValues.expiration * 15 // 15 minutos
 
-    fun generateToken(username: String, id: Int): String {
+    fun generateToken(id: Long): String {
         return Jwts.builder()
             .subject(id.toString())
             .issuedAt(Date())
@@ -22,7 +20,7 @@ class JwtUtil(private val jwtConfigValues: JwtConfigValues) {
             .compact()
     }
 
-    fun extractUsername(token: String): String {
+    fun extractUserId(token: String): String {
         return Jwts.parser()
             .verifyWith(key)
             .build()

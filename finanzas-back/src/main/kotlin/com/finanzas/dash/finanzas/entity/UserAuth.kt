@@ -1,5 +1,6 @@
 package com.finanzas.dash.finanzas.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.finanzas.dash.finanzas.enum.ProviderEnum
 import jakarta.persistence.*
 import java.time.OffsetDateTime
@@ -14,14 +15,18 @@ class UserAuth {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private val user: User? = null
+    var user: User? = null
 
+    @JsonIgnore
     @Column(nullable = false)
-    private var passwordHash: String? = null
+    var passwordHash: String? = null
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private var provider: ProviderEnum? = ProviderEnum.LOCAL
+    var provider: ProviderEnum? = ProviderEnum.local
 
-    private val lastLoginAt: OffsetDateTime? = null
-    private val passwordUpdatedAt: OffsetDateTime? = null
+    @JsonIgnore
+    var lastLoginAt: OffsetDateTime? = null
+    @JsonIgnore
+    var passwordUpdatedAt: OffsetDateTime? = null
 }

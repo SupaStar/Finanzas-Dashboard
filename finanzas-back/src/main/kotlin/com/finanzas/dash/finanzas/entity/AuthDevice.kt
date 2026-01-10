@@ -1,6 +1,8 @@
 package com.finanzas.dash.finanzas.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
+import java.net.InetAddress
 import java.time.OffsetDateTime
 
 
@@ -13,15 +15,13 @@ class AuthDevice {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_id", nullable = false)
-    private val auth: UserAuth? = null
+    var auth: UserAuth? = null
 
-    @Column(nullable = false)
-    private var ip: String? = null
-
-    private val deviceId: String? = null
+    @JsonIgnore
+    var platformName: String? = null
 
     @Column(columnDefinition = "TEXT")
-    private var userAgent: String? = null
+    var refreshToken: String? = null
 
-    private val lastUsedAt: OffsetDateTime? = null
+    var lastUsedAt: OffsetDateTime? = null
 }
