@@ -1,4 +1,4 @@
-package com.frontend.finanzasdashfront.ui.auth
+package com.frontend.finanzasdashfront.views.auth
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions

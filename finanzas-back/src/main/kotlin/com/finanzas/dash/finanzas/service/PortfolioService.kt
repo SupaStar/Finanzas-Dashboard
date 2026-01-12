@@ -50,7 +50,7 @@ class PortfolioService(
     fun getUserPortfolio(): PortfolioGetAllResponseDto {
         val user = securityService.currentUser()
         val portfolio = portfolioRepository.findByUserUserId(user.userId!!)
-        return PortfolioGetAllResponseDto(messafe = portfolio.map { it.toDto() })
+        return PortfolioGetAllResponseDto(message = portfolio.map { it.toDto() })
     }
 
     @Transactional
