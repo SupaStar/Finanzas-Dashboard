@@ -4,7 +4,9 @@ import com.finanzas.dash.finanzas.config.exception.GeneralRequestException
 import com.finanzas.dash.finanzas.dto.request.dividend.AddDividendPortfolioRequestDto
 import com.finanzas.dash.finanzas.dto.response.dividend.AddDividendResponseDto
 import com.finanzas.dash.finanzas.dto.response.dividend.DividendsPortfolioResponseDto
+import com.finanzas.dash.finanzas.dto.response.dividend.MessageDividendsPortfolioResponseDto
 import com.finanzas.dash.finanzas.entity.Dividend
+import com.finanzas.dash.finanzas.entity.Portfolio
 import com.finanzas.dash.finanzas.repository.DividendRepository
 import com.finanzas.dash.finanzas.repository.PortfolioRepository
 import com.finanzas.dash.finanzas.utils.extension.toDto
@@ -22,7 +24,15 @@ class DividendService(
 ) {
     fun getAllDividendsPorfolio(portfolioId: Long): DividendsPortfolioResponseDto {
         val dividends = dividendRepository.findByPortfolioPortfolioId(portfolioId)
-        return DividendsPortfolioResponseDto(message = dividends.map { it.toDto() })
+        val portfolio = portfolioRepository.findByPortfolioId(portfolioId) ?: throw GeneralRequestException(
+            errors = listOf("Portfolio not found"),
+            HttpStatus.NOT_FOUND
+        )
+        return DividendsPortfolioResponseDto(
+            message = MessageDividendsPortfolioResponseDto(
+                portfolio?.stock!!.toDto(),
+                dividends.map { it.toDto() })
+        )
     }
 
     fun addDividend(portfolioId: Long, request: AddDividendPortfolioRequestDto): AddDividendResponseDto {
@@ -36,7 +46,7 @@ class DividendService(
                 this.paidDate = LocalDate.parse(request.paidDate!!).atStartOfDay().atOffset(ZoneOffset.UTC)
                 this.currencyCode = request.currencyCode
                 this.tax = request.tax!!
-                this.netValue =  request.value!! * request.exchangeRate!!
+                this.netValue = request.value!! * request.exchangeRate!!
                 this.exchangeRate = request.exchangeRate!!
             })
             portfolioService.updatePortfolioData(portfolioId)

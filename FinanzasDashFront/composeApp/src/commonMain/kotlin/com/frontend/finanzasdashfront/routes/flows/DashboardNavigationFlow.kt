@@ -19,9 +19,10 @@ fun DashboardNavigationFlow() {
         }
 
         is DashboardScreens.PortfolioDetail -> {
+            val viewModel = remember { AppModule.providePortfolioViewModel(screen.idPortfolio) }
             PortfolioItemScreen(
-                idPortfolio = screen.idPortfolio,
-                onBack = { router.goTo(DashboardScreens.Dashboard) }
+                onBack = { router.goTo(DashboardScreens.Dashboard) },
+                viewModel
             )
         }
     }

@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import com.frontend.finanzasdashfront.component.PortfolioRow
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.ui.Alignment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,71 +42,77 @@ fun DashboardScreen(onLogout: () -> Unit, viewModel: DashboardViewModel, onNavig
             )
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-        ) {
-            Card(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-            ) {
-                Column(Modifier.padding(20.dp)) {
-                    Text("Valor Total Estimado", style = MaterialTheme.typography.labelLarge)
-                    Text(
-                        text = "$${state.items.sumOf { it.avgPrice.toDouble() * it.totalQuantity.toDouble() }}", // Cálculo rápido
-                        style = MaterialTheme.typography.displaySmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+        if (state.isLoading) {
+            Box(Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
             }
-
-            Text(
-                text = "Acciones",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            Card(
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
             ) {
-                Column {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.secondaryContainer)
-                            .padding(12.dp)
-                    ) {
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                ) {
+                    Column(Modifier.padding(20.dp)) {
+                        Text("Valor Total Estimado", style = MaterialTheme.typography.labelLarge)
                         Text(
-                            "Accion",
-                            Modifier.weight(1.5f),
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            "Titulos.",
-                            Modifier.weight(1f),
-                            textAlign = TextAlign.End,
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            "Costo promedio",
-                            Modifier.weight(1f),
-                            textAlign = TextAlign.End,
-                            style = MaterialTheme.typography.labelMedium,
+                            text = "$${state.items.sumOf { it.avgPrice.toDouble() * it.totalQuantity.toDouble() }}", // Cálculo rápido
+                            style = MaterialTheme.typography.displaySmall,
                             fontWeight = FontWeight.Bold
                         )
                     }
+                }
 
-                    HorizontalDivider()
+                Text(
+                    text = "Acciones",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
 
-                    LazyColumn {
-                        items(state.items) { portfolioItem ->
-                            PortfolioRow(portfolioItem, onNavigateToPortfolioDetail)
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp), thickness = 0.5.dp)
+                Card(
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.secondaryContainer)
+                                .padding(12.dp)
+                        ) {
+                            Text(
+                                "Accion",
+                                Modifier.weight(1.5f),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                "Titulos.",
+                                Modifier.weight(1f),
+                                textAlign = TextAlign.End,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                "Costo promedio",
+                                Modifier.weight(1f),
+                                textAlign = TextAlign.End,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        HorizontalDivider()
+
+                        LazyColumn {
+                            items(state.items) { portfolioItem ->
+                                PortfolioRow(portfolioItem, onNavigateToPortfolioDetail)
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp), thickness = 0.5.dp)
+                            }
                         }
                     }
                 }

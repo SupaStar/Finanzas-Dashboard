@@ -7,10 +7,10 @@ import com.frontend.finanzasdashfront.config.TokenManager
 import com.frontend.finanzasdashfront.model.dashboard.DashboardUiState
 import com.frontend.finanzasdashfront.routes.routers.DashboardRouter
 import com.frontend.finanzasdashfront.routes.routers.DashboardScreens
-import com.frontend.finanzasdashfront.views.dashboard.DashboardScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class DashboardViewModel(
@@ -19,14 +19,22 @@ class DashboardViewModel(
     private val router: DashboardRouter
 ) :
     ViewModel() {
-    private val _uiState = MutableStateFlow(DashboardUiState())
+    private val _uiState = MutableStateFlow(DashboardUiState(isLoading = true))
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
     init {
+        loadData()
+    }
+
+    fun loadData() {
         viewModelScope.launch {
             val response = portfolioService.getPortfolio()
-            _uiState.value = _uiState.value.copy(response.message)
-            val owo = ""
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    items = response.message
+                )
+            }
         }
     }
 
