@@ -2,7 +2,8 @@ name: Deploy to Home Server
 
 on:
   push:
-    branches: [release/testing]
+    branches: 
+      - release/testing
 
 jobs:
   deploy:
@@ -20,13 +21,21 @@ jobs:
           oauth-secret: ${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}
           tags: tag:github-ci
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd ~/Proyectos/Finanzas-Dashboard
-            git pull
-            docker compose up -d --build
+
+      - name: Deploy
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          ssh -o StrictHostKeyChecking=no \
+            servertanuko@${{ secrets.SERVER_IP }} << 'EOF'
+            set -e
+            cd /home/servertanuko/Proyectos/Finanzas-Dashboard
+          git fetch origin
+          git checkout release/testing
+          git pull origin release/testing
+          docker compose down || true
+          docker compose up -d --build
+          EOF
+
