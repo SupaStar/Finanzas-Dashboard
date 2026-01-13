@@ -1,5 +1,5 @@
 package com.finanzas.dash.finanzas.enum
 
 enum class ProviderEnum {
-    LOCAL, GOOGLE, GITHUB
+    local, google, github
 }

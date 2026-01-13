@@ -53,7 +53,7 @@ CREATE TABLE auth_devices (
 CREATE TABLE broker (
     broker_id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    symbol VARCHAR(50) NOT NULL UNIQUE
+    symbol VARCHAR(50) NOT NULL
 );
 
 
@@ -67,11 +67,14 @@ CREATE TABLE stock (
     broker_id BIGINT NOT NULL,
     close_day NUMERIC(15,6),
     last_fetch TIMESTAMPTZ,
-    currency CHAR(3) NOT NULL,
+    currency VARCHAR(3) NOT NULL,
+
 
     CONSTRAINT fk_stock_broker
         FOREIGN KEY (broker_id)
-        REFERENCES broker(broker_id)
+        REFERENCES broker(broker_id),
+     CONSTRAINT uk_symbol_broker
+        UNIQUE (symbol, broker_id)
 );
 
 
@@ -126,13 +129,13 @@ CREATE TABLE operation (
 CREATE TABLE dividend (
     dividend_id BIGSERIAL PRIMARY KEY,
     dividend_type VARCHAR(20) NOT NULL
-        CHECK (dividend_type IN ('cash', 'stock')),
+        CHECK (dividend_type IN ('cash', 'stock','reinvested')),
     value NUMERIC(15,6) NOT NULL,
     portfolio_id BIGINT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     modified_at TIMESTAMPTZ,
-    paid_date DATE,
-    currency_code CHAR(3) NOT NULL,
+    paid_date TIMESTAMPTZ,
+    currency_code VARCHAR(3) NOT NULL,
     tax NUMERIC(15,6) DEFAULT 0,
     net_value NUMERIC(15,6) NOT NULL,
     exchange_rate NUMERIC(15,6),
@@ -142,3 +145,4 @@ CREATE TABLE dividend (
         REFERENCES portfolio(portfolio_id)
         ON DELETE CASCADE
 );
+
