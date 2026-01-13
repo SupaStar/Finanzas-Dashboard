@@ -26,6 +26,9 @@ import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
+// Función expect/actual para detectar si estamos en modo debug
+expect fun isDebugBuild(): Boolean
+
 object AppModule {
     private val httpClient = HttpClient(getEngine()) { // getEngine() es el expect/actual de motores
         install(ContentNegotiation) {
@@ -41,11 +44,14 @@ object AppModule {
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
         }
-        install(Logging) {
-            level = LogLevel.ALL
-            logger = object : Logger {
-                override fun log(message: String) {
-                    println("KTOR_LOG: $message") // Verás esto en el Logcat o consola
+        // Logging solo en modo debug
+        if (isDebugBuild()) {
+            install(Logging) {
+                level = LogLevel.ALL
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        println("KTOR_LOG: $message")
+                    }
                 }
             }
         }

@@ -28,12 +28,26 @@ class DashboardViewModel(
 
     fun loadData() {
         viewModelScope.launch {
-            val response = portfolioService.getPortfolio()
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    items = response.message
-                )
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            try {
+                val response = portfolioService.getPortfolio()
+                val items = response.message
+                val totalValue = items.sumOf { it.avgPrice.toDouble() * it.totalQuantity.toDouble() }
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        items = items,
+                        totalValue = totalValue,
+                        errorMessage = null
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.message ?: "Error al cargar los portafolios"
+                    )
+                }
             }
         }
     }

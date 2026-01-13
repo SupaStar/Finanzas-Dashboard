@@ -4,5 +4,7 @@ import com.frontend.finanzasdashfront.dto.portfolio.PortfolioDto
 
 data class DashboardUiState (
     val isLoading: Boolean = false,
-    val items:List<PortfolioDto> = emptyList()
+    val items: List<PortfolioDto> = emptyList(),
+    val errorMessage: String? = null,
+    val totalValue: Double = 0.0
 )

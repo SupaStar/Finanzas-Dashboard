@@ -7,3 +7,16 @@ class AndroidPlatform : Platform {
 }
 
 actual fun getPlatform(): Platform = AndroidPlatform()
+
+actual fun isDebugBuild(): Boolean {
+    // En Android, BuildConfig.DEBUG está disponible automáticamente
+    // Si hay problemas, puedes usar: return true // Para desarrollo
+    return try {
+        val buildConfigClass = Class.forName("com.frontend.finanzasdashfront.BuildConfig")
+        buildConfigClass.getField("DEBUG").getBoolean(null)
+    } catch (e: Exception) {
+        true // Por defecto true para desarrollo si no se puede detectar
+    }
+}
+
+actual fun getPlatformHost(): String = "http://10.0.2.2:8080"

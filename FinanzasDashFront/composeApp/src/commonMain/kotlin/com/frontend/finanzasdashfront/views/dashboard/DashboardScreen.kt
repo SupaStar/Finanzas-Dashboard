@@ -42,11 +42,28 @@ fun DashboardScreen(onLogout: () -> Unit, viewModel: DashboardViewModel, onNavig
             )
         }
     ) { paddingValues ->
-        if (state.isLoading) {
-            Box(Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+        when {
+            state.isLoading -> {
+                Box(Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
             }
-        } else {
+            state.errorMessage != null -> {
+                Box(Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = state.errorMessage!!,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(onClick = { viewModel.loadData() }) {
+                            Text("Reintentar")
+                        }
+                    }
+                }
+            }
+            else -> {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -60,7 +77,7 @@ fun DashboardScreen(onLogout: () -> Unit, viewModel: DashboardViewModel, onNavig
                     Column(Modifier.padding(20.dp)) {
                         Text("Valor Total Estimado", style = MaterialTheme.typography.labelLarge)
                         Text(
-                            text = "$${state.items.sumOf { it.avgPrice.toDouble() * it.totalQuantity.toDouble() }}", // Cálculo rápido
+                            text = "$${String.format("%.2f", state.totalValue)}",
                             style = MaterialTheme.typography.displaySmall,
                             fontWeight = FontWeight.Bold
                         )
@@ -116,6 +133,7 @@ fun DashboardScreen(onLogout: () -> Unit, viewModel: DashboardViewModel, onNavig
                         }
                     }
                 }
+            }
             }
         }
     }
