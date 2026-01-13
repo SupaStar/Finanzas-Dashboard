@@ -36,6 +36,7 @@ jobs:
           timeout: 60s
           command_timeout: 30m
           script: |
+            echo "SSH OK"
             cd ~/Proyectos/Finanzas-Dashboard
             git pull
             docker compose up -d --build
