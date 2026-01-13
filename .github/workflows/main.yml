@@ -27,6 +27,6 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd ~/docker/proyecto
+            cd ~/Proyectos/Finanzas-Dashboard
             git pull
             docker compose up -d --build
