@@ -53,8 +53,8 @@ services:
       dockerfile: Dockerfile
     container_name: finanzas-dash-pystock
     restart: always
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     depends_on:
       - redis
     networks:
