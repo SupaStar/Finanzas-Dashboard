@@ -31,13 +31,15 @@ jobs:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          timeout: 60s
-          command_timeout: 30m
-          script: |
-            cd ~/Proyectos/Finanzas-Dashboard
+           host: ${{ secrets.SERVER_IP }}
+           username: deploys
+           key: ${{ secrets.SSH_KEY }}
+           port: 22
+           timeout: 60s
+           command_timeout: 30m
+           request_pty: true
+           script: |
+            echo "SSH OK"
+            cd /home/deploys/Proyectos/Finanzas-Dashboard
             git pull
             docker compose up -d --build
