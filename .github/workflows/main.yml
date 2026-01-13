@@ -13,6 +13,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check secrets presence
+        run: |
+            [ -z "${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}" ] && echo "❌ CLIENT_ID missing" || echo "✅ CLIENT_ID OK"
+            [ -z "${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}" ] && echo "❌ CLIENT_SECRET missing" || echo "✅ CLIENT_SECRET OK"
+
       - name: Connect to Tailscale
         uses: tailscale/github-action@v2
         with:
