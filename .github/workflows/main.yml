@@ -22,9 +22,11 @@ jobs:
           oauth-secret: ${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}
           tags: tag:github-ci
 
-      - name: Test SSH port
-        run: |
-          nc -zv ${{ secrets.SERVER_IP }} 22 || echo "❌ SSH not reachable"
+
+      - name: Debug key length
+        run: echo "SSH_KEY length=${#SSH_KEY}"
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
       
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
@@ -36,7 +38,6 @@ jobs:
           timeout: 60s
           command_timeout: 30m
           script: |
-            echo "SSH OK"
             cd ~/Proyectos/Finanzas-Dashboard
             git pull
             docker compose up -d --build
