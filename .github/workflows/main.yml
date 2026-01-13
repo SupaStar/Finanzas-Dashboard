@@ -24,7 +24,7 @@ jobs:
 
       - name: Test SSH port
         run: |
-          nc -zv ${{ secrets.SERVER_TAILSCALE_IP }} 22 || echo "❌ SSH not reachable"
+          nc -zv ${{ secrets.SERVER_IP }} 22 || echo "❌ SSH not reachable"
       
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
