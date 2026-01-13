@@ -2,7 +2,9 @@ name: Deploy to Home Server
 
 on:
   push:
-    branches: [release/testing]
+    branches: 
+      - release/testing
+      - IntegracionServerLocal
 
 jobs:
   deploy:
