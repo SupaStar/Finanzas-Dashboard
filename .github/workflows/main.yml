@@ -4,7 +4,6 @@ on:
   push:
     branches: 
       - release/testing
-      - IntegracionServerLocal
 
 jobs:
   deploy:
@@ -33,7 +32,9 @@ jobs:
             servertanuko@${{ secrets.SERVER_IP }} << 'EOF'
             set -e
             cd /home/servertanuko/Proyectos/Finanzas-Dashboard
-            git pull
+          git fetch origin
+          git checkout release/testing
+          git pull origin release/testing
           docker compose down || true
           docker compose up -d --build
           EOF
