@@ -40,6 +40,4 @@ jobs:
            request_pty: true
            script: |
             echo "SSH OK"
-            cd /home/deploys/Proyectos/Finanzas-Dashboard
-            git pull
-            docker compose up -d --build
+            
