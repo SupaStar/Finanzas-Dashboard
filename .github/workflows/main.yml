@@ -28,16 +28,13 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
       
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-           host: ${{ secrets.SERVER_IP }}
-           username: servertanuko
-           key: ${{ secrets.SSH_KEY }}
-           port: 22
-           timeout: 60s
-           command_timeout: 30m
-           request_pty: true
-           script: |
-            echo "SSH OK"
+      - name: SSH Deploy (native)
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          ssh -o StrictHostKeyChecking=no \
+          servertanuko@${{ secrets.SERVER_IP }} \
+          "echo SSH OK"
             
