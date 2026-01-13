@@ -23,18 +23,17 @@ jobs:
           tags: tag:github-ci
 
 
-      - name: Debug key length
-        run: echo "SSH_KEY length=${#SSH_KEY}"
-        env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-      
-      - name: SSH Deploy (native)
+      - name: Deploy
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
           ssh -o StrictHostKeyChecking=no \
-          servertanuko@${{ secrets.SERVER_IP }} \
-          "echo SSH OK"
-            
+            servertanuko@${{ secrets.SERVER_IP }} << 'EOF'
+            set -e
+            cd /home/servertanuko/Proyectos/Finanzas-Dashboard
+            git pull
+          docker compose up -d --build
+          EOF
+
