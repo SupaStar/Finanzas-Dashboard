@@ -18,5 +18,8 @@ actual fun isDebugBuild(): Boolean {
         true // Por defecto true para desarrollo si no se puede detectar
     }
 }
+//Local
+//actual fun getPlatformHost(): String = "http://10.0.2.2:8080"
 
-actual fun getPlatformHost(): String = "http://10.0.2.2:8080"
+// Server local
+actual fun getPlatformHost(): String = "http://192.168.1.96:8080"

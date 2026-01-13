@@ -5,4 +5,7 @@ class JVMPlatform : Platform {
 }
 
 actual fun getPlatform(): Platform = JVMPlatform()
-actual fun getPlatformHost(): String = "http://localhost:8080"
+//Local
+//actual fun getPlatformHost(): String = "http://localhost:8080"
+// Server local
+actual fun getPlatformHost(): String = "http://192.168.1.96:8080"

@@ -13,9 +13,8 @@ import com.frontend.finanzasdashfront.viewmodel.dashboard.DashboardViewModel
 import com.frontend.finanzasdashfront.viewmodel.portfolio.PortfolioViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerTokens
-import io.ktor.client.plugins.auth.providers.bearer
+import io.ktor.client.plugins.HttpResponseValidator
+
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.LogLevel
@@ -26,7 +25,6 @@ import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-// Función expect/actual para detectar si estamos en modo debug
 expect fun isDebugBuild(): Boolean
 
 object AppModule {
@@ -53,6 +51,22 @@ object AppModule {
                         println("KTOR_LOG: $message")
                     }
                 }
+            }
+        }
+        expectSuccess = false
+        HttpResponseValidator {
+            validateResponse { response ->
+                val statusCode = response.status.value
+
+                if (statusCode == 403) {
+                    println("KTOR_LOG: Acceso prohibido (403). Limpiando token...")
+                    tokenManager.clearToken()
+                }
+            }
+
+            handleResponseExceptionWithRequest { exception, request ->
+
+                println("KTOR_LOG: Error de red o validación: ${exception.message}")
             }
         }
     }
