@@ -23,7 +23,7 @@ class LoginViewModel(private val authService: AuthService, private val tokenMana
 
         _uiState.value = _uiState.value.copy(
             isLoading = true,
-            errorMessage = null
+            errorMessage = ""
         )
         viewModelScope.launch {
             try {
@@ -33,7 +33,7 @@ class LoginViewModel(private val authService: AuthService, private val tokenMana
                     tokenManager.saveToken(response.message.token)
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        errorMessage = null
+                        errorMessage = ""
                     )
                 } else {
                     _uiState.value = _uiState.value.copy(
@@ -48,7 +48,15 @@ class LoginViewModel(private val authService: AuthService, private val tokenMana
                 )
             }
         }
-
+    }
+    fun onPaswordVisibleChanged(visible: Boolean) {
+        _uiState.update { it.copy(isPasswordVisible = visible) }
+    }
+    fun onUsernameChanged(username: String) {
+        _uiState.update { it.copy(username = username) }
+    }
+    fun onPasswordChanged(password: String) {
+        _uiState.update { it.copy(password = password) }
     }
 }
 

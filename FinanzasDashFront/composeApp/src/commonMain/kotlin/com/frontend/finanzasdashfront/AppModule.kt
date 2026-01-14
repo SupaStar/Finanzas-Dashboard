@@ -2,20 +2,22 @@ package com.frontend.finanzasdashfront
 
 import com.frontend.finanzasdashfront.api.services.AuthService
 import com.frontend.finanzasdashfront.api.getEngine
+import com.frontend.finanzasdashfront.api.services.BrokerService
 import com.frontend.finanzasdashfront.api.services.DividendService
 import com.frontend.finanzasdashfront.api.services.OperationService
 import com.frontend.finanzasdashfront.api.services.PortfolioService
+import com.frontend.finanzasdashfront.api.services.StockService
 import com.frontend.finanzasdashfront.config.SecurityManager
 import com.frontend.finanzasdashfront.config.TokenManager
 import com.frontend.finanzasdashfront.routes.routers.DashboardRouter
 import com.frontend.finanzasdashfront.viewmodel.auth.LoginViewModel
 import com.frontend.finanzasdashfront.viewmodel.dashboard.DashboardViewModel
+import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.PortfolioViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerTokens
-import io.ktor.client.plugins.auth.providers.bearer
+import io.ktor.client.plugins.HttpResponseValidator
+
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.LogLevel
@@ -26,7 +28,6 @@ import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-// Función expect/actual para detectar si estamos en modo debug
 expect fun isDebugBuild(): Boolean
 
 object AppModule {
@@ -55,6 +56,22 @@ object AppModule {
                 }
             }
         }
+        expectSuccess = false
+        HttpResponseValidator {
+            validateResponse { response ->
+                val statusCode = response.status.value
+
+                if (statusCode == 403) {
+                    println("KTOR_LOG: Acceso prohibido (403). Limpiando token...")
+                    tokenManager.clearToken()
+                }
+            }
+
+            handleResponseExceptionWithRequest { exception, request ->
+
+                println("KTOR_LOG: Error de red o validación: ${exception.message}")
+            }
+        }
     }
 
 
@@ -63,10 +80,13 @@ object AppModule {
     val portfolioService = PortfolioService(httpClient)
     val operationService = OperationService(httpClient)
     val dividendService = DividendService(httpClient)
+    val stockService = StockService(httpClient)
+    val brokerService = BrokerService(httpClient)
     val dashboardRouter = DashboardRouter()
     // 3. Proveemos el ViewModel
     fun provideLoginViewModel() = LoginViewModel(authService, tokenManager)
     fun provideDashboardViewModel() = DashboardViewModel(tokenManager, portfolioService, dashboardRouter)
 
+    fun provideSelectStockVM() = SelectStockVM(stockService, brokerService, portfolioService)
     fun providePortfolioViewModel(idPortfolio:Long) = PortfolioViewModel(idPortfolio, operationService, dividendService)
 }
