@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import com.frontend.finanzasdashfront.component.PortfolioRow
+import com.frontend.finanzasdashfront.ui.component.PortfolioRow
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -96,6 +96,7 @@ fun DashboardScreen(
                 if (showDialog) {
                     SelectStockModal(
                         onClose = { showDialog = false },
+                        reloadData = {viewModel.loadData()},
                         viewModel = viewModelModal
                     )
                 }

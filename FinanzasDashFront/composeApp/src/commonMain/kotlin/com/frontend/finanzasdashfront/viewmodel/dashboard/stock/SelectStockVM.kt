@@ -6,8 +6,8 @@ import com.frontend.finanzasdashfront.api.services.BrokerService
 import com.frontend.finanzasdashfront.api.services.PortfolioService
 import com.frontend.finanzasdashfront.api.services.StockService
 import com.frontend.finanzasdashfront.model.dashboard.stock.SelectStockUiState
-import com.frontend.finanzasdashfront.request.AddStockPortfolioRequestDto
-import com.frontend.finanzasdashfront.request.AddStockRequestDto
+import com.frontend.finanzasdashfront.dto.request.AddStockPortfolioRequestDto
+import com.frontend.finanzasdashfront.dto.request.AddStockRequestDto
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -20,7 +20,9 @@ class SelectStockVM(
     private val _uiState = MutableStateFlow(SelectStockUiState(isLoading = true))
     val uiState: StateFlow<SelectStockUiState> = _uiState.asStateFlow()
     private val _closeEvent = MutableSharedFlow<Unit>()
+    private val _reloadDash = MutableSharedFlow<Unit>()
     val closeEvent = _closeEvent.asSharedFlow()
+    val reloadDash = _reloadDash.asSharedFlow()
 
     init {
         loadStocksAvailable()
@@ -98,6 +100,7 @@ class SelectStockVM(
                 if (response.estado) {
                     _uiState.update { it.copy(isLoading = false, errorMessage = null) }
                     _closeEvent.emit(Unit)
+                    _reloadDash.emit(Unit)
                 } else {
                     _uiState.update {
                         it.copy(

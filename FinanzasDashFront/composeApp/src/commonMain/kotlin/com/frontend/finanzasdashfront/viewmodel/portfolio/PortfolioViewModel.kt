@@ -18,7 +18,7 @@ class PortfolioViewModel(
     private val dividendService: DividendService
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(PortfolioDetailUiState(isLoading = true))
+    private val _uiState = MutableStateFlow(PortfolioDetailUiState(isLoading = true, portfolioid = idPortfolio))
     val uiState: StateFlow<PortfolioDetailUiState> = _uiState.asStateFlow()
 
     init {

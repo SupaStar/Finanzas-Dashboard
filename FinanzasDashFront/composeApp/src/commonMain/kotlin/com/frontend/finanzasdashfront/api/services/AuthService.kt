@@ -1,7 +1,7 @@
 package com.frontend.finanzasdashfront.api.services
 
 import com.frontend.finanzasdashfront.api.Constants
-import com.frontend.finanzasdashfront.request.LoginRequestDto
+import com.frontend.finanzasdashfront.dto.request.LoginRequestDto
 import com.frontend.finanzasdashfront.dto.auth.LoginResponseDto
 import com.frontend.finanzasdashfront.getPlatform
 import io.ktor.client.*
