@@ -14,6 +14,7 @@ import com.frontend.finanzasdashfront.viewmodel.auth.LoginViewModel
 import com.frontend.finanzasdashfront.viewmodel.dashboard.DashboardViewModel
 import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.PortfolioViewModel
+import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddDividendModalVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddOperationModalVM
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
@@ -90,6 +91,6 @@ object AppModule {
 
     fun provideSelectStockVM() = SelectStockVM(stockService, brokerService, portfolioService)
     fun providePortfolioViewModel(idPortfolio:Long) = PortfolioViewModel(idPortfolio, operationService, dividendService)
-
     fun provideAddOperationVM() = AddOperationModalVM(operationService)
+    fun provideAddDividendVM() = AddDividendModalVM(dividendService)
 }

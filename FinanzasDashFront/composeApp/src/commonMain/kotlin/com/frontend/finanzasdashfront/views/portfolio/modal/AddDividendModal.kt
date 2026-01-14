@@ -1,6 +1,5 @@
 package com.frontend.finanzasdashfront.views.portfolio.modal
 
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,24 +18,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.frontend.finanzasdashfront.model.portfolio.modal.EnumCurrencyCodesDropdown
+import com.frontend.finanzasdashfront.model.portfolio.modal.EnumDividendTypeDropdown
 import com.frontend.finanzasdashfront.model.portfolio.modal.EnumOperationTypeDropdown
 import com.frontend.finanzasdashfront.ui.component.DatePickerField
-import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddOperationModalVM
+import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddDividendModalVM
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddOperationModal(
-    viewModel: AddOperationModalVM,
-    onClose: () -> Unit,
-    reloadOperations: () -> Unit,
+fun AddDividendModal(
+    viewModel: AddDividendModalVM, onClose: () -> Unit,
+    reloadDividends: () -> Unit,
     idPorfolio: Long
 ) {
+
     val state by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        launch { viewModel.closeEvent.collect { onClose() } }
-        launch { viewModel.reloadOperationsEvent.collect { reloadOperations() } }
+        launch { viewModel.closeModalEvent.collect { onClose() } }
+        launch { viewModel.reloadDividendsEvent.collect { reloadDividends() } }
     }
 
     Dialog(onDismissRequest = onClose) {
@@ -59,7 +60,7 @@ fun AddOperationModal(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        "Nueva Operación",
+                        "Nueva Dividendo",
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -67,9 +68,7 @@ fun AddOperationModal(
                         Icon(Icons.Default.Close, contentDescription = "Cerrar")
                     }
                 }
-
                 Spacer(modifier = Modifier.height(16.dp))
-
                 if (state.isLoading) {
                     Box(Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
@@ -83,87 +82,101 @@ fun AddOperationModal(
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                     }
-
                     ExposedDropdownMenuBox(
-                        expanded = state.isExpandedSelect,
-                        onExpandedChange = { viewModel.onExpandedSelectOperationType(!state.isExpandedSelect) },
+                        expanded = state.isExpandedDividendTypeSelected,
+                        onExpandedChange = { viewModel.onExpandedDividendTypeChange(!state.isExpandedDividendTypeSelected) },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         OutlinedTextField(
-                            value = state.operationTypeSelectedText,
+                            value = state.dividendTypeSelectedText,
                             onValueChange = {},
                             readOnly = true,
                             label = { Text("Tipo de operación") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.isExpandedSelect) },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.isExpandedDividendTypeSelected) },
                             modifier = Modifier.menuAnchor().fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp)
                         )
                         ExposedDropdownMenu(
-                            expanded = state.isExpandedSelect,
-                            onDismissRequest = { viewModel.onExpandedSelectOperationType(false) }
+                            expanded = state.isExpandedDividendTypeSelected,
+                            onDismissRequest = { viewModel.onExpandedDividendTypeChange(false) }
                         ) {
-                            EnumOperationTypeDropdown.entries.forEach { type ->
+                            EnumDividendTypeDropdown.entries.forEach { type ->
                                 DropdownMenuItem(
                                     text = { Text(type.label) },
                                     onClick = {
-                                        viewModel.onOperationTypeSelected(type.label, type.name.lowercase())
+                                        viewModel.onDividendTypeChange(type.label, type.name.lowercase())
                                     }
                                 )
                             }
                         }
                     }
-
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Grid de Valores (2x2 para mejor usabilidad)
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        OperationField(
-                            label = "Cantidad",
-                            value = state.quantity,
-                            onValueChange = viewModel::onQuantityChange,
-                            modifier = Modifier.weight(1f)
+                        DividendField(
+                            label = "Valor",
+                            value = state.value,
+                            onValueChange = viewModel::onValueChange,
+                            modifier = Modifier.weight(1f),
                         )
-                        OperationField(
-                            label = "Precio",
-                            value = state.price,
-                            onValueChange = viewModel::onPriceChange,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
 
+                        ExposedDropdownMenuBox(
+                            expanded = state.isExpandedCurrencyCodeSelected,
+                            onExpandedChange = { viewModel.onExpandedCurrencyChange(!state.isExpandedCurrencyCodeSelected) },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            OutlinedTextField(
+                                value = state.currencyCodeSelectedText,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Moneda") },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.isExpandedCurrencyCodeSelected) },
+                                modifier = Modifier.menuAnchor().fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            ExposedDropdownMenu(
+                                expanded = state.isExpandedCurrencyCodeSelected,
+                                onDismissRequest = { viewModel.onExpandedDividendTypeChange(false) }
+                            ) {
+                                EnumCurrencyCodesDropdown.entries.forEach { type ->
+                                    DropdownMenuItem(
+                                        text = { Text(type.label) },
+                                        onClick = {
+                                            viewModel.onCurrencyTypeChange(type.label, type.name.uppercase())
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        OperationField(
-                            label = "Comisión",
-                            value = state.fee,
-                            onValueChange = viewModel::onFeeChange,
-                            modifier = Modifier.weight(1f)
-                        )
-                        OperationField(
-                            label = "Impuestos",
-                            value = state.tax,
-                            onValueChange = viewModel::onTaxChange,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
                     DatePickerField(
-                        selectedDate = state.operationDate,
+                        selectedDate = state.paidDateSelected,
                         onDateSelected = { viewModel.onDateChange(it) }
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
-
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        DividendField(
+                            label = "Impuesto",
+                            value = state.tax,
+                            onValueChange = viewModel::onTaxChanged,
+                            modifier = Modifier.weight(1f),
+                        )
+                        DividendField(
+                            label = "Tipo de cambio",
+                            value = state.exchangeRate,
+                            onValueChange = viewModel::onExchangeRateChanged,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
                     Button(
-                        onClick = { viewModel.saveOperation(idPortfolio = idPorfolio) },
+                        onClick = { viewModel.saveDividend(idPortfolio = idPorfolio) },
                         modifier = Modifier.fillMaxWidth().height(50.dp),
                         shape = RoundedCornerShape(12.dp),
-                        // enabled = state.isFormValid // Descomenta cuando valides en el VM
                     ) {
-                        Text("Guardar Transacción", style = MaterialTheme.typography.titleMedium)
+                        Text("Guardar dividendo", style = MaterialTheme.typography.titleMedium)
                     }
                 }
             }
@@ -171,11 +184,8 @@ fun AddOperationModal(
     }
 }
 
-/**
- * Componente interno para evitar repetición de código en los textfields
- */
 @Composable
-fun OperationField(
+fun DividendField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,

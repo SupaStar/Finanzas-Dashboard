@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class AddOperationModalVM(operationService: OperationService) : ViewModel() {
+class AddOperationModalVM(private val operationService: OperationService) : ViewModel() {
     private val _uiState = MutableStateFlow(AddOperationModalUiState(isLoading = false))
     private val _reloadOperationsEvent = MutableSharedFlow<Unit>()
     private val _closeModalsEvent = MutableSharedFlow<Unit>()
@@ -73,6 +73,7 @@ class AddOperationModalVM(operationService: OperationService) : ViewModel() {
                 )
                 val response = operationService.addOperation(request)
                 if (response.estado) {
+                    resetState()
                     _reloadOperationsEvent.emit(Unit)
                     _closeModalsEvent.emit(Unit)
                 } else {
@@ -89,5 +90,8 @@ class AddOperationModalVM(operationService: OperationService) : ViewModel() {
                 }
             }
         }
+    }
+    fun resetState() {
+        _uiState.value = AddOperationModalUiState(isLoading = false)
     }
 }

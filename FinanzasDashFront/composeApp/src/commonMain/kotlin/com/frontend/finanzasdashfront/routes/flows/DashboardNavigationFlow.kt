@@ -22,10 +22,12 @@ fun DashboardNavigationFlow() {
         is DashboardScreens.PortfolioDetail -> {
             val viewModel = remember { AppModule.providePortfolioViewModel(screen.idPortfolio) }
             val addOperationModalVM = remember { AppModule.provideAddOperationVM() }
+            val addDividendModalVM = remember { AppModule.provideAddDividendVM() }
             PortfolioItemScreen(
                 onBack = { router.goTo(DashboardScreens.Dashboard) },
                 viewModel,
-                addOperationVM = addOperationModalVM
+                addOperationVM = addOperationModalVM,
+                addDividendVm = addDividendModalVM
             )
         }
     }

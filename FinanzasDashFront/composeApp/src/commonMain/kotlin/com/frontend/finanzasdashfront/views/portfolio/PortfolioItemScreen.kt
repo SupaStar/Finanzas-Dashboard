@@ -25,7 +25,9 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.rotate
+import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddDividendModalVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddOperationModalVM
+import com.frontend.finanzasdashfront.views.portfolio.modal.AddDividendModal
 import com.frontend.finanzasdashfront.views.portfolio.modal.AddOperationModal
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +36,7 @@ fun PortfolioItemScreen(
     onBack: () -> Unit,
     viewModel: PortfolioViewModel,
     addOperationVM: AddOperationModalVM,
+    addDividendVm: AddDividendModalVM
 ) {
     val state by viewModel.uiState.collectAsState()
     var expanded by remember { mutableStateOf(false) }
@@ -63,7 +66,7 @@ fun PortfolioItemScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.End) {
                         SmallFloatingActionButton(
-                            onClick = { /* Acción Dividendo */ },
+                            onClick = { showDividendModal = !showDividendModal },
                             containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                         ) {
                             Text("Dividendo", modifier = Modifier.padding(horizontal = 12.dp))
@@ -111,6 +114,14 @@ fun PortfolioItemScreen(
                     viewModel = addOperationVM,
                     onClose = { showOperationModal = false },
                     reloadOperations = { viewModel.loadPortfolioData() },
+                    idPorfolio = state.portfolioid
+                )
+            }
+            if(showDividendModal){
+                AddDividendModal(
+                    viewModel = addDividendVm,
+                    onClose = { showDividendModal = false },
+                    reloadDividends = { viewModel.loadPortfolioData() },
                     idPorfolio = state.portfolioid
                 )
             }
