@@ -1,11 +1,5 @@
 package com.frontend.finanzasdashfront.views.dashboard
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,21 +18,27 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import com.frontend.finanzasdashfront.component.PortfolioRow
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.rotate
+import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
+import com.frontend.finanzasdashfront.views.dashboard.stock.SelectStockModal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen(onLogout: () -> Unit, viewModel: DashboardViewModel, onNavigateToPortfolioDetail: (Long) -> Unit) {
+fun DashboardScreen(
+    viewModel: DashboardViewModel,
+    viewModelModal: SelectStockVM,
+) {
     val state by viewModel.uiState.collectAsState()
-
+    var showDialog by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("Mi Portafolio", style = MaterialTheme.typography.headlineSmall) },
                 actions = {
-                    IconButton(onClick = onLogout) {
+                    IconButton(onClick = { viewModel.logout() }) {
                         Icon(
                             Icons.Default.ExitToApp,
                             contentDescription = "Logout",
@@ -57,7 +57,7 @@ fun DashboardScreen(onLogout: () -> Unit, viewModel: DashboardViewModel, onNavig
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 FloatingActionButton(
-                    onClick = {  },
+                    onClick = { showDialog = true },
                     containerColor = MaterialTheme.colorScheme.primary,
                     shape = CircleShape
                 ) {
@@ -93,6 +93,12 @@ fun DashboardScreen(onLogout: () -> Unit, viewModel: DashboardViewModel, onNavig
             }
 
             else -> {
+                if (showDialog) {
+                    SelectStockModal(
+                        onClose = { showDialog = false },
+                        viewModel = viewModelModal
+                    )
+                }
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -158,7 +164,7 @@ fun DashboardScreen(onLogout: () -> Unit, viewModel: DashboardViewModel, onNavig
 
                             LazyColumn {
                                 items(state.items) { portfolioItem ->
-                                    PortfolioRow(portfolioItem, onNavigateToPortfolioDetail)
+                                    PortfolioRow(portfolioItem, onItemClicked = { viewModel.goToDetail(portfolioItem.portfolioId )})
                                     HorizontalDivider(
                                         modifier = Modifier.padding(horizontal = 12.dp),
                                         thickness = 0.5.dp

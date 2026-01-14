@@ -27,7 +27,10 @@ class StockService(
             listOf("Error al encontrar tu broker."),
             HttpStatus.CONFLICT
         )
-        val stockName = "${requestDto.stockName?.uppercase()}.${broker.symbol}"
+        var stockName = "${requestDto.stockName?.uppercase()}"
+        if (broker.symbol == "MX") {
+            stockName = "${requestDto.stockName?.uppercase()}.${broker.symbol}"
+        }
         val stockInfo = stockApiService.getStock(stockName)
         val stock = try {
             stockRepository.save(Stock().apply {

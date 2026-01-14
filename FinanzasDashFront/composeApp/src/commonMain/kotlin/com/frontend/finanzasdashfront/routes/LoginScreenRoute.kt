@@ -14,10 +14,6 @@ fun LoginScreenRoute(viewModel: LoginViewModel) {
     if (state.isLoggedIn) {
         Text("✅ Sesión iniciada")
     } else {
-        LoginScreen(
-            onLogin = viewModel::login,
-            errorMessage = state.errorMessage,
-            isLoading = state.isLoading
-        )
+        LoginScreen(viewModel = viewModel)
     }
 }

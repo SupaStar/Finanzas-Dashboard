@@ -1,8 +1,7 @@
 package com.frontend.finanzasdashfront.api.services
 
 import com.frontend.finanzasdashfront.api.Constants
-import com.frontend.finanzasdashfront.dto.operation.GetAllOperationsPortfolioResponseDto
-import com.frontend.finanzasdashfront.dto.stock.GetAllStocksResponseDto
+import com.frontend.finanzasdashfront.dto.broker.GetAllBrokerResponseDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -10,13 +9,13 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 
-class OperationService(private val client: HttpClient) {
-    private val operationsPortfolioUrl = "/operation/all"
-    suspend fun getAllOperations(idPortfolio: Long): GetAllOperationsPortfolioResponseDto {
-        val response = client.get("${Constants.BaseUrl}${operationsPortfolioUrl}/${idPortfolio}") {
+class BrokerService(private val client: HttpClient) {
+    private val allBrokerUrl = "/broker/all"
+    suspend fun getBrokers(): GetAllBrokerResponseDto {
+        val response = client.get("${Constants.BaseUrl}${allBrokerUrl}") {
             contentType(ContentType.Application.Json)
         }
-        val responseDto = response.body<GetAllOperationsPortfolioResponseDto>()
+        val responseDto = response.body<GetAllBrokerResponseDto>()
 
         if (response.status == HttpStatusCode.OK) {
             return responseDto

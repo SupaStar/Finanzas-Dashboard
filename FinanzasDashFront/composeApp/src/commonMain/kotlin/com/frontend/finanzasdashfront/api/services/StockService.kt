@@ -5,6 +5,7 @@ import com.frontend.finanzasdashfront.dto.portfolio.PortfolioResponseDto
 import com.frontend.finanzasdashfront.dto.stock.AddStockResponseDto
 import com.frontend.finanzasdashfront.dto.stock.GetAllStocksResponseDto
 import com.frontend.finanzasdashfront.request.AddStockPortfolioRequestDto
+import com.frontend.finanzasdashfront.request.AddStockRequestDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -17,7 +18,7 @@ import io.ktor.http.contentType
 class StockService(private val client: HttpClient) {
     private val getAll = "/stock/all"
     private val add = "/stock/add"
-    suspend fun getPortfolio(): GetAllStocksResponseDto {
+    suspend fun getStocks(): GetAllStocksResponseDto {
         val response = client.get("${Constants.BaseUrl}${getAll}") {
             contentType(ContentType.Application.Json)
         }
@@ -31,7 +32,7 @@ class StockService(private val client: HttpClient) {
         }
     }
     //TODO agregar request
-    suspend fun addStockToPortfolio(request: AddStockPortfolioRequestDto): AddStockResponseDto {
+    suspend fun addStock(request: AddStockRequestDto): AddStockResponseDto {
         val response = client.post("${Constants.BaseUrl}${add}") {
             contentType(ContentType.Application.Json)
             setBody(request)

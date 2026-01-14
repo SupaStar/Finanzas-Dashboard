@@ -17,18 +17,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.frontend.finanzasdashfront.viewmodel.auth.LoginViewModel
 
 @Composable
-fun LoginScreen(
-    onLogin: (username: String, password: String) -> Unit,
-    errorMessage: String? = null,
-    isLoading: Boolean = false
-) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var isPasswordVisible by remember { mutableStateOf(false) }
+fun LoginScreen(viewModel: LoginViewModel) {
+    val state by viewModel.uiState.collectAsState()
 
-    val isFormValid = username.isNotBlank() && password.length >= 6
+    val isFormValid = state.username.isNotBlank() && state.password.length >= 6
 
     Column(
         modifier = Modifier
@@ -60,8 +56,8 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 OutlinedTextField(
-                    value = username,
-                    onValueChange = { username = it },
+                    value = state.username,
+                    onValueChange = { viewModel.onUsernameChanged(username = it) },
                     label = { Text("Usuario o Email") },
                     leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                     singleLine = true,
@@ -71,28 +67,28 @@ fun LoginScreen(
                 )
 
                 OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
+                    value = state.password,
+                    onValueChange = { viewModel.onPasswordChanged(password = it)},
                     label = { Text("Contraseña") },
                     leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                     trailingIcon = {
-                        IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                        IconButton(onClick = { viewModel.onPaswordVisibleChanged(!state.isPasswordVisible) }) {
                             Icon(
-                                imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                imageVector = if (state.isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                 contentDescription = "Mostrar/Ocultar contraseña"
                             )
                         }
                     },
                     singleLine = true,
-                    visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (state.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
 
-                if (errorMessage != null) {
+                if (state.errorMessage != "") {
                     Text(
-                        text = errorMessage,
+                        text = state.errorMessage,
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(start = 4.dp)
@@ -101,16 +97,15 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Botón de Acción
                 Button(
-                    onClick = { onLogin(username, password) },
+                    onClick = { viewModel.login(state.username, state.password) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
-                    enabled = !isLoading && isFormValid,
+                    enabled = !state.isLoading && isFormValid,
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    if (isLoading) {
+                    if (state.isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
                             strokeWidth = 3.dp,

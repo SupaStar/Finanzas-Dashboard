@@ -15,7 +15,8 @@ fun DashboardNavigationFlow() {
     when (val screen = currentScreen) {
         is DashboardScreens.Dashboard -> {
             val viewModel = remember { AppModule.provideDashboardViewModel() }
-            DashboardScreenRoute(viewModel)
+            val viewModelSelectStock = remember { AppModule.provideSelectStockVM() }
+            DashboardScreenRoute(viewModel, viewModelSelectStock)
         }
 
         is DashboardScreens.PortfolioDetail -> {

@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GetAllStocksResponseDto(
     var estado: Boolean = true,
-    var message: MessageOperationResponseDto? = null,
+    var message: List<StockDto> = emptyList(),
     val errors: List<String>? = null
 )

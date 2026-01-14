@@ -40,7 +40,7 @@ class PortfolioService(
                 this.avgPrice = BigDecimal.ZERO
                 this.totalQuantity = BigDecimal.ZERO
             })
-            return PortfolioResponseDto(estado = true, messafe = portfolioItem.toDto())
+            return PortfolioResponseDto(estado = true, message = portfolioItem.toDto())
         } catch (ex: DataIntegrityViolationException) {
             throw GeneralRequestException(listOf("Accion ya registrada"), HttpStatus.CONFLICT)
 //            throw GeneralRequestException(listOf(ex.message!!), HttpStatus.INTERNAL_SERVER_ERROR)
