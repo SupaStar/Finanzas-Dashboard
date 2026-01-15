@@ -12,4 +12,4 @@ actual fun isDebugBuild(): Boolean {
     return true // TODO: Implementar detección real de modo debug en Wasm
 }
 
-actual fun getPlatformHost(): String = "http://localhost:8082/api"
+actual fun getPlatformHost(): String = "http://192.168.1.96:8082/api"
