@@ -13,3 +13,4 @@ actual fun isDebugBuild(): Boolean {
 }
 
 actual fun getPlatformHost(): String = "http://192.168.1.96:8082/api"
+//actual fun getPlatformHost(): String = "http://localhost:8080"
