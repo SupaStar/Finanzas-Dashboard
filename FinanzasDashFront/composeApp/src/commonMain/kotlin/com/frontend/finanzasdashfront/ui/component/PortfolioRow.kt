@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.frontend.finanzasdashfront.dto.portfolio.PortfolioDto
+import com.frontend.finanzasdashfront.utils.formatCurrency
 import kotlin.math.roundToInt
 
 @Composable
@@ -31,27 +32,34 @@ fun PortfolioRow(item: PortfolioDto, onItemClicked: (Long) -> Unit) {
             Text(item.Stock.name, style = MaterialTheme.typography.bodySmall, color = Color.Gray, maxLines = 1)
         }
         Text(
-            text = "${item.totalQuantity}",
+            text = item.totalQuantity.formatCurrency(),
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodyMedium
         )
         Text(
-            text = "$${item.avgPrice}",
+            text = "$${item.avgPrice.formatCurrency()}",
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary
         )
         Text(
-            text = "$${item.avgPrice.toDouble() * item.totalQuantity.toDouble()}",
+            text = "$${item.Stock.closeDay.formatCurrency()}",
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary
         )
         Text(
-            text = "$${item.totalQuantity.toDouble() * item.Stock.closeDay.toDouble()}",
+            text = "$${(item.avgPrice.toDouble() * item.totalQuantity.toDouble()).toFloat().formatCurrency()}",
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = "$${(item.totalQuantity.toDouble() * item.Stock.closeDay.toDouble()).toFloat().formatCurrency()}",
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodyMedium,
