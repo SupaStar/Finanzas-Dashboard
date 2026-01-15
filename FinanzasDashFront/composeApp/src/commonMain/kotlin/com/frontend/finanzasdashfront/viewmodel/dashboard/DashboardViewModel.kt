@@ -32,7 +32,7 @@ class DashboardViewModel(
             try {
                 val response = portfolioService.getPortfolio()
                 val items = response.message
-                val totalValue = items.sumOf { it.avgPrice.toDouble() * it.totalQuantity.toDouble() }
+                val totalValue = items.sumOf { it.Stock.closeDay.toDouble() * it.totalQuantity.toDouble() }
                 _uiState.update {
                     it.copy(
                         isLoading = false,

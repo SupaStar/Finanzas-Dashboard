@@ -7,4 +7,6 @@ import java.math.BigInteger
 interface StockRepository : JpaRepository<Stock, BigInteger> {
     fun findByName(name: String): Stock?
     fun findByStockId(stockId: Long): Stock?
+
+    fun findBySymbol(symbol: String): Stock?
 }

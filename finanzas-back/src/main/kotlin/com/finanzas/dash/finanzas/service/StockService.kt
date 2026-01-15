@@ -47,6 +47,35 @@ class StockService(
         return StockResponseDto(estado = true, message = stock.toDto())
     }
 
+    fun addStockSimple(requestDto: AddStockRequestDto){
+        val broker = brokerRepository.findByBrokerId(requestDto.brokerId) ?: throw GeneralRequestException(
+            listOf("Error al encontrar tu broker."),
+            HttpStatus.CONFLICT
+        )
+        val stockBd = stockRepository.findBySymbol(requestDto.stockName!!)
+        if(stockBd != null){
+            println("${requestDto.stockName} is already in use")
+            return
+        }
+        var stockName = "${requestDto.stockName?.uppercase()}"
+        if (broker.symbol == "MX") {
+            stockName = "${requestDto.stockName?.uppercase()}.${broker.symbol}"
+        }
+        val stockInfo = stockApiService.getStock(stockName)
+        val stock = try {
+            stockRepository.save(Stock().apply {
+                this.name = stockName
+                this.symbol = requestDto.stockName?.uppercase()
+                this.broker = broker
+                this.closeDay = stockInfo.data.price
+                this.lastFetch = OffsetDateTime.now()
+                this.currency = stockInfo.data.currency
+            })
+        } catch (ex: DataIntegrityViolationException) {
+            println("Accion $stockName ya registrada")
+        }
+    }
+
     fun getAll(): StockGetAllResponseDto {
         val stocks = stockRepository.findAll()
         return StockGetAllResponseDto(estado = true, message = stocks.map { it.toDto() })

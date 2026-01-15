@@ -159,6 +159,20 @@ fun DashboardScreen(
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold
                                 )
+                                Text(
+                                    "Costo compra",
+                                    Modifier.weight(1f),
+                                    textAlign = TextAlign.End,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    "Valor mercado",
+                                    Modifier.weight(1f),
+                                    textAlign = TextAlign.End,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
 
                             HorizontalDivider()

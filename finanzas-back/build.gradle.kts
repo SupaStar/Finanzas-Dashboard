@@ -62,7 +62,7 @@ dependencies {
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-
+	implementation("com.opencsv:opencsv:5.9")
 }
 
 kotlin {

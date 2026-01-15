@@ -99,4 +99,11 @@ class PortfolioService(
 
         portfolioRepository.save(portfolio)
     }
+
+    fun updateAllPortfolios(userId: Long) {
+        val portfolios = portfolioRepository.findByUserUserId(userId)
+        portfolios.forEach { portfolio ->
+            updatePortfolioData(portfolio.portfolioId!!)
+        }
+    }
 }
