@@ -15,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 @Service
 class PortfolioService(
@@ -92,7 +93,11 @@ class PortfolioService(
         }
 
         operationsAmount = operationsAmount.subtract(totalDividendsRein)
-        val avgPrice = operationsAmount / operationsTotal
+        val avgPrice = if (operationsTotal > BigDecimal.ZERO) {
+            operationsAmount.divide(operationsTotal, 4, RoundingMode.HALF_UP)
+        } else {
+            BigDecimal.ZERO
+        }
 
         portfolio.totalQuantity = operationsTotal
         portfolio.avgPrice = avgPrice

@@ -67,11 +67,23 @@ class CsvService(
                 operations.add(operation)
             }
             operationRepository.saveAll(operations)
-            portfoliosId.forEach { portfolioId ->
-                portfolioService.updatePortfolioData(portfolioId)
-            }
+//            portfoliosId.forEach { portfolioId ->
+//                portfolioService.updatePortfolioData(portfolioId)
+//            }
 
         } catch (e: CsvException) {
+            e.printStackTrace()
+        }
+    }
+    @Transactional
+    fun updateAllPortfolios() {
+        try{
+            val user = securityService.currentUser()
+            val portfolios = portfolioRepository.findByUserUserId(user.userId!!)
+            portfolios.forEach { portfolio ->
+                portfolioService.updatePortfolioData(portfolio.portfolioId!!)
+            }
+        }catch (e: Exception){
             e.printStackTrace()
         }
     }

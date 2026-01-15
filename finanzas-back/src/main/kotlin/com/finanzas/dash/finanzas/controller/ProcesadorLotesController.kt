@@ -2,6 +2,7 @@ package com.finanzas.dash.finanzas.controller
 
 import com.finanzas.dash.finanzas.service.CsvService
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -28,5 +29,9 @@ class ProcesadorLotesController(private val csvService: CsvService) {
         }
         csvService.addStocks(file)
         println("Archivo procesado")
+    }
+    @GetMapping("/update")
+    fun update() {
+        csvService.updateAllPortfolios()
     }
 }
