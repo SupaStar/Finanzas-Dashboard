@@ -1,11 +1,9 @@
 package com.frontend.finanzasdashfront.api.services
 
 import com.frontend.finanzasdashfront.api.Constants
-import com.frontend.finanzasdashfront.dto.portfolio.PortfolioResponseDto
 import com.frontend.finanzasdashfront.dto.stock.AddStockResponseDto
 import com.frontend.finanzasdashfront.dto.stock.GetAllStocksResponseDto
-import com.frontend.finanzasdashfront.request.AddStockPortfolioRequestDto
-import com.frontend.finanzasdashfront.request.AddStockRequestDto
+import com.frontend.finanzasdashfront.dto.request.AddStockRequestDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get

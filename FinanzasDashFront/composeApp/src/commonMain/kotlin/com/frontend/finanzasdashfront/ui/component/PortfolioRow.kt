@@ -1,4 +1,4 @@
-package com.frontend.finanzasdashfront.component
+package com.frontend.finanzasdashfront.ui.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.frontend.finanzasdashfront.dto.portfolio.PortfolioDto
+import kotlin.math.roundToInt
 
 @Composable
 fun PortfolioRow(item: PortfolioDto, onItemClicked: (Long) -> Unit) {
@@ -37,6 +38,20 @@ fun PortfolioRow(item: PortfolioDto, onItemClicked: (Long) -> Unit) {
         )
         Text(
             text = "$${item.avgPrice}",
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = "$${item.avgPrice.toDouble() * item.totalQuantity.toDouble()}",
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = "$${item.totalQuantity.toDouble() * item.Stock.closeDay.toDouble()}",
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodyMedium,

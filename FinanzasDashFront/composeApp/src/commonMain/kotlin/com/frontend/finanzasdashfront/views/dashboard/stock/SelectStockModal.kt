@@ -1,6 +1,5 @@
 package com.frontend.finanzasdashfront.views.dashboard.stock
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,7 +8,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,16 +20,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectStockModal(
     onClose: () -> Unit,
+    reloadData: () -> Unit,
     viewModel: SelectStockVM
 ) {
     val state by viewModel.uiState.collectAsState()
     LaunchedEffect(Unit) {
-        viewModel.closeEvent.collect { onClose() }
+        launch { viewModel.closeEvent.collect { onClose() } }
+        launch { viewModel.reloadDash.collect { reloadData() } }
     }
 
     Dialog(onDismissRequest = onClose) {
@@ -40,7 +45,6 @@ fun SelectStockModal(
             tonalElevation = 6.dp
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                // Header Personalizado
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -60,8 +64,12 @@ fun SelectStockModal(
 
                 HorizontalDivider()
 
-                // Contenido principal
-                Box(modifier = Modifier.weight(1f)) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
                     when {
                         state.isLoading -> {
                             CircularProgressIndicator(Modifier.align(Alignment.Center))
@@ -108,7 +116,6 @@ fun SelectStockModal(
                     }
                 }
 
-                // Sección inferior: Formulario para nueva acción
                 Surface(
                     tonalElevation = 12.dp,
                     modifier = Modifier.fillMaxWidth(),

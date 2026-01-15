@@ -1,4 +1,4 @@
-package com.frontend.finanzasdashfront.request
+package com.frontend.finanzasdashfront.dto.request
 
 import kotlinx.serialization.Serializable
 

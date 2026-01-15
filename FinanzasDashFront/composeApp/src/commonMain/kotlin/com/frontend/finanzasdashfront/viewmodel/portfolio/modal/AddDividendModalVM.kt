@@ -1,0 +1,107 @@
+package com.frontend.finanzasdashfront.viewmodel.portfolio.modal
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.frontend.finanzasdashfront.api.services.DividendService
+import com.frontend.finanzasdashfront.dto.request.AddDividendPortfolioRequestDto
+import com.frontend.finanzasdashfront.model.portfolio.modal.AddDividendModalUiState
+import com.frontend.finanzasdashfront.model.portfolio.modal.EnumOperationTypeDropdown
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+class AddDividendModalVM(private val dividendService: DividendService) : ViewModel() {
+    private val _uiState = MutableStateFlow(AddDividendModalUiState(isLoading = false))
+    private val _reloadDividendsEvent = MutableSharedFlow<Unit>()
+    private val _closeModalEvent = MutableSharedFlow<Unit>()
+    val uiState: StateFlow<AddDividendModalUiState> = _uiState.asStateFlow()
+    val closeModalEvent: SharedFlow<Unit> = _closeModalEvent.asSharedFlow()
+    val reloadDividendsEvent: SharedFlow<Unit> = _reloadDividendsEvent.asSharedFlow()
+
+
+    fun saveDividend(idPortfolio: Long) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            try {
+                val request = AddDividendPortfolioRequestDto(
+                    value = uiState.value.value.toDouble(),
+                    dividendType = uiState.value.dividendTypeValue,
+                    paidDate = uiState.value.paidDateSelected,
+                    currencyCode = uiState.value.currencyCodeSelected,
+                    tax = uiState.value.tax.toDouble(),
+                    exchangeRate = uiState.value.exchangeRate.toDouble()
+                )
+                val response = dividendService.addDividend(idPortfolio,request)
+                if (response.estado) {
+                    resetState()
+                    _reloadDividendsEvent.emit(Unit)
+                    _closeModalEvent.emit(Unit)
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = response.errors?.joinToString("\n") ?: "Error al guardar"
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(isLoading = false, errorMessage = "Error desconocido")
+                }
+            }
+        }
+    }
+
+    fun onExpandedDividendTypeChange(newValue: Boolean) {
+        _uiState.update { it.copy(isExpandedDividendTypeSelected = newValue) }
+    }
+
+    fun onExpandedCurrencyChange(newValue: Boolean) {
+        _uiState.update { it.copy(isExpandedCurrencyCodeSelected = newValue) }
+    }
+
+    fun onDividendTypeChange(dividendType: String, dividendValue: String) {
+        _uiState.update {
+            it.copy(
+                isExpandedDividendTypeSelected = false,
+                dividendTypeSelectedText = dividendType,
+                dividendTypeValue = dividendValue
+            )
+        }
+    }
+
+    fun onCurrencyTypeChange(currencyType: String, currencyValue: String) {
+        _uiState.update {
+            it.copy(
+                isExpandedCurrencyCodeSelected = false,
+                currencyCodeSelectedText = currencyType,
+                currencyCodeSelected = currencyValue
+            )
+        }
+    }
+
+    fun onValueChange(newValue: String) {
+        _uiState.update { it.copy(value = newValue) }
+    }
+
+    fun onDateChange(newValue: String) {
+        _uiState.update { it.copy(paidDateSelected = newValue) }
+    }
+
+    fun onTaxChanged(newValue: String) {
+        _uiState.update { it.copy(tax = newValue) }
+    }
+
+    fun onExchangeRateChanged(newValue: String) {
+        _uiState.update { it.copy(exchangeRate = newValue) }
+    }
+
+    fun resetState(){
+        _uiState.value = AddDividendModalUiState(isLoading = false)
+    }
+}

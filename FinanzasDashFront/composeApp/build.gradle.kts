@@ -71,7 +71,7 @@ kotlin {
             implementation("com.russhwolf:multiplatform-settings:1.1.1")
             implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.1")
 
-
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -80,6 +80,8 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
             implementation("io.ktor:ktor-client-apache5:${ktorVersion}")
+
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
         }
         iosMain.dependencies {
             implementation("io.ktor:ktor-client-darwin:${ktorVersion}")

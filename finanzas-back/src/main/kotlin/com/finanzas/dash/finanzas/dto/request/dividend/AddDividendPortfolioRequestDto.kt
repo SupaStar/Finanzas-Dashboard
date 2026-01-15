@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull
 import java.math.BigDecimal
 
 data class AddDividendPortfolioRequestDto(
-    @field:NotNull(message = "El impuesto no puede estar vacio")
+    @field:NotNull(message = "El valor de dividendo no puede estar vacio")
     val value: BigDecimal?,
     @field:NotNull(message = "El tipo de dividendo no puede estar vacio")
     val dividendType: DividendTypeEnum?,

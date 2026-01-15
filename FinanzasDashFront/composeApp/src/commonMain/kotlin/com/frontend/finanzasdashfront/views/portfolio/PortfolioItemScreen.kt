@@ -23,12 +23,26 @@ import androidx.compose.ui.unit.dp
 import com.frontend.finanzasdashfront.viewmodel.portfolio.PortfolioViewModel
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.rotate
+import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddDividendModalVM
+import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddOperationModalVM
+import com.frontend.finanzasdashfront.views.portfolio.modal.AddDividendModal
+import com.frontend.finanzasdashfront.views.portfolio.modal.AddOperationModal
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PortfolioItemScreen(onBack: () -> Unit, viewModel: PortfolioViewModel) {
+fun PortfolioItemScreen(
+    onBack: () -> Unit,
+    viewModel: PortfolioViewModel,
+    addOperationVM: AddOperationModalVM,
+    addDividendVm: AddDividendModalVM
+) {
     val state by viewModel.uiState.collectAsState()
     var expanded by remember { mutableStateOf(false) }
+    var showOperationModal by remember { mutableStateOf(false) }
+    var showDividendModal by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -52,7 +66,7 @@ fun PortfolioItemScreen(onBack: () -> Unit, viewModel: PortfolioViewModel) {
                 ) {
                     Column(horizontalAlignment = Alignment.End) {
                         SmallFloatingActionButton(
-                            onClick = { /* Acción Dividendo */ },
+                            onClick = { showDividendModal = !showDividendModal },
                             containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                         ) {
                             Text("Dividendo", modifier = Modifier.padding(horizontal = 12.dp))
@@ -61,7 +75,7 @@ fun PortfolioItemScreen(onBack: () -> Unit, viewModel: PortfolioViewModel) {
                         Spacer(modifier = Modifier.height(12.dp))
 
                         SmallFloatingActionButton(
-                            onClick = { /* Acción Operación */ },
+                            onClick = { showOperationModal = !showOperationModal },
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                         ) {
                             Text("Operación", modifier = Modifier.padding(horizontal = 12.dp))
@@ -95,6 +109,22 @@ fun PortfolioItemScreen(onBack: () -> Unit, viewModel: PortfolioViewModel) {
         } else if (state.errorMessage != null) {
             Text(text = state.errorMessage!!, modifier = Modifier.padding(paddingValues))
         } else {
+            if (showOperationModal) {
+                AddOperationModal(
+                    viewModel = addOperationVM,
+                    onClose = { showOperationModal = false },
+                    reloadOperations = { viewModel.loadPortfolioData() },
+                    idPorfolio = state.portfolioid
+                )
+            }
+            if(showDividendModal){
+                AddDividendModal(
+                    viewModel = addDividendVm,
+                    onClose = { showDividendModal = false },
+                    reloadDividends = { viewModel.loadPortfolioData() },
+                    idPorfolio = state.portfolioid
+                )
+            }
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -127,6 +157,7 @@ fun PortfolioItemScreen(onBack: () -> Unit, viewModel: PortfolioViewModel) {
         }
     }
 }
+
 @Composable
 fun SectionHeader(title: String, color: Color) {
     Column(modifier = Modifier.padding(vertical = 8.dp)) {

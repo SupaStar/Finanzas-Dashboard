@@ -48,7 +48,7 @@ class OperationService(
                 this.portfolio = portfolio
                 this.fee = requestDto.fee
                 this.tax = requestDto.tax
-                this.total = total
+                this.total = totalNet
                 this.operationDate = LocalDate.parse(requestDto.operationDate!!).atStartOfDay().atOffset(ZoneOffset.UTC)
             })
             portfolioService.updatePortfolioData(portfolio.portfolioId!!)
