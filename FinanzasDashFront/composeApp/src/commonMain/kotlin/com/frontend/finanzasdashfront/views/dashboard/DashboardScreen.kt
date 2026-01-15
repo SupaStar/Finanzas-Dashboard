@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import com.frontend.finanzasdashfront.utils.formatCurrency
 import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
 import com.frontend.finanzasdashfront.views.dashboard.stock.SelectStockModal
 
@@ -47,9 +48,11 @@ fun DashboardScreen(
                         )
                     }
                     IconButton(onClick = { viewModel.loadData() }) {
-                        Icon(Icons.Default.Refresh,
+                        Icon(
+                            Icons.Default.Refresh,
                             contentDescription = "Refresh",
-                            tint = MaterialTheme.colorScheme.primary)
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -102,7 +105,7 @@ fun DashboardScreen(
                 if (showDialog) {
                     SelectStockModal(
                         onClose = { showDialog = false },
-                        reloadData = {viewModel.loadData()},
+                        reloadData = { viewModel.loadData() },
                         viewModel = viewModelModal
                     )
                 }
@@ -120,8 +123,8 @@ fun DashboardScreen(
                             Text("Valor Total Estimado", style = MaterialTheme.typography.labelLarge)
                             Text(
                                 text = "$${
-                                    state.totalValue.toString().substringBefore(".")
-                                }.${state.totalValue.toString().substringAfter(".", "00").take(2).padEnd(2, '0')}",
+                                    state.totalValue.toFloat().formatCurrency()
+                                }",
                                 style = MaterialTheme.typography.displaySmall,
                                 fontWeight = FontWeight.Bold
                             )
@@ -166,7 +169,14 @@ fun DashboardScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    "Costo compra",
+                                    "Costo mercado",
+                                    Modifier.weight(1f),
+                                    textAlign = TextAlign.End,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    "Monto invertido",
                                     Modifier.weight(1f),
                                     textAlign = TextAlign.End,
                                     style = MaterialTheme.typography.labelMedium,
@@ -185,7 +195,9 @@ fun DashboardScreen(
 
                             LazyColumn {
                                 items(state.items) { portfolioItem ->
-                                    PortfolioRow(portfolioItem, onItemClicked = { viewModel.goToDetail(portfolioItem.portfolioId )})
+                                    PortfolioRow(
+                                        portfolioItem,
+                                        onItemClicked = { viewModel.goToDetail(portfolioItem.portfolioId) })
                                     HorizontalDivider(
                                         modifier = Modifier.padding(horizontal = 12.dp),
                                         thickness = 0.5.dp
