@@ -1,10 +1,13 @@
 package com.finanzas.dash.finanzas.service
 
 import com.finanzas.dash.finanzas.dto.request.stocks.AddStockRequestDto
+import com.finanzas.dash.finanzas.entity.Dividend
 import com.finanzas.dash.finanzas.entity.Operation
 import com.finanzas.dash.finanzas.entity.Portfolio
 import com.finanzas.dash.finanzas.entity.User
+import com.finanzas.dash.finanzas.enum.DividendTypeEnum
 import com.finanzas.dash.finanzas.enum.OperationTypeEnum
+import com.finanzas.dash.finanzas.repository.DividendRepository
 import com.finanzas.dash.finanzas.repository.OperationRepository
 import com.finanzas.dash.finanzas.repository.PortfolioRepository
 import com.finanzas.dash.finanzas.repository.StockRepository
@@ -28,6 +31,7 @@ class CsvService(
     private val operationRepository: OperationRepository,
     private val stockService: StockService,
     private val portfolioService: PortfolioService,
+    private val dividendRepository: DividendRepository
 ) {
     @Transactional
     fun processCsv(file: MultipartFile) {
@@ -75,15 +79,16 @@ class CsvService(
             e.printStackTrace()
         }
     }
+
     @Transactional
     fun updateAllPortfolios() {
-        try{
+        try {
             val user = securityService.currentUser()
             val portfolios = portfolioRepository.findByUserUserId(user.userId!!)
             portfolios.forEach { portfolio ->
                 portfolioService.updatePortfolioData(portfolio.portfolioId!!)
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
@@ -121,6 +126,65 @@ class CsvService(
                 )
                 stockService.addStockSimple(request)
             }
+        } catch (e: CsvException) {
+            e.printStackTrace()
+        }
+    }
+
+    fun addDividends(file: MultipartFile) {
+        val user = securityService.currentUser()
+        try {
+            val inputStream = file.inputStream
+            val reader = BufferedReader(InputStreamReader(inputStream))
+            val csvReader = CSVReader(reader)
+            csvReader.skip(1)
+
+            val filas = csvReader.readAll()
+            var dividends = mutableListOf<Dividend>()
+            filas.forEach { fila ->
+                val fecha = fila[0]
+                val date = LocalDate.parse(fecha)
+                val dateTimeDate = date.atTime(LocalTime.MIDNIGHT).atOffset(ZoneOffset.UTC)
+                val importe = fila[1].toBigDecimal()
+                val tipo = fila[2]
+                var tax = BigDecimal.ZERO
+                var dividendType = DividendTypeEnum.reinvested
+                if(tipo == "Resultado"){
+                    val porcentaje = BigDecimal("0.30")
+                    tax = importe.multiply(porcentaje)
+                    dividendType = DividendTypeEnum.cash
+                }else if(tipo == "dividend"){
+                    val porcentaje = BigDecimal("0.10")
+                    tax = importe.multiply(porcentaje)
+                    dividendType = DividendTypeEnum.cash
+                }
+                val stockName = fila[3].replace(" ", "").uppercase()
+                val currency = fila[4]
+                val stock = stockRepository.findBySymbol(stockName)
+                if (stock != null) {
+                    val portfolio = validateOrCreatePortfolio(stockName, user = user)
+                    var exchangeRate = BigDecimal.ZERO
+                    if(currency=="MXN"){
+                         exchangeRate = BigDecimal.ONE
+                    }else{
+                        exchangeRate = fila[5].toBigDecimal()
+                    }
+                    val dividend = Dividend().apply {
+                        this.dividendType = dividendType
+                        this.value = importe
+                        this.paidDate = dateTimeDate
+                        this.currencyCode = currency
+                        this.portfolio = portfolio
+                        this.tax = tax
+                        this.netValue= importe.minus(tax)
+                        this.exchangeRate = exchangeRate
+                    }
+                    dividends.add(dividend)
+                }else{
+                    println("No existe la accion $stockName")
+                }
+            }
+            dividendRepository.saveAll(dividends)
         } catch (e: CsvException) {
             e.printStackTrace()
         }
