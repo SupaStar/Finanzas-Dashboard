@@ -19,7 +19,7 @@ services:
     networks:
       - finanzas-network
 
-  app:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile.backend
@@ -67,6 +67,19 @@ services:
     container_name: finanzas-dash-redis
     networks:
       - finanzas-network
+
+  frontend:
+    build:
+      context: ./FinanzasDashFront
+      dockerfile: Dockerfile
+    container_name: finanzas-dash-frontend
+    restart: always
+    ports:
+      - "8082:3999"
+    networks:
+      - finanzas-network
+    depends_on:
+      - backend
 
 volumes:
   bd_finanzas:
