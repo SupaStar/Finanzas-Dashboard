@@ -30,6 +30,15 @@ class ProcesadorLotesController(private val csvService: CsvService) {
         csvService.addStocks(file)
         println("Archivo procesado")
     }
+    @PostMapping("/dividends")
+    fun dividend(@RequestParam("file") file : MultipartFile) {
+        if(file.isEmpty()){
+            println("file is empty")
+        }
+        csvService.addDividends(file)
+        println("Archivo procesado")
+    }
+
     @GetMapping("/update")
     fun update() {
         csvService.updateAllPortfolios()

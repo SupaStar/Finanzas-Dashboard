@@ -21,13 +21,8 @@ jobs:
           oauth-secret: ${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}
           tags: tag:github-ci
 
-
-      - name: Deploy
+      - name: Fetch and pull changes
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-
           ssh -o StrictHostKeyChecking=no \
             servertanuko@${{ secrets.SERVER_IP }} << 'EOF'
             set -e
@@ -35,6 +30,10 @@ jobs:
           git fetch origin
           git checkout release/testing
           git pull origin release/testing
+          EOF
+
+      - name: Deploy
+        run: |
           docker compose down || true
           docker compose up -d --build
           EOF
