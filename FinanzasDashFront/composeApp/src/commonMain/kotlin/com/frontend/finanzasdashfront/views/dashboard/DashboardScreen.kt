@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import com.frontend.finanzasdashfront.ui.component.PortfolioRow
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,6 +45,11 @@ fun DashboardScreen(
                             contentDescription = "Logout",
                             tint = MaterialTheme.colorScheme.error
                         )
+                    }
+                    IconButton(onClick = { viewModel.loadData() }) {
+                        Icon(Icons.Default.Refresh,
+                            contentDescription = "Refresh",
+                            tint = MaterialTheme.colorScheme.primary)
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
