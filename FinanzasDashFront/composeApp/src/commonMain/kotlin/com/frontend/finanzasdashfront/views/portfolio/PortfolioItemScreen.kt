@@ -25,6 +25,9 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.rotate
+import com.frontend.finanzasdashfront.dto.dividend.DividendDto
+import com.frontend.finanzasdashfront.dto.operation.OperationDto
+import com.frontend.finanzasdashfront.ui.component.EmptyStateMsg
 import com.frontend.finanzasdashfront.utils.formatCurrency
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddDividendModalVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddOperationModalVM
@@ -43,64 +46,41 @@ fun PortfolioItemScreen(
     var expanded by remember { mutableStateOf(false) }
     var showOperationModal by remember { mutableStateOf(false) }
     var showDividendModal by remember { mutableStateOf(false) }
+    var selectedTabIndex by remember { mutableStateOf(0) } // 0 para Operaciones, 1 para Dividendos
+    val tabs = listOf("Operaciones", "Dividendos")
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Acción: ${state.stockName}") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Volver")
-                    }
-                }
-            )
-        },
-        floatingActionButton = {
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                AnimatedVisibility(
-                    visible = expanded,
-                    enter = fadeIn() + expandVertically(expandFrom = Alignment.Bottom),
-                    exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Bottom)
-                ) {
-                    Column(horizontalAlignment = Alignment.End) {
-                        SmallFloatingActionButton(
-                            onClick = { showDividendModal = !showDividendModal },
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        ) {
-                            Text("Dividendo", modifier = Modifier.padding(horizontal = 12.dp))
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        SmallFloatingActionButton(
-                            onClick = { showOperationModal = !showOperationModal },
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        ) {
-                            Text("Operación", modifier = Modifier.padding(horizontal = 12.dp))
+            Column(modifier = Modifier.fillMaxWidth()) {
+                TopAppBar(
+                    title = { Text("Acción: ${state.stockName}") },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(Icons.Default.ArrowBack, "Volver")
                         }
                     }
-                }
-
-                val rotation by animateFloatAsState(
-                    targetValue = if (expanded) 45f else 0f,
-                    label = "Rotation"
                 )
-
-                FloatingActionButton(
-                    onClick = { expanded = !expanded },
-                    containerColor = if (expanded) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary,
-                    shape = CircleShape
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Menu",
-                        modifier = Modifier.rotate(rotation)
-                    )
+                TabRow(selectedTabIndex = selectedTabIndex) {
+                    tabs.forEachIndexed { index, title ->
+                        Tab(
+                            selected = selectedTabIndex == index,
+                            onClick = { selectedTabIndex = index },
+                            text = {
+                                Text(title, style = MaterialTheme.typography.titleSmall)
+                            }
+                        )
+                    }
                 }
             }
+
+        },
+        floatingActionButton = {
+            ExpandableFabMenu(
+                expanded = expanded,
+                onExpandClick = { expanded = !expanded },
+                onAddOperation = { showOperationModal = true; expanded = false },
+                onAddDividend = { showDividendModal = true; expanded = false }
+            )
         }
     ) { paddingValues ->
         if (state.isLoading) {
@@ -110,48 +90,33 @@ fun PortfolioItemScreen(
         } else if (state.errorMessage != null) {
             Text(text = state.errorMessage!!, modifier = Modifier.padding(paddingValues))
         } else {
-            if (showOperationModal) {
-                AddOperationModal(
-                    viewModel = addOperationVM,
-                    onClose = { showOperationModal = false },
-                    reloadOperations = { viewModel.loadPortfolioData() },
-                    idPorfolio = state.portfolioid
-                )
-            }
-            if(showDividendModal){
-                AddDividendModal(
-                    viewModel = addDividendVm,
-                    onClose = { showDividendModal = false },
-                    reloadDividends = { viewModel.loadPortfolioData() },
-                    idPorfolio = state.portfolioid
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(bottom = 16.dp)
-                ) {
-                    item { SectionHeader("Operaciones", MaterialTheme.colorScheme.primary) }
-                    items(state.operations) { operation ->
-                        OperationCard(operation)
-                        Spacer(modifier = Modifier.height(8.dp))
+            Box(modifier = Modifier.padding(paddingValues)) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                } else {
+                    Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+                        if (state.isLoading) {
+                            CircularProgressIndicator(Modifier.align(Alignment.Center))
+                        } else {
+                            // Alternamos el contenido según la pestaña seleccionada
+                            when (selectedTabIndex) {
+                                0 -> OperationList(state.operations)
+                                1 -> DividendList(state.dividends)
+                            }
+                        }
                     }
-                }
-                Text("Total de dividendos $${state.dividends.sumOf { it.netValue.toDouble() }.toFloat().formatCurrency()}")
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(bottom = 16.dp)
-                ) {
-                    item { SectionHeader("Dividendos", MaterialTheme.colorScheme.tertiary) }
-                    items(state.dividends) { dividend ->
-                        DividendCard(dividend)
-                        Spacer(modifier = Modifier.height(8.dp))
+
+                    if (showOperationModal) {
+                        AddOperationModal(
+                            viewModel = addOperationVM, onClose = { showOperationModal = false },
+                            reloadOperations = { viewModel.loadPortfolioData() }, idPorfolio = state.portfolioid
+                        )
+                    }
+                    if (showDividendModal) {
+                        AddDividendModal(
+                            viewModel = addDividendVm, onClose = { showDividendModal = false },
+                            reloadDividends = { viewModel.loadPortfolioData() }, idPorfolio = state.portfolioid
+                        )
                     }
                 }
             }
@@ -159,10 +124,3 @@ fun PortfolioItemScreen(
     }
 }
 
-@Composable
-fun SectionHeader(title: String, color: Color) {
-    Column(modifier = Modifier.padding(vertical = 8.dp)) {
-        Text(title, style = MaterialTheme.typography.titleMedium, color = color)
-        HorizontalDivider(thickness = 2.dp, color = color.copy(alpha = 0.5f))
-    }
-}
