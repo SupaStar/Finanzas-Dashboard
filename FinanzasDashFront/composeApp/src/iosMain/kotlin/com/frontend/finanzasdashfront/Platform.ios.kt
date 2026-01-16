@@ -7,3 +7,11 @@ class IOSPlatform : Platform {
 }
 
 actual fun getPlatform(): Platform = IOSPlatform()
+
+actual fun isDebugBuild(): Boolean {
+    // En iOS, puedes usar #if DEBUG o verificar configuración
+    // Por ahora, retornamos true para desarrollo
+    return true // TODO: Implementar detección real de modo debug en iOS
+}
+
+actual fun getPlatformHost(): String = "http://localhost:8080"

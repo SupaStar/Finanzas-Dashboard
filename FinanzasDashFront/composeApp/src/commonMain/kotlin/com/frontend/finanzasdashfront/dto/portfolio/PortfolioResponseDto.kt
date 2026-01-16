@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PortfolioResponseDto(
     var estado: Boolean,
-    var messafe: PortfolioDto,
+    var message: PortfolioDto? = null,
     val errors: List<String>? = null
 )

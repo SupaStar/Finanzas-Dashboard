@@ -12,4 +12,5 @@ data class OperationDto (
     val fee: Float,
     val tax: Float,
     val total: Float,
+    val operationDate: String,
 )

@@ -15,12 +15,14 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 @Service
 class PortfolioService(
     private val securityService: SecurityService,
     private val portfolioRepository: PortfolioRepository,
-    private val stockRepository: StockRepository
+    private val stockRepository: StockRepository,
+    private val utilService: UtilService,
 ) {
     fun test() {
         val user = securityService.currentUser()
@@ -40,7 +42,7 @@ class PortfolioService(
                 this.avgPrice = BigDecimal.ZERO
                 this.totalQuantity = BigDecimal.ZERO
             })
-            return PortfolioResponseDto(estado = true, messafe = portfolioItem.toDto())
+            return PortfolioResponseDto(estado = true, message = portfolioItem.toDto())
         } catch (ex: DataIntegrityViolationException) {
             throw GeneralRequestException(listOf("Accion ya registrada"), HttpStatus.CONFLICT)
 //            throw GeneralRequestException(listOf(ex.message!!), HttpStatus.INTERNAL_SERVER_ERROR)
@@ -48,9 +50,10 @@ class PortfolioService(
     }
 
     fun getUserPortfolio(): PortfolioGetAllResponseDto {
+        val usdPrice = utilService.getUsdValue()
         val user = securityService.currentUser()
         val portfolio = portfolioRepository.findByUserUserId(user.userId!!)
-        return PortfolioGetAllResponseDto(messafe = portfolio.map { it.toDto() })
+        return PortfolioGetAllResponseDto(message = portfolio.map { it.toDto() }, usdPrice = usdPrice.USD_MXN)
     }
 
     @Transactional
@@ -92,11 +95,22 @@ class PortfolioService(
         }
 
         operationsAmount = operationsAmount.subtract(totalDividendsRein)
-        val avgPrice = operationsAmount / operationsTotal
+        val avgPrice = if (operationsTotal > BigDecimal.ZERO) {
+            operationsAmount.divide(operationsTotal, 4, RoundingMode.HALF_UP)
+        } else {
+            BigDecimal.ZERO
+        }
 
         portfolio.totalQuantity = operationsTotal
         portfolio.avgPrice = avgPrice
 
         portfolioRepository.save(portfolio)
+    }
+
+    fun updateAllPortfolios(userId: Long) {
+        val portfolios = portfolioRepository.findByUserUserId(userId)
+        portfolios.forEach { portfolio ->
+            updatePortfolioData(portfolio.portfolioId!!)
+        }
     }
 }

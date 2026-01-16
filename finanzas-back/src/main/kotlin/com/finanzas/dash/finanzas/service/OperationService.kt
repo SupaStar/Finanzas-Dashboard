@@ -2,6 +2,7 @@ package com.finanzas.dash.finanzas.service
 
 import com.finanzas.dash.finanzas.config.exception.GeneralRequestException
 import com.finanzas.dash.finanzas.dto.request.operation.AddOperationRequestDto
+import com.finanzas.dash.finanzas.dto.response.operation.MessageOperationResponseDto
 import com.finanzas.dash.finanzas.dto.response.operation.OperationAddResponseDto
 import com.finanzas.dash.finanzas.dto.response.operation.OperationsPortfolioResponseDto
 import com.finanzas.dash.finanzas.entity.Operation
@@ -18,11 +19,16 @@ import java.time.ZoneOffset
 class OperationService(
     private val operationRepository: OperationRepository,
     private val portfolioRepository: PortfolioRepository,
-    private val portfolioService: PortfolioService
+    private val portfolioService: PortfolioService,
 ) {
     fun getOperationsPortfolio(portfolioId: Long): OperationsPortfolioResponseDto {
         val operations = operationRepository.findByPortfolioPortfolioId(portfolioId)
-        return OperationsPortfolioResponseDto(message = operations.map { it.toDto() })
+        val portfolio = portfolioRepository.findByPortfolioId(portfolioId)
+        return OperationsPortfolioResponseDto(
+            message = MessageOperationResponseDto(
+                portfolio?.stock!!.toDto(),
+                operations.map { it.toDto() })
+        )
     }
 
     @Transactional
@@ -42,7 +48,7 @@ class OperationService(
                 this.portfolio = portfolio
                 this.fee = requestDto.fee
                 this.tax = requestDto.tax
-                this.total = total
+                this.total = totalNet
                 this.operationDate = LocalDate.parse(requestDto.operationDate!!).atStartOfDay().atOffset(ZoneOffset.UTC)
             })
             portfolioService.updatePortfolioData(portfolio.portfolioId!!)

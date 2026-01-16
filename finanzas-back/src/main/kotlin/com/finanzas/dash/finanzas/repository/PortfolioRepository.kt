@@ -10,4 +10,6 @@ interface PortfolioRepository : JpaRepository<Portfolio, Long> {
 
     @Query("SELECT p FROM Portfolio p LEFT JOIN FETCH p.dividends WHERE p.portfolioId = :id")
     fun findByIdWithDividends(id: Long): Portfolio?
+
+    fun findByUserUserIdAndStockSymbol(userId: Long, symbol: String): Portfolio?
 }

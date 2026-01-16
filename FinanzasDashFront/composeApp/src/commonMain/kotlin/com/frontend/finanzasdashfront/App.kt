@@ -1,6 +1,7 @@
 package com.frontend.finanzasdashfront
 
 import androidx.compose.material3.MaterialTheme
+import com.frontend.finanzasdashfront.ui.FinanzasDashTheme
 import androidx.compose.runtime.*
 import com.frontend.finanzasdashfront.routes.flows.AuthNavigationFlow
 import com.frontend.finanzasdashfront.routes.flows.DashboardNavigationFlow

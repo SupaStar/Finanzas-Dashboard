@@ -6,15 +6,29 @@ import com.frontend.finanzasdashfront.AppModule
 import com.frontend.finanzasdashfront.routes.DashboardScreenRoute
 import com.frontend.finanzasdashfront.routes.routers.DashboardRouter
 import com.frontend.finanzasdashfront.routes.routers.DashboardScreens
+import com.frontend.finanzasdashfront.views.portfolio.PortfolioItemScreen
 
 @Composable
 fun DashboardNavigationFlow() {
-    val router = remember { DashboardRouter() }
-
-    when (router.current) {
-        DashboardScreens.Dashboard -> {
+    val router = AppModule.dashboardRouter
+    val currentScreen = router.current
+    when (val screen = currentScreen) {
+        is DashboardScreens.Dashboard -> {
             val viewModel = remember { AppModule.provideDashboardViewModel() }
-            DashboardScreenRoute(viewModel)
+            val viewModelSelectStock = remember { AppModule.provideSelectStockVM() }
+            DashboardScreenRoute(viewModel, viewModelSelectStock)
+        }
+
+        is DashboardScreens.PortfolioDetail -> {
+            val viewModel = remember { AppModule.providePortfolioViewModel(screen.idPortfolio) }
+            val addOperationModalVM = remember { AppModule.provideAddOperationVM() }
+            val addDividendModalVM = remember { AppModule.provideAddDividendVM() }
+            PortfolioItemScreen(
+                onBack = { router.goTo(DashboardScreens.Dashboard) },
+                viewModel,
+                addOperationVM = addOperationModalVM,
+                addDividendVm = addDividendModalVM
+            )
         }
     }
 }
