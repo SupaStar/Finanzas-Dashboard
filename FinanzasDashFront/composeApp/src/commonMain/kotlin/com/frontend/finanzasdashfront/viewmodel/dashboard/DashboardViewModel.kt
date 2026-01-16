@@ -48,6 +48,7 @@ class DashboardViewModel(
                         items = items,
                         totalValue = totalValue,
                         errorMessage = null,
+                        usdValue = response.usdPrice,
                         chartData = DataPieChartDashboard(data = pieChart, colors = generateHueColorPalette(pieChart.size))
                     )
                 }

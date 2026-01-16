@@ -42,6 +42,7 @@ fun Operation.toDto() = OperationDto(
     fee = this.fee!!,
     tax = this.tax!!,
     total = this.total!!,
+    operationDate = this.operationDate!!,
 )
 
 fun Dividend.toDto() = DividendDto(

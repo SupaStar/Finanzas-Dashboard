@@ -21,7 +21,8 @@ import java.math.RoundingMode
 class PortfolioService(
     private val securityService: SecurityService,
     private val portfolioRepository: PortfolioRepository,
-    private val stockRepository: StockRepository
+    private val stockRepository: StockRepository,
+    private val utilService: UtilService,
 ) {
     fun test() {
         val user = securityService.currentUser()
@@ -49,9 +50,10 @@ class PortfolioService(
     }
 
     fun getUserPortfolio(): PortfolioGetAllResponseDto {
+        val usdPrice = utilService.getUsdValue()
         val user = securityService.currentUser()
         val portfolio = portfolioRepository.findByUserUserId(user.userId!!)
-        return PortfolioGetAllResponseDto(message = portfolio.map { it.toDto() })
+        return PortfolioGetAllResponseDto(message = portfolio.map { it.toDto() }, usdPrice = usdPrice.USD_MXN)
     }
 
     @Transactional

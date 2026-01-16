@@ -2,6 +2,8 @@ package com.frontend.finanzasdashfront.views.dashboard
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +35,7 @@ fun PortfolioPieChart(
     val colors = uiState.chartData.colors
 
     ChartLayout(
-        modifier = modifier.fillMaxWidth().height(300.dp).padding(16.dp),
+        modifier = modifier.fillMaxWidth().height(450.dp).padding(16.dp),
         title = {
             Text(
                 "Distribución de Portafolio",
@@ -42,25 +44,65 @@ fun PortfolioPieChart(
             )
         },
         legend = {
-            FlowLegend(
-                itemCount = chartData.size,
-                symbol = { i ->
-                    Symbol(
-                        modifier = Modifier.size(12.dp),
-                        fillBrush = SolidColor(colors.getOrElse(i) { Color.Gray })
-                    )
-                },
-                label = { i ->
-                    Column(modifier = Modifier.padding(bottom = 4.dp)) {
-                        Text(chartData[i].label, style = MaterialTheme.typography.bodySmall)
-                        Text(chartData[i].value.formatCurrency(), style = MaterialTheme.typography.bodySmall, fontSize = 8.sp)
+            Column(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .verticalScroll(rememberScrollState()), // Por si hay muchos items
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                chartData.forEachIndexed { i, item ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Symbol(
+                            modifier = Modifier.size(12.dp),
+                            fillBrush = SolidColor(colors.getOrElse(i) { Color.Gray })
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(item.label, style = MaterialTheme.typography.labelSmall)
+                            val displayValue = if (item.label == "USD") {
+                                (item.value.toDouble() * uiState.usdValue).toFloat()
+                            } else {
+                                item.value
+                            }
+                            Text(
+                                displayValue.formatCurrency(),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color.Gray
+                            )
+                        }
                     }
-
-                },
-                modifier = Modifier.padding(top = 16.dp)
-            )
+                }
+            }
         },
-        legendLocation = LegendLocation.BOTTOM
+        legendLocation = LegendLocation.RIGHT
+//            FlowLegend(
+//                itemCount = chartData.size,
+//                symbol = { i ->
+//                    Symbol(
+//                        modifier = Modifier.size(12.dp),
+//                        fillBrush = SolidColor(colors.getOrElse(i) { Color.Gray })
+//                    )
+//                },
+//                label = { i ->
+//                    Column(modifier = Modifier.padding(bottom = 4.dp)) {
+//                        Text(chartData[i].label, style = MaterialTheme.typography.bodySmall)
+//                        if (chartData[i].label == "USD") {
+//                            Text(
+//                                (chartData[i].value.toDouble() * uiState.usdValue).toFloat().formatCurrency(),
+//                                style = MaterialTheme.typography.bodySmall,
+//                                fontSize = 8.sp
+//                            )
+//                        } else {
+//                            Text(
+//                                chartData[i].value.formatCurrency(),
+//                                style = MaterialTheme.typography.bodySmall,
+//                                fontSize = 8.sp
+//                            )
+//                        }
+//                    }
+//                },
+//                modifier = Modifier.padding(top = 24.dp)
+//            )
     ) {
         PieChart(
             values = values,

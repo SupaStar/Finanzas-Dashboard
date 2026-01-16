@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.frontend.finanzasdashfront.api.services.DividendService
 import com.frontend.finanzasdashfront.api.services.OperationService
 import com.frontend.finanzasdashfront.model.portfolio.PortfolioDetailUiState
+import com.frontend.finanzasdashfront.utils.year
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,13 +39,18 @@ class PortfolioViewModel(
                 val opsData = operationsResponse.message
                 val divData = dividendsResponse.message
 
+                val yearsDividends = divData.dividends.map { it.year().toString() }
+                    .distinct()
+                    .sortedDescending()
+
                 if (opsData != null && divData != null) {
                     _uiState.update {
                         it.copy(
                             stockName = opsData.stock.symbol,
                             operations = opsData.operations,
                             dividends = divData.dividends,
-                            isLoading = false
+                            isLoading = false,
+                            yearsDividends = yearsDividends,
                         )
                     }
                 } else {
@@ -57,5 +63,13 @@ class PortfolioViewModel(
                 }
             }
         }
+    }
+
+    fun onTabIndexChanged(index: Int) {
+        _uiState.update { it.copy(selectedTabIndex = index) }
+    }
+
+    fun onYearSelectedChanged(year: String) {
+        _uiState.update { it.copy(yearDividendsSelected = year) }
     }
 }
