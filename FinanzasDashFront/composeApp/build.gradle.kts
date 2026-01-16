@@ -60,7 +60,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(compose.materialIconsExtended)
 
-            implementation("io.github.koalaplot:koalaplot-core:0.10.4")
+            implementation("io.github.koalaplot:koalaplot-core:0.10.3")
             implementation("io.ktor:ktor-client-core:${ktorVersion}")
             implementation("io.ktor:ktor-client-content-negotiation:${ktorVersion}")
             implementation("io.ktor:ktor-serialization-kotlinx-json:${ktorVersion}")

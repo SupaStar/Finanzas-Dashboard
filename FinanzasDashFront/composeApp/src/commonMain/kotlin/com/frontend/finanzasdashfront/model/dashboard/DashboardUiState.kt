@@ -1,6 +1,7 @@
 package com.frontend.finanzasdashfront.model.dashboard
 
 import androidx.compose.ui.graphics.Color
+import com.frontend.finanzasdashfront.dto.charts.DataPieChartDashboard
 import com.frontend.finanzasdashfront.dto.portfolio.PortfolioDto
 
 data class DashboardUiState (
@@ -10,14 +11,4 @@ data class DashboardUiState (
     val totalValue: Double = 0.0,
     val usdValue: Float = 1.0f,
     val chartData: DataPieChartDashboard = DataPieChartDashboard()
-)
-
-data class DataPieChartDashboard(
-    val data: List<DataPieChart> = emptyList(),
-    val colors: List<Color> = emptyList(),
-)
-
-data class DataPieChart(
-    val value: Float = 0.0f,
-    val label: String = "",
 )
