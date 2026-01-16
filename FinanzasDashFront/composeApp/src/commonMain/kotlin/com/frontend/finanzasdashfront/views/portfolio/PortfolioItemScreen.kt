@@ -74,36 +74,29 @@ fun PortfolioItemScreen(
         } else if (state.errorMessage != null) {
             Text(text = state.errorMessage!!, modifier = Modifier.padding(paddingValues))
         } else {
-            Box(modifier = Modifier.padding(paddingValues)) {
+            Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
                 if (state.isLoading) {
                     CircularProgressIndicator(Modifier.align(Alignment.Center))
                 } else {
-                    Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-                        if (state.isLoading) {
-                            CircularProgressIndicator(Modifier.align(Alignment.Center))
-                        } else {
-                            // Alternamos el contenido según la pestaña seleccionada
-                            when (state.selectedTabIndex) {
-                                0 -> OperationTab(state.operations)
-                                1 -> DividendTab(state.dividends)
-                                2 -> InfoTab(uiState = state, viewModel::onYearSelectedChanged)
-                            }
-                        }
-                    }
-
-                    if (showOperationModal) {
-                        AddOperationModal(
-                            viewModel = addOperationVM, onClose = { showOperationModal = false },
-                            reloadOperations = { viewModel.loadPortfolioData() }, idPorfolio = state.portfolioid
-                        )
-                    }
-                    if (showDividendModal) {
-                        AddDividendModal(
-                            viewModel = addDividendVm, onClose = { showDividendModal = false },
-                            reloadDividends = { viewModel.loadPortfolioData() }, idPorfolio = state.portfolioid
-                        )
+                    when (state.selectedTabIndex) {
+                        0 -> OperationTab(state.operations)
+                        1 -> DividendTab(state.dividends)
+                        2 -> InfoTab(uiState = state, viewModel::onYearSelectedChanged)
                     }
                 }
+            }
+
+            if (showOperationModal) {
+                AddOperationModal(
+                    viewModel = addOperationVM, onClose = { showOperationModal = false },
+                    reloadOperations = { viewModel.loadPortfolioData() }, idPorfolio = state.portfolioid
+                )
+            }
+            if (showDividendModal) {
+                AddDividendModal(
+                    viewModel = addDividendVm, onClose = { showDividendModal = false },
+                    reloadDividends = { viewModel.loadPortfolioData() }, idPorfolio = state.portfolioid
+                )
             }
         }
     }
