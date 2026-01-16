@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -78,7 +80,7 @@ fun InfoTab(
                 InfoCard(
                     title = "N Rentas",
                     amount = totalDividends.formatCurrency(),
-                    icon = Icons.Default.AccountBalanceWallet,
+                    icon = Icons.Default.CreditCard,
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     modifier = Modifier.weight(1f)
                 )
