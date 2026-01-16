@@ -55,6 +55,8 @@ fun InfoTab(
             val totalFees = operations.sumOf { it.fee.toDouble() }.toFloat()
             val totalTaxes = (operations.sumOf { it.tax.toDouble() } + dividends.sumOf { it.tax.toDouble() }).toFloat()
 
+            val totalDividends = dividends.sumOf { it.netValue.toDouble() }.toFloat()
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -71,6 +73,13 @@ fun InfoTab(
                     amount = totalTaxes.formatCurrency(),
                     icon = Icons.Default.AccountBalanceWallet,
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    modifier = Modifier.weight(1f)
+                )
+                InfoCard(
+                    title = "N Rentas",
+                    amount = totalDividends.formatCurrency(),
+                    icon = Icons.Default.AccountBalanceWallet,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
                     modifier = Modifier.weight(1f)
                 )
             }

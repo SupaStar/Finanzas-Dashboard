@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.frontend.finanzasdashfront.api.services.PortfolioService
 import com.frontend.finanzasdashfront.config.TokenManager
+import com.frontend.finanzasdashfront.dto.charts.DataPieChart
+import com.frontend.finanzasdashfront.dto.charts.DataPieChartDashboard
 import com.frontend.finanzasdashfront.model.dashboard.DashboardUiState
-import com.frontend.finanzasdashfront.model.dashboard.DataPieChart
-import com.frontend.finanzasdashfront.model.dashboard.DataPieChartDashboard
 import com.frontend.finanzasdashfront.routes.routers.DashboardRouter
 import com.frontend.finanzasdashfront.routes.routers.DashboardScreens
 import io.github.koalaplot.core.util.generateHueColorPalette
@@ -49,7 +49,10 @@ class DashboardViewModel(
                         totalValue = totalValue,
                         errorMessage = null,
                         usdValue = response.usdPrice,
-                        chartData = DataPieChartDashboard(data = pieChart, colors = generateHueColorPalette(pieChart.size))
+                        chartData = DataPieChartDashboard(
+                            data = pieChart,
+                            colors = generateHueColorPalette(pieChart.size)
+                        )
                     )
                 }
             } catch (e: Exception) {
