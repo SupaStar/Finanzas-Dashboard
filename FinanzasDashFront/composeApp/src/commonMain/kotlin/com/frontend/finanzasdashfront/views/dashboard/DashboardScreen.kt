@@ -11,23 +11,20 @@ import androidx.compose.runtime.collectAsState
 import com.frontend.finanzasdashfront.viewmodel.dashboard.DashboardViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import com.frontend.finanzasdashfront.ui.component.PortfolioRow
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import com.frontend.finanzasdashfront.utils.formatCurrency
 import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
 import com.frontend.finanzasdashfront.views.dashboard.stock.SelectStockModal
+import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalKoalaPlotApi::class)
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel,
@@ -115,97 +112,42 @@ fun DashboardScreen(
                         .padding(paddingValues)
                         .padding(16.dp)
                 ) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-                    ) {
-                        Column(Modifier.padding(20.dp)) {
-                            Text("Valor Total Estimado", style = MaterialTheme.typography.labelLarge)
-                            Text(
-                                text = "$${
-                                    state.totalValue.toFloat().formatCurrency()
-                                }",
-                                style = MaterialTheme.typography.displaySmall,
-                                fontWeight = FontWeight.Bold
+                    TotalValueCard(state.totalValue)
+                    if (state.chartData.data.isNotEmpty()) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            PortfolioPieChart(
+                                uiState = state,
+                                modifier = Modifier.height(220.dp).padding(8.dp)
                             )
                         }
                     }
 
                     Text(
-                        text = "Acciones",
+                        text = "Detalle de Activos",
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
                     )
-
-                    Card(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Column {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                                    .padding(12.dp)
-                            ) {
-                                Text(
-                                    "Accion",
-                                    Modifier.weight(1.5f),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    "Titulos.",
-                                    Modifier.weight(1f),
-                                    textAlign = TextAlign.End,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    "Costo promedio",
-                                    Modifier.weight(1f),
-                                    textAlign = TextAlign.End,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    "Costo mercado",
-                                    Modifier.weight(1f),
-                                    textAlign = TextAlign.End,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    "Monto invertido",
-                                    Modifier.weight(1f),
-                                    textAlign = TextAlign.End,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    "Valor mercado",
-                                    Modifier.weight(1f),
-                                    textAlign = TextAlign.End,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-
-                            HorizontalDivider()
-
-                            LazyColumn {
-                                items(state.items) { portfolioItem ->
-                                    PortfolioRow(
-                                        portfolioItem,
-                                        onItemClicked = { viewModel.goToDetail(portfolioItem.portfolioId) })
-                                    HorizontalDivider(
-                                        modifier = Modifier.padding(horizontal = 12.dp),
-                                        thickness = 0.5.dp
-                                    )
-                                }
-                            }
+                        items(state.items) { portfolioItem ->
+                            PortfolioRow(
+                                item = portfolioItem,
+                                onClick = { viewModel.goToDetail(portfolioItem.portfolioId) }
+                            )
                         }
                     }
+                    Spacer(modifier = Modifier.height(80.dp))
                 }
             }
         }

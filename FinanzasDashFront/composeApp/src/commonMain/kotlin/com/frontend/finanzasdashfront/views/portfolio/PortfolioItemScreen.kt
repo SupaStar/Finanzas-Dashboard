@@ -25,6 +25,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.rotate
+import com.frontend.finanzasdashfront.utils.formatCurrency
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddDividendModalVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddOperationModalVM
 import com.frontend.finanzasdashfront.views.portfolio.modal.AddDividendModal
@@ -142,7 +143,7 @@ fun PortfolioItemScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
-
+                Text("Total de dividendos $${state.dividends.sumOf { it.netValue.toDouble() }.toFloat().formatCurrency()}")
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(bottom = 16.dp)
