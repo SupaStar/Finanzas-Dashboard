@@ -1,10 +1,6 @@
 package com.frontend.finanzasdashfront.views.portfolio
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -19,7 +15,7 @@ import com.frontend.finanzasdashfront.dto.operation.OperationDto
 import com.frontend.finanzasdashfront.utils.formatCurrency
 
 @Composable
-fun OperationList(operations: List<OperationDto>) {
+fun OperationTab(operations: List<OperationDto>) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -35,7 +31,7 @@ fun OperationList(operations: List<OperationDto>) {
 }
 
 @Composable
-fun DividendList(dividends: List<DividendDto>) {
+fun DividendTab(dividends: List<DividendDto>) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -44,7 +40,7 @@ fun DividendList(dividends: List<DividendDto>) {
         item {
             val total = dividends.sumOf { it.netValue.toDouble() }.toFloat().formatCurrency()
             Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
             ) {
                 Text(

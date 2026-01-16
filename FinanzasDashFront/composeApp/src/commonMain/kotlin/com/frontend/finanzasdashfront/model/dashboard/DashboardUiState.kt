@@ -8,6 +8,7 @@ data class DashboardUiState (
     val items: List<PortfolioDto> = emptyList(),
     val errorMessage: String? = null,
     val totalValue: Double = 0.0,
+    val usdValue: Float = 1.0f,
     val chartData: DataPieChartDashboard = DataPieChartDashboard()
 )
 

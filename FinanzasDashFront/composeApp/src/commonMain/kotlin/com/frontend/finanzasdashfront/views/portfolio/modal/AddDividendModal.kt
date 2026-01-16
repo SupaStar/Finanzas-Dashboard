@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.frontend.finanzasdashfront.model.portfolio.modal.EnumCurrencyCodesDropdown
 import com.frontend.finanzasdashfront.model.portfolio.modal.EnumDividendTypeDropdown
-import com.frontend.finanzasdashfront.model.portfolio.modal.EnumOperationTypeDropdown
 import com.frontend.finanzasdashfront.ui.component.DatePickerField
+import com.frontend.finanzasdashfront.ui.component.GenericExposedDropdown
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddDividendModalVM
 import kotlinx.coroutines.launch
 

@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class PortfolioGetAllResponseDto(
     var estado: Boolean,
     var message: List<PortfolioDto>,
+    var usdPrice: Float,
     val errors: List<String>? = null
 )

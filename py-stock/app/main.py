@@ -3,6 +3,10 @@ import yfinance as yf
 import redis
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from forex_python.converter import CurrencyRates
+from decimal import Decimal
+c = CurrencyRates(force_decimal=True)
+yf.enable_debug_mode()
 
 app = FastAPI(title="Stock Info API")
 
@@ -85,4 +89,27 @@ def get_multiple_stocks(tickers: RequestStocks):
                 })
         return results
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/USD_MXN")
+def get_dolar_value():
+    try:
+        print("Fetching USD to MXN exchange rate")
+        cache_key = "USD_MXN_rate"
+        cached = redis_client.get(cache_key)
+        print(f"Cached USD to MXN rate: {cached}")
+        if cached:
+            return {"USD_MXN": float(Decimal(cached))}
+
+        change = yf.Ticker("USDMXN=X")
+        last_price = change.info.get("open")
+        print(f"Fetched USD to MXN rate: {last_price}")
+        redis_client.setex(
+            cache_key,
+            CACHE_TTL,
+            str(last_price)
+        )
+        return {"USD_MXN": float(last_price)}
+    except Exception as e:
+        print(f"Error fetching USD to MXN rate: {e}")
         raise HTTPException(status_code=500, detail=str(e))

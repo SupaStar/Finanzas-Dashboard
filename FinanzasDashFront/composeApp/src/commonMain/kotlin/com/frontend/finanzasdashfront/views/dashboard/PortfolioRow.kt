@@ -26,7 +26,7 @@ import com.frontend.finanzasdashfront.ui.theme.Surface
 import com.frontend.finanzasdashfront.utils.formatCurrency
 
 @Composable
-fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit) {
+fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float) {
     OutlinedCard(
         onClick = { onClick(item.portfolioId) },
         modifier = Modifier.fillMaxWidth(),
@@ -54,8 +54,35 @@ fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit) {
             Spacer(Modifier.height(12.dp))
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                InfoColumn("Invertido", "$${(item.avgPrice.toDouble() * item.totalQuantity.toDouble()).toFloat().formatCurrency()}", Modifier.weight(1f))
-                InfoColumn("Valor Actual", "$${(item.totalQuantity.toDouble() * item.Stock.closeDay.toDouble()).toFloat().formatCurrency()}", Modifier.weight(1f), isHighlight = true)
+                if (item.Stock.currency == "MXN") {
+                    InfoColumn(
+                        "Invertido",
+                        "$${(item.avgPrice.toDouble() * item.totalQuantity.toDouble()).toFloat().formatCurrency()}",
+                        Modifier.weight(1f)
+                    )
+                    InfoColumn(
+                        "Valor Actual",
+                        "$${
+                            (item.totalQuantity.toDouble() * item.Stock.closeDay.toDouble()).toFloat().formatCurrency()
+                        }",
+                        Modifier.weight(1f),
+                        isHighlight = true
+                    )
+                } else {
+                    InfoColumn(
+                        "Invertido",
+                        "$${(item.avgPrice.toDouble() * item.totalQuantity.toDouble() * usdValue.toDouble()).toFloat().formatCurrency()}",
+                        Modifier.weight(1f)
+                    )
+                    InfoColumn(
+                        "Valor Actual",
+                        "$${
+                            (item.totalQuantity.toDouble() * item.Stock.closeDay.toDouble() * usdValue).toFloat().formatCurrency()
+                        }",
+                        Modifier.weight(1f),
+                        isHighlight = true
+                    )
+                }
             }
         }
     }

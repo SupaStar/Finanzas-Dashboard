@@ -35,6 +35,7 @@ fun DashboardScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
+                modifier = Modifier.height(26.dp),
                 title = { Text("Mi Portafolio", style = MaterialTheme.typography.headlineSmall) },
                 actions = {
                     IconButton(onClick = { viewModel.logout() }) {
@@ -143,7 +144,8 @@ fun DashboardScreen(
                         items(state.items) { portfolioItem ->
                             PortfolioRow(
                                 item = portfolioItem,
-                                onClick = { viewModel.goToDetail(portfolioItem.portfolioId) }
+                                onClick = { viewModel.goToDetail(portfolioItem.portfolioId) },
+                                usdValue = state.usdValue
                             )
                         }
                     }

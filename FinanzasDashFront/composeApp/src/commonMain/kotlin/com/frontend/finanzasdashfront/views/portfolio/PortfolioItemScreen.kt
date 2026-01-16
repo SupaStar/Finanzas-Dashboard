@@ -1,11 +1,7 @@
 package com.frontend.finanzasdashfront.views.portfolio
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,17 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import com.frontend.finanzasdashfront.viewmodel.portfolio.PortfolioViewModel
-import androidx.compose.animation.*
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.draw.rotate
-import com.frontend.finanzasdashfront.dto.dividend.DividendDto
-import com.frontend.finanzasdashfront.dto.operation.OperationDto
-import com.frontend.finanzasdashfront.ui.component.EmptyStateMsg
-import com.frontend.finanzasdashfront.utils.formatCurrency
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddDividendModalVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddOperationModalVM
 import com.frontend.finanzasdashfront.views.portfolio.modal.AddDividendModal
@@ -46,8 +32,6 @@ fun PortfolioItemScreen(
     var expanded by remember { mutableStateOf(false) }
     var showOperationModal by remember { mutableStateOf(false) }
     var showDividendModal by remember { mutableStateOf(false) }
-    var selectedTabIndex by remember { mutableStateOf(0) } // 0 para Operaciones, 1 para Dividendos
-    val tabs = listOf("Operaciones", "Dividendos")
 
     Scaffold(
         topBar = {
@@ -60,11 +44,11 @@ fun PortfolioItemScreen(
                         }
                     }
                 )
-                TabRow(selectedTabIndex = selectedTabIndex) {
-                    tabs.forEachIndexed { index, title ->
+                TabRow(selectedTabIndex = state.selectedTabIndex) {
+                    state.optionsTabs.forEachIndexed { index, title ->
                         Tab(
-                            selected = selectedTabIndex == index,
-                            onClick = { selectedTabIndex = index },
+                            selected = state.selectedTabIndex == index,
+                            onClick = { viewModel.onTabIndexChanged(index) },
                             text = {
                                 Text(title, style = MaterialTheme.typography.titleSmall)
                             }
@@ -99,9 +83,10 @@ fun PortfolioItemScreen(
                             CircularProgressIndicator(Modifier.align(Alignment.Center))
                         } else {
                             // Alternamos el contenido según la pestaña seleccionada
-                            when (selectedTabIndex) {
-                                0 -> OperationList(state.operations)
-                                1 -> DividendList(state.dividends)
+                            when (state.selectedTabIndex) {
+                                0 -> OperationTab(state.operations)
+                                1 -> DividendTab(state.dividends)
+                                2 -> InfoTab(uiState = state, viewModel::onYearSelectedChanged)
                             }
                         }
                     }

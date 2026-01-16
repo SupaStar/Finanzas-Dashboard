@@ -10,4 +10,10 @@ data class PortfolioDetailUiState(
     val portfolioid: Long = 0,
     val operations: List<OperationDto> = emptyList(),
     val dividends: List<DividendDto> = emptyList(),
+    val optionsTabs: List<String> = listOf("Operaciones", "Dividendos", "Info"),
+    val selectedTabIndex: Int = 0,
+    val selectYearText: String = "Selecciona un año para ver sus detalles",
+    val yearsDividends: List<String> = emptyList(),
+    val yearDividendsSelected: String = "",
+    val isExpandedDividendsYearSelected: Boolean = false,
 )
