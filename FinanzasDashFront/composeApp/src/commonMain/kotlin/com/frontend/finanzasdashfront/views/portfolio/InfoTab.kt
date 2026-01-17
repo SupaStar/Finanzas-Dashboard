@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -55,6 +57,8 @@ fun InfoTab(
             val totalFees = operations.sumOf { it.fee.toDouble() }.toFloat()
             val totalTaxes = (operations.sumOf { it.tax.toDouble() } + dividends.sumOf { it.tax.toDouble() }).toFloat()
 
+            val totalDividends = dividends.sumOf { it.netValue.toDouble() }.toFloat()
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -71,6 +75,13 @@ fun InfoTab(
                     amount = totalTaxes.formatCurrency(),
                     icon = Icons.Default.AccountBalanceWallet,
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    modifier = Modifier.weight(1f)
+                )
+                InfoCard(
+                    title = "N Rentas",
+                    amount = totalDividends.formatCurrency(),
+                    icon = Icons.Default.CreditCard,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
                     modifier = Modifier.weight(1f)
                 )
             }
