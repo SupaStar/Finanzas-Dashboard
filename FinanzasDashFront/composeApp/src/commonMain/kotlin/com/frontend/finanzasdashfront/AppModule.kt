@@ -90,7 +90,7 @@ object AppModule {
     val authRouter = AuthRouter()
     // 3. Proveemos el ViewModel
     fun provideLoginViewModel() = LoginViewModel(authService, tokenManager, authRouter)
-    fun provideRegisterViewModel() = RegisterViewModel(authService, tokenManager)
+    fun provideRegisterViewModel() = RegisterViewModel(authService, tokenManager, authRouter)
     fun provideDashboardViewModel() = DashboardViewModel(tokenManager, portfolioService, dashboardRouter)
 
     fun provideSelectStockVM() = SelectStockVM(stockService, brokerService, portfolioService)
