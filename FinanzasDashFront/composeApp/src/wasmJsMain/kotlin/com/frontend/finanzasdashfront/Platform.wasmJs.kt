@@ -12,7 +12,7 @@ actual fun isDebugBuild(): Boolean {
     return true // TODO: Implementar detección real de modo debug en Wasm
 }
 //Local Sercer
-//actual fun getPlatformHost(): String = "http://192.168.1.96:8082/api"
+actual fun getPlatformHost(): String = "http://192.168.1.96:8082/api"
 //PROD
-actual fun getPlatformHost(): String = "http://3.144.13.186:8082/api"
+//actual fun getPlatformHost(): String = "http://3.144.13.186:8082/api"
 //actual fun getPlatformHost(): String = "http://localhost:8080"
