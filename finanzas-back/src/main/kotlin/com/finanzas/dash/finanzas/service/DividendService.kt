@@ -23,7 +23,7 @@ class DividendService(
     private val portfolioService: PortfolioService
 ) {
     fun getAllDividendsPorfolio(portfolioId: Long): DividendsPortfolioResponseDto {
-        val dividends = dividendRepository.findByPortfolioPortfolioId(portfolioId)
+        val dividends = dividendRepository.findByPortfolioPortfolioId(portfolioId).sortedByDescending { it.paidDate }
         val portfolio = portfolioRepository.findByPortfolioId(portfolioId) ?: throw GeneralRequestException(
             errors = listOf("Portfolio not found"),
             HttpStatus.NOT_FOUND

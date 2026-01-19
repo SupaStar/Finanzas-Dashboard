@@ -74,4 +74,12 @@ class DashboardViewModel(
     fun logout() {
         tokenManager.clearToken()
     }
+
+    fun onFilterChanged(newValue: String) {
+        var filteredData = _uiState.value.items
+        if (newValue.isNotEmpty()) {
+            filteredData = _uiState.value.items.filter { it.Stock.symbol.contains(newValue, true) }
+        }
+        _uiState.update { it.copy(filterStock = newValue, filteredStocks = filteredData) }
+    }
 }
