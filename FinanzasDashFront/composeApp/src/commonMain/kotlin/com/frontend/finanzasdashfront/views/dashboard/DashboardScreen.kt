@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.*
 import androidx.compose.runtime.collectAsState
@@ -14,12 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.input.KeyboardType
 import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
 import com.frontend.finanzasdashfront.views.dashboard.stock.SelectStockModal
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
@@ -134,21 +137,52 @@ fun DashboardScreen(
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
                     )
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        items(state.items) { portfolioItem ->
-                            PortfolioRow(
-                                item = portfolioItem,
-                                onClick = { viewModel.goToDetail(portfolioItem.portfolioId) },
-                                usdValue = state.usdValue
-                            )
+
+                    OutlinedTextField(
+                        value = state.filterStock,
+                        onValueChange = { viewModel.onFilterChanged(newValue = it) },
+                        label = { Text("Buscar") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                    )
+
+                    if (state.filterStock == "") {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            items(state.items) { portfolioItem ->
+                                PortfolioRow(
+                                    item = portfolioItem,
+                                    onClick = { viewModel.goToDetail(portfolioItem.portfolioId) },
+                                    usdValue = state.usdValue
+                                )
+                            }
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            items(state.filteredStocks) { portfolioItem ->
+                                PortfolioRow(
+                                    item = portfolioItem,
+                                    onClick = { viewModel.goToDetail(portfolioItem.portfolioId) },
+                                    usdValue = state.usdValue
+                                )
+                            }
                         }
                     }
+
+
                     Spacer(modifier = Modifier.height(80.dp))
                 }
             }

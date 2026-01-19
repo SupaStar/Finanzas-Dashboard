@@ -22,7 +22,7 @@ class OperationService(
     private val portfolioService: PortfolioService,
 ) {
     fun getOperationsPortfolio(portfolioId: Long): OperationsPortfolioResponseDto {
-        val operations = operationRepository.findByPortfolioPortfolioId(portfolioId)
+        val operations = operationRepository.findByPortfolioPortfolioId(portfolioId).sortedByDescending { it.operationDate }
         val portfolio = portfolioRepository.findByPortfolioId(portfolioId)
         return OperationsPortfolioResponseDto(
             message = MessageOperationResponseDto(
