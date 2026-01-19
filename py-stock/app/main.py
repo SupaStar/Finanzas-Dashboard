@@ -3,10 +3,6 @@ import yfinance as yf
 import redis
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from forex_python.converter import CurrencyRates
-from decimal import Decimal
-c = CurrencyRates(force_decimal=True)
-yf.enable_debug_mode()
 
 app = FastAPI(title="Stock Info API")
 

@@ -10,5 +10,7 @@ data class DashboardUiState (
     val errorMessage: String? = null,
     val totalValue: Double = 0.0,
     val usdValue: Float = 1.0f,
-    val chartData: DataPieChartDashboard = DataPieChartDashboard()
+    val chartData: DataPieChartDashboard = DataPieChartDashboard(),
+    val filterStock: String = "",
+    val filteredStocks: List<PortfolioDto> = emptyList(),
 )
