@@ -2,4 +2,3 @@ fastapi
 uvicorn[standard]
 yfinance
 redis
-forex-python

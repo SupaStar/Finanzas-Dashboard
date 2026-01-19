@@ -9,8 +9,10 @@ import com.frontend.finanzasdashfront.api.services.PortfolioService
 import com.frontend.finanzasdashfront.api.services.StockService
 import com.frontend.finanzasdashfront.config.SecurityManager
 import com.frontend.finanzasdashfront.config.TokenManager
+import com.frontend.finanzasdashfront.routes.routers.AuthRouter
 import com.frontend.finanzasdashfront.routes.routers.DashboardRouter
 import com.frontend.finanzasdashfront.viewmodel.auth.LoginViewModel
+import com.frontend.finanzasdashfront.viewmodel.auth.RegisterViewModel
 import com.frontend.finanzasdashfront.viewmodel.dashboard.DashboardViewModel
 import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.PortfolioViewModel
@@ -85,8 +87,10 @@ object AppModule {
     val stockService = StockService(httpClient)
     val brokerService = BrokerService(httpClient)
     val dashboardRouter = DashboardRouter()
+    val authRouter = AuthRouter()
     // 3. Proveemos el ViewModel
-    fun provideLoginViewModel() = LoginViewModel(authService, tokenManager)
+    fun provideLoginViewModel() = LoginViewModel(authService, tokenManager, authRouter)
+    fun provideRegisterViewModel() = RegisterViewModel(authService, tokenManager)
     fun provideDashboardViewModel() = DashboardViewModel(tokenManager, portfolioService, dashboardRouter)
 
     fun provideSelectStockVM() = SelectStockVM(stockService, brokerService, portfolioService)

@@ -119,7 +119,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
         }
 
         TextButton(
-            onClick = { /* Acción de registro */ },
+            onClick = { viewModel.goToRegisterScreen() },
             modifier = Modifier.padding(top = 16.dp)
         ) {
             Text("¿No tienes cuenta? Regístrate")

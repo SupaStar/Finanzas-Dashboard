@@ -4,15 +4,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
-sealed class AuthScreen {
-    object Login : AuthScreen()
+sealed class AuthScreens {
+    object Login : AuthScreens()
+    object Register: AuthScreens()
 }
 
 class AuthRouter {
-    var current by mutableStateOf<AuthScreen>(AuthScreen.Login)
+    var current by mutableStateOf<AuthScreens>(AuthScreens.Login)
         private set
 
-    fun goTo(screen: AuthScreen) {
+    fun goTo(screen: AuthScreens) {
         current = screen
     }
 }
