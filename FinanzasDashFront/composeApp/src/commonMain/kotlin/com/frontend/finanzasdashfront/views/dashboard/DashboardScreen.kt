@@ -27,7 +27,6 @@ fun DashboardScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                modifier = Modifier.height(26.dp),
                 title = { Text("Mi Portafolio", style = MaterialTheme.typography.headlineSmall) },
                 actions = {
                     IconButton(onClick = { viewModel.logout() }) {
