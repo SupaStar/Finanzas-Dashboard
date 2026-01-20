@@ -1,6 +1,5 @@
 Pushear imagen
 
-
 # Latest
 
 docker build -t finanzas-frontend .
@@ -13,9 +12,9 @@ docker push imsupastar222/finanzas-frontend:latest
 
 docker build -t finanzas-frontend:oracle  .
 
-docker tag finanzas-frontend:oracle imsupastar222/finanzas-frontend:oracle 
+docker tag finanzas-frontend:oracle imsupastar222/finanzas-frontend:oracle
 
-docker push imsupastar222/finanzas-frontend:oracle 
+docker push imsupastar222/finanzas-frontend:oracle
 
 En servidor EC2
 
@@ -39,4 +38,3 @@ docker compose build py-stock
 docker compose build backend
 
 docker compose up -d
-
