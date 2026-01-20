@@ -25,6 +25,14 @@ fun Portfolio.toDto() = PortfolioDto(
     portfolioId = this.portfolioId!!,
     Stock = this.stock!!.toDto(),
     avgPrice = this.avgPrice!!,
+    totalQuantity = this.totalQuantity!!,
+    dividends = this.dividends.map { it.toDto() },
+)
+
+fun Portfolio.toDtoLight() = PortfolioDto(
+    portfolioId = this.portfolioId!!,
+    Stock = this.stock!!.toDto(),
+    avgPrice = this.avgPrice!!,
     totalQuantity = this.totalQuantity!!
 )
 
@@ -49,7 +57,7 @@ fun Dividend.toDto() = DividendDto(
     dividendId = this.dividendId!!,
     dividendType = this.dividendType!!,
     value = this.value!!,
-    portfolio = this.portfolio!!.toDto(),
+    portfolio = this.portfolio!!.toDtoLight(),
     paidDate = this.paidDate!!,
     currencyCode = this.currencyCode!!,
     tax = this.tax,

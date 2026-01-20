@@ -82,4 +82,8 @@ class DashboardViewModel(
         }
         _uiState.update { it.copy(filterStock = newValue, filteredStocks = filteredData) }
     }
+
+    fun onTabIndexChanged(index: Int) {
+        _uiState.update { it.copy(selectedTabIndex = index) }
+    }
 }
