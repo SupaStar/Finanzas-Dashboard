@@ -27,8 +27,14 @@ import com.frontend.finanzasdashfront.utils.formatCurrency
 
 @Composable
 fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float) {
-    val valorCompra = (item.avgPrice.toDouble() * item.totalQuantity.toDouble())
-    val valorActual = (item.totalQuantity.toDouble() * item.Stock.closeDay.toDouble())
+    var valorCompra = 0f
+    var valorActual = 0f
+    if (item.Stock.currency == "MXN") {
+        valorActual = (item.totalQuantity * item.Stock.closeDay)
+        valorCompra = (item.avgPrice * item.totalQuantity)
+    } else {
+        valorActual = (item.totalQuantity * item.Stock.closeDay)
+    }
     val plusMinus = (valorActual - valorCompra) / valorCompra * 100
     OutlinedCard(
         onClick = { onClick(item.portfolioId) },
@@ -46,13 +52,13 @@ fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float) {
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                if(item.Stock.currency == "MXN"){
+                if (item.Stock.currency == "MXN") {
                     Text(
                         "Precio actual: ${item.Stock.closeDay.formatCurrency()}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
-                }else{
+                } else {
                     Text(
                         "Precio actual: ${(item.Stock.closeDay * usdValue).formatCurrency()}",
                         style = MaterialTheme.typography.titleMedium,
@@ -79,7 +85,7 @@ fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float) {
                     InfoColumn(
                         "Invertido",
                         "$${
-                            valorCompra.toFloat()
+                            valorCompra
                                 .formatCurrency()
                         }",
                         Modifier.weight(1f)
@@ -87,37 +93,29 @@ fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float) {
                     InfoColumn(
                         "Valor Actual",
                         "$${
-                            valorActual.toFloat()
+                            valorActual
                                 .formatCurrency()
                         }",
                         Modifier.weight(1f),
                         isHighlight = true
                     )
+                    if (!plusMinus.isNaN()) {
+                        InfoColumn(
+                            "Plus Minus",
+                            "${
+                                plusMinus.formatCurrency()
+                            } %",
+                            Modifier.weight(1f),
+                            isHighlight = true
+                        )
+                    }
                 } else {
                     InfoColumn(
-                        "Invertido",
-                        "$${
-                            (valorCompra * usdValue.toDouble()).toFloat()
-                                .formatCurrency()
-                        }",
-                        Modifier.weight(1f)
-                    )
-                    InfoColumn(
                         "Valor Actual",
                         "$${
-                            (valorActual * usdValue).toFloat()
+                            (valorActual * usdValue)
                                 .formatCurrency()
                         }",
-                        Modifier.weight(1f),
-                        isHighlight = true
-                    )
-                }
-                if(!plusMinus.isNaN()){
-                    InfoColumn(
-                        "Plus Minus",
-                        "${
-                            plusMinus.toFloat().formatCurrency()
-                        } %",
                         Modifier.weight(1f),
                         isHighlight = true
                     )
