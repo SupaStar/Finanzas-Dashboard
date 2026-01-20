@@ -1,28 +1,17 @@
 package com.frontend.finanzasdashfront.views.dashboard
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.runtime.Composable
-import androidx.compose.material3.*
-import androidx.compose.runtime.collectAsState
-import com.frontend.finanzasdashfront.viewmodel.dashboard.DashboardViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.frontend.finanzasdashfront.viewmodel.dashboard.DashboardViewModel
 import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
 import com.frontend.finanzasdashfront.views.dashboard.stock.SelectStockModal
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
@@ -131,57 +120,21 @@ fun DashboardScreen(
                             )
                         }
                     }
-
-                    Text(
-                        text = "Detalle de Activos",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
-                    )
-
-                    OutlinedTextField(
-                        value = state.filterStock,
-                        onValueChange = { viewModel.onFilterChanged(newValue = it) },
-                        label = { Text("Buscar") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = MaterialTheme.shapes.medium,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
-                    )
-
-                    if (state.filterStock == "") {
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
-                            contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            items(state.items) { portfolioItem ->
-                                PortfolioRow(
-                                    item = portfolioItem,
-                                    onClick = { viewModel.goToDetail(portfolioItem.portfolioId) },
-                                    usdValue = state.usdValue
-                                )
-                            }
-                        }
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
-                            contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            items(state.filteredStocks) { portfolioItem ->
-                                PortfolioRow(
-                                    item = portfolioItem,
-                                    onClick = { viewModel.goToDetail(portfolioItem.portfolioId) },
-                                    usdValue = state.usdValue
-                                )
-                            }
+                    TabRow(selectedTabIndex = state.selectedTabIndex) {
+                        state.optionsTabs.forEachIndexed { index, title ->
+                            Tab(
+                                selected = state.selectedTabIndex == index,
+                                onClick = { viewModel.onTabIndexChanged(index) },
+                                text = {
+                                    Text(title, style = MaterialTheme.typography.titleSmall)
+                                }
+                            )
                         }
                     }
-
+                    when (state.selectedTabIndex) {
+                        0 -> StockListTab(state, viewModel)
+                        1 -> InfoTabDash(state)
+                    }
 
                     Spacer(modifier = Modifier.height(80.dp))
                 }
