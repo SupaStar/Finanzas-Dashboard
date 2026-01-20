@@ -42,20 +42,13 @@ fun InfoTabDash(state: DashboardUiState) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp)
-            ) {
-                if (dividends.isEmpty()) {
-                    Text(
-                        text = "No hay datos disponibles",
-                        modifier = Modifier.align(Alignment.Center),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                } else {
-                    DividendBarChart(dividends)
-                }
+            if (dividends.isEmpty()) {
+                Text(
+                    text = "No hay datos disponibles",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            } else {
+                DividendBarChart(dividends)
             }
         }
     }

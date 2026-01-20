@@ -27,6 +27,9 @@ import com.frontend.finanzasdashfront.utils.formatCurrency
 
 @Composable
 fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float) {
+    val valorCompra = (item.avgPrice.toDouble() * item.totalQuantity.toDouble())
+    val valorActual = (item.totalQuantity.toDouble() * item.Stock.closeDay.toDouble())
+    val plusMinus = (valorActual - valorCompra) / valorCompra * 100
     OutlinedCard(
         onClick = { onClick(item.portfolioId) },
         modifier = Modifier.fillMaxWidth(),
@@ -38,7 +41,25 @@ fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(item.Stock.symbol, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(
+                    item.Stock.symbol,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                if(item.Stock.currency == "MXN"){
+                    Text(
+                        "Precio actual: ${item.Stock.closeDay.formatCurrency()}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }else{
+                    Text(
+                        "Precio actual: ${(item.Stock.closeDay * usdValue).formatCurrency()}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
                 Surface(
                     color = MaterialTheme.colorScheme.secondaryContainer,
                     shape = CircleShape
@@ -53,17 +74,21 @@ fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float) {
 
             Spacer(Modifier.height(12.dp))
 
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(Modifier.fillMaxWidth()) {
                 if (item.Stock.currency == "MXN") {
                     InfoColumn(
                         "Invertido",
-                        "$${(item.avgPrice.toDouble() * item.totalQuantity.toDouble()).toFloat().formatCurrency()}",
+                        "$${
+                            valorCompra.toFloat()
+                                .formatCurrency()
+                        }",
                         Modifier.weight(1f)
                     )
                     InfoColumn(
                         "Valor Actual",
                         "$${
-                            (item.totalQuantity.toDouble() * item.Stock.closeDay.toDouble()).toFloat().formatCurrency()
+                            valorActual.toFloat()
+                                .formatCurrency()
                         }",
                         Modifier.weight(1f),
                         isHighlight = true
@@ -71,14 +96,28 @@ fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float) {
                 } else {
                     InfoColumn(
                         "Invertido",
-                        "$${(item.avgPrice.toDouble() * item.totalQuantity.toDouble() * usdValue.toDouble()).toFloat().formatCurrency()}",
+                        "$${
+                            (valorCompra * usdValue.toDouble()).toFloat()
+                                .formatCurrency()
+                        }",
                         Modifier.weight(1f)
                     )
                     InfoColumn(
                         "Valor Actual",
                         "$${
-                            (item.totalQuantity.toDouble() * item.Stock.closeDay.toDouble() * usdValue).toFloat().formatCurrency()
+                            (valorActual * usdValue).toFloat()
+                                .formatCurrency()
                         }",
+                        Modifier.weight(1f),
+                        isHighlight = true
+                    )
+                }
+                if(!plusMinus.isNaN()){
+                    InfoColumn(
+                        "Plus Minus",
+                        "${
+                            plusMinus.toFloat().formatCurrency()
+                        } %",
                         Modifier.weight(1f),
                         isHighlight = true
                     )
@@ -90,13 +129,22 @@ fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float) {
 
 @Composable
 fun InfoColumn(label: String, value: String, modifier: Modifier, isHighlight: Boolean = false) {
-    Column(modifier) {
-        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.secondary,
+            textAlign = TextAlign.Center
+        )
         Text(
             value,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Normal,
-            color = if (isHighlight) MaterialTheme.colorScheme.primary else Color.Unspecified
+            color = if (isHighlight) MaterialTheme.colorScheme.primary else Color.Unspecified,
+            textAlign = TextAlign.Center
         )
     }
 }
