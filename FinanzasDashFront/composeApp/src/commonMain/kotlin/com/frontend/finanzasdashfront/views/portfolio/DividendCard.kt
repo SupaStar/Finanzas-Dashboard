@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import com.frontend.finanzasdashfront.dto.dividend.DividendDto
+import com.frontend.finanzasdashfront.dto.enums.DividendTypeEnum
+import com.frontend.finanzasdashfront.utils.toLabel
 
 @Composable
 fun DividendCard(dividend: DividendDto) {
@@ -17,7 +19,7 @@ fun DividendCard(dividend: DividendDto) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Fecha Pago: ${dividend.paidDate}", style = MaterialTheme.typography.labelMedium)
-            Text("${dividend.dividendType}: ${dividend.value} ${dividend.currencyCode}", fontWeight = Bold)
+            Text("${dividend.dividendType.toLabel()}: ${dividend.value} ${dividend.currencyCode}", fontWeight = Bold)
 
             if (dividend.currencyCode != "MXN") {
                 Text("Tipo de cambio: ${dividend.exchangeRate}", style = MaterialTheme.typography.bodySmall)

@@ -1,6 +1,7 @@
 package com.frontend.finanzasdashfront.utils
 
 import com.frontend.finanzasdashfront.dto.dividend.DividendDto
+import com.frontend.finanzasdashfront.dto.enums.DividendTypeEnum
 import com.frontend.finanzasdashfront.dto.enums.OperationTypeEnum
 import com.frontend.finanzasdashfront.dto.operation.OperationDto
 
@@ -12,6 +13,14 @@ fun OperationTypeEnum.toLabel(): String {
         return "Compra"
     } else {
         return "Venta"
+    }
+}
+
+fun DividendTypeEnum.toLabel(): String {
+    if(this == DividendTypeEnum.cash){
+        return "Dividendo"
+    }else{
+        return "Reembolso"
     }
 }
 

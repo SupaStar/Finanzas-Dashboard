@@ -95,7 +95,7 @@ def get_dolar_value():
         cached = redis_client.get(cache_key)
         print(f"Cached USD to MXN rate: {cached}")
         if cached:
-            return {"USD_MXN": float(Decimal(cached))}
+            return {"USD_MXN": cached}
 
         change = yf.Ticker("USDMXN=X")
         last_price = change.info.get("open")

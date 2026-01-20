@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.frontend.finanzasdashfront.model.portfolio.PortfolioDetailUiState
+import com.frontend.finanzasdashfront.ui.component.DividendBarChart
 import com.frontend.finanzasdashfront.ui.component.GenericExposedDropdown
 import com.frontend.finanzasdashfront.utils.formatCurrency
 import com.frontend.finanzasdashfront.utils.year
@@ -91,6 +92,8 @@ fun InfoTab(
                 Text("Selecciona un año para ver el desglose", style = MaterialTheme.typography.bodyMedium)
             }
         }
+
+        DividendBarChart(uiState.dividends)
     }
 }
 

@@ -13,4 +13,6 @@ data class DashboardUiState (
     val chartData: DataPieChartDashboard = DataPieChartDashboard(),
     val filterStock: String = "",
     val filteredStocks: List<PortfolioDto> = emptyList(),
+    val optionsTabs: List<String> = listOf("Acciones", "Info"),
+    val selectedTabIndex: Int = 0
 )
