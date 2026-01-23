@@ -5,7 +5,7 @@
         <domain>localhost</domain>
         <domain>10.0.2.2</domain>
         <domain>192.168.1.96</domain>
-        <domain>139.177.102.0</domain>
+        <domain>3.144.13.186</domain>
     </domain-config>
 
 </network-security-config>

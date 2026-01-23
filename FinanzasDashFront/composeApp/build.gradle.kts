@@ -126,9 +126,14 @@ compose.desktop {
         mainClass = "com.frontend.finanzasdashfront.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.frontend.finanzasdashfront"
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Exe)
+            packageName = "Finanzas Dashboard"
             packageVersion = "1.0.0"
+            includeAllModules = true
+//
+//            buildTypes.release.proguard {
+//                disableDefaultConfiguration()
+//            }
         }
     }
 }
