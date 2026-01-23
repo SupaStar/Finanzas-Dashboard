@@ -41,14 +41,15 @@ fun InfoTab(
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
-
-        GenericExposedDropdown(
-            label = "Año a filtrar",
-            options = uiState.yearsDividends,
-            selectedOption = uiState.yearDividendsSelected,
-            onOptionSelected = { year -> onYearSelected(year) },
-            leadingIcon = Icons.Default.DateRange
-        )
+        if (uiState.dividends.isNotEmpty()) {
+            GenericExposedDropdown(
+                label = "Año a filtrar",
+                options = uiState.yearsDividends,
+                selectedOption = uiState.yearDividendsSelected,
+                onOptionSelected = { year -> onYearSelected(year) },
+                leadingIcon = Icons.Default.DateRange
+            )
+        }
 
         if (uiState.yearDividendsSelected.isNotEmpty()) {
             val yearInt = uiState.yearDividendsSelected.toIntOrNull() ?: 0
@@ -93,7 +94,9 @@ fun InfoTab(
             }
         }
 
-        DividendBarChart(uiState.dividends)
+        if (uiState.dividends.isNotEmpty()) {
+            DividendBarChart(uiState.dividends)
+        }
     }
 }
 
