@@ -23,5 +23,5 @@ actual fun isDebugBuild(): Boolean {
 
 // Server local
 //actual fun getPlatformHost(): String = "http://192.168.1.96:8080"
-//PROD oracle
-actual fun getPlatformHost(): String = "http://139.177.102.0:8082/api"
+//PROD aws
+actual fun getPlatformHost(): String = "http://3.144.13.186:8082/api"

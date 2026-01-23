@@ -38,7 +38,7 @@ class CsvService(
         try {
             val user = securityService.currentUser()
 
-            val stocks = stockRepository.findAll()
+//            val stocks = stockRepository.findAll()
 
             val inputStream = file.inputStream
             val reader = BufferedReader(InputStreamReader(inputStream))
@@ -55,6 +55,10 @@ class CsvService(
                 val quantity = fila[2].toBigDecimal()
                 val price = fila[3].toBigDecimal()
                 val fee = fila[4].toBigDecimal()
+                var total = quantity * price
+                if(quantity < 1.toBigDecimal()){
+                    total = price
+                }
                 val symbol = fila[6]
                 val portfolio = validateOrCreatePortfolio(accion, user)
                 val operation = Operation().apply {
@@ -64,7 +68,7 @@ class CsvService(
                     this.portfolio = portfolio
                     this.fee = fee
                     this.tax = BigDecimal.ZERO
-                    this.total = quantity * price
+                    this.total = total
                     this.operationDate = date.atTime(LocalTime.MIDNIGHT).atOffset(ZoneOffset.UTC)
                 }
                 portfoliosId.add(portfolio.portfolioId!!)
