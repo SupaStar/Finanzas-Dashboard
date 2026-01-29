@@ -35,7 +35,14 @@ class DashboardViewModel(
             try {
                 val response = portfolioService.getPortfolio()
                 val items = response.message
-                val totalValue = items.sumOf { it.Stock.closeDay.toDouble() * it.totalQuantity.toDouble() }
+                val usdExchangeRate = response.usdPrice.toDouble()
+
+                val totalValue = items.sumOf { item ->
+                    val stock = item.Stock
+                    val subtotal = stock.closeDay.toDouble() * item.totalQuantity.toDouble()
+
+                    if (stock.currency != "MXN") subtotal * usdExchangeRate else subtotal
+                }
                 val groupedByCurrency = items.groupBy { it.Stock.currency }.mapValues { entry ->
                     entry.value.sumOf { it.totalQuantity.toDouble() * it.Stock.closeDay.toDouble() }
                 }

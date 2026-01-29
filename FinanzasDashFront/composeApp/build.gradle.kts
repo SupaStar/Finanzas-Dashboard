@@ -128,7 +128,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Exe)
             packageName = "Finanzas Dashboard"
-            packageVersion = "1.0.0"
+            packageVersion = "1.0.1"
             includeAllModules = true
 //
 //            buildTypes.release.proguard {
