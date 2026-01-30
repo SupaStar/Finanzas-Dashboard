@@ -43,4 +43,9 @@ class ProcesadorLotesController(private val csvService: CsvService) {
     fun update() {
         csvService.updateAllPortfolios()
     }
+
+    @GetMapping("/updateDividends")
+    fun updateDividends() {
+        csvService.updateAllPortfoliosDividends()
+    }
 }

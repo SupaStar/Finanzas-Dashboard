@@ -97,6 +97,19 @@ class CsvService(
         }
     }
 
+    @Transactional
+    fun updateAllPortfoliosDividends() {
+        try {
+            val user = securityService.currentUser()
+            val portfolios = portfolioRepository.findByUserUserId(user.userId!!)
+            portfolios.forEach { portfolio ->
+                portfolioService.updateAllDividends(portfolio.portfolioId!!)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     fun validateOrCreatePortfolio(stockName: String, user: User): Portfolio {
         val existingPortfolio = portfolioRepository.findByUserUserIdAndStockSymbol(user.userId!!, stockName)
         if (existingPortfolio != null) {

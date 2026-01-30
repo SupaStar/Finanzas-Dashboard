@@ -46,7 +46,7 @@ class DividendService(
                 this.paidDate = LocalDate.parse(request.paidDate!!).atStartOfDay().atOffset(ZoneOffset.UTC)
                 this.currencyCode = request.currencyCode
                 this.tax = request.tax!!
-                this.netValue = request.value!! * request.exchangeRate!!
+                this.netValue = request.value!! * request.exchangeRate!! - request.tax
                 this.exchangeRate = request.exchangeRate!!
             })
             portfolioService.updatePortfolioData(portfolioId)
