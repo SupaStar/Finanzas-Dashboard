@@ -7,6 +7,7 @@ import com.finanzas.dash.finanzas.dto.response.portfolio.PortfolioResponseDto
 import com.finanzas.dash.finanzas.entity.Portfolio
 import com.finanzas.dash.finanzas.enum.DividendTypeEnum
 import com.finanzas.dash.finanzas.enum.OperationTypeEnum
+import com.finanzas.dash.finanzas.repository.DividendRepository
 import com.finanzas.dash.finanzas.repository.PortfolioRepository
 import com.finanzas.dash.finanzas.repository.StockRepository
 import com.finanzas.dash.finanzas.utils.extension.toDto
@@ -22,6 +23,7 @@ class PortfolioService(
     private val securityService: SecurityService,
     private val portfolioRepository: PortfolioRepository,
     private val stockRepository: StockRepository,
+    private val dividendRepository: DividendRepository,
     private val utilService: UtilService,
 ) {
     fun test() {
@@ -105,6 +107,19 @@ class PortfolioService(
         portfolio.avgPrice = avgPrice
 
         portfolioRepository.save(portfolio)
+    }
+
+    fun updateAllDividends(portfolioId: Long){
+        val portfolio =
+            portfolioRepository.findByIdWithDividends(portfolioId) ?: throw GeneralRequestException(
+                listOf("Error al encontrar el portafolio"),
+                HttpStatus.BAD_REQUEST
+            )
+
+        portfolio.dividends.forEach { dividend ->
+            dividend.netValue = dividend.value!! * dividend.exchangeRate!! - dividend.tax
+            dividendRepository.save(dividend)
+        }
     }
 
     fun updateAllPortfolios(userId: Long) {
