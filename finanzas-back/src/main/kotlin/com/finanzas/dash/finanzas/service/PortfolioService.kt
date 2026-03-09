@@ -54,7 +54,7 @@ class PortfolioService(
     fun getUserPortfolio(): PortfolioGetAllResponseDto {
         val usdPrice = utilService.getUsdValue()
         val user = securityService.currentUser()
-        val portfolio = portfolioRepository.findByUserUserId(user.userId!!)
+        val portfolio = portfolioRepository.findByUserUserIdWithGeneralInformation(user.userId!!)
         return PortfolioGetAllResponseDto(message = portfolio.map { it.toDto() }, usdPrice = usdPrice.USD_MXN)
     }
 

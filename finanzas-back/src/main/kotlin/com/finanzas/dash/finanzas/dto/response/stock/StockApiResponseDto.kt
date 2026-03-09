@@ -14,7 +14,7 @@ data class StockData(
     var name: String,
     var price: BigDecimal,
     var currency: String,
-    var marketCap: BigInteger?,
+    var marketCap: String?,
     var sector: String?
 )
 
