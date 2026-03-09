@@ -26,7 +26,8 @@ fun OperationCard(operation: OperationDto) {
                 Text("Precio: $${operation.price.formatCurrency()}")
             }
             Divider(Modifier.padding(vertical = 8.dp))
-            Text("Total: $${operation.total}", style = MaterialTheme.typography.bodyLarge, fontWeight = Bold)
+            val total = if (operation.quantity < 1f) operation.price else operation.total
+            Text("Total: $${total}", style = MaterialTheme.typography.bodyLarge, fontWeight = Bold)
         }
     }
 }

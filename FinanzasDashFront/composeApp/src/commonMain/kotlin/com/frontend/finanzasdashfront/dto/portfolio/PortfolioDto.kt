@@ -11,4 +11,5 @@ data class PortfolioDto(
     var avgPrice: Float,
     var totalQuantity: Float,
     var dividends: List<DividendDto> = emptyList(),
+    var generalInformation: List<PortfolioGeneralInformationDto> = emptyList(),
 )

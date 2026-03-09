@@ -11,7 +11,7 @@ import com.frontend.finanzasdashfront.utils.formatCurrency
 @Composable
 fun TotalValueCard(totalValue: Double) {
     Card(
-        modifier = Modifier.fillMaxWidth().height(90.dp),
+        modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primary
         )
@@ -24,7 +24,7 @@ fun TotalValueCard(totalValue: Double) {
             )
             Text(
                 text = "$${totalValue.toFloat().formatCurrency()}",
-                style = MaterialTheme.typography.displayMedium,
+                style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Black,
                 color = MaterialTheme.colorScheme.onPrimary
             )
