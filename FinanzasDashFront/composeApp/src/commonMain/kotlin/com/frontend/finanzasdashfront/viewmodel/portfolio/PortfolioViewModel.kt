@@ -30,31 +30,33 @@ class PortfolioViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                val operationsDeferred = async { operationService.getAllOperations(idPortfolio) }
-                val dividendsDeferred = async { dividendService.getDividends(idPortfolio) }
-
-                val operationsResponse = operationsDeferred.await()
-                val dividendsResponse = dividendsDeferred.await()
-
-                val opsData = operationsResponse.message
-                val divData = dividendsResponse.message
-
-                val yearsDividends = divData.dividends.map { it.year().toString() }
-                    .distinct()
-                    .sortedDescending()
-
-                if (opsData != null && divData != null) {
-                    _uiState.update {
-                        it.copy(
-                            stockName = opsData.stock.symbol,
-                            operations = opsData.operations,
-                            dividends = divData.dividends,
-                            isLoading = false,
-                            yearsDividends = yearsDividends,
-                        )
+                kotlinx.coroutines.coroutineScope {
+                    val operationsDeferred = async { operationService.getAllOperations(idPortfolio) }
+                    val dividendsDeferred = async { dividendService.getDividends(idPortfolio) }
+    
+                    val operationsResponse = operationsDeferred.await()
+                    val dividendsResponse = dividendsDeferred.await()
+    
+                    val opsData = operationsResponse.message
+                    val divData = dividendsResponse.message
+    
+                    val yearsDividends = divData.dividends.map { it.year().toString() }
+                        .distinct()
+                        .sortedDescending()
+    
+                    if (opsData != null && divData != null) {
+                        _uiState.update {
+                            it.copy(
+                                stockName = opsData.stock.symbol,
+                                operations = opsData.operations,
+                                dividends = divData.dividends,
+                                isLoading = false,
+                                yearsDividends = yearsDividends,
+                            )
+                        }
+                    } else {
+                        _uiState.update { it.copy(isLoading = false, errorMessage = "Datos no encontrados") }
                     }
-                } else {
-                    _uiState.update { it.copy(isLoading = false, errorMessage = "Datos no encontrados") }
                 }
 
             } catch (e: Exception) {

@@ -88,7 +88,7 @@ fun GeneralInfoBarChart(generalInfo: List<PortfolioGeneralInformationDto>) {
 
     Column {
         ChartLayout(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier.fillMaxWidth().height(300.dp).padding(16.dp),
             title = { Text("Distribución de Dividendos por Mes", style = MaterialTheme.typography.titleLarge) },
             legend = {
                 FlowLegend(
