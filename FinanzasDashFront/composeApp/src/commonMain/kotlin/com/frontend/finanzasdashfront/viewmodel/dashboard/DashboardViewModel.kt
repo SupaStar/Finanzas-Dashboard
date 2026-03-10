@@ -93,4 +93,8 @@ class DashboardViewModel(
     fun onTabIndexChanged(index: Int) {
         _uiState.update { it.copy(selectedTabIndex = index) }
     }
+
+    fun toggleUsdDisplay() {
+        _uiState.update { it.copy(showUsdAsMxn = !it.showUsdAsMxn) }
+    }
 }

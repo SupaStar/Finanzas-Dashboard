@@ -23,6 +23,16 @@ class AddOperationModalVM(private val operationService: OperationService) : View
     val reloadOperationsEvent: SharedFlow<Unit> = _reloadOperationsEvent.asSharedFlow()
     val closeEvent: SharedFlow<Unit> = _closeModalsEvent.asSharedFlow()
 
+    fun initModal(isUsd: Boolean) {
+        _uiState.update { 
+            it.copy(
+                isUsd = isUsd,
+                fee = if (isUsd) "0" else "",
+                tax = if (isUsd) "0" else ""
+            ) 
+        }
+    }
+
     fun onExpandedSelectOperationType(newValue: Boolean) {
         _uiState.update { it.copy(isExpandedSelect = newValue) }
     }

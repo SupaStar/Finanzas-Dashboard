@@ -138,13 +138,15 @@ fun AddOperationModal(
                             label = "Comisión",
                             value = state.fee,
                             onValueChange = viewModel::onFeeChange,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            enabled = !state.isUsd
                         )
                         OperationField(
                             label = "Impuestos",
                             value = state.tax,
                             onValueChange = viewModel::onTaxChange,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            enabled = !state.isUsd
                         )
                     }
 
@@ -179,7 +181,8 @@ fun OperationField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     OutlinedTextField(
         value = value,
@@ -188,6 +191,7 @@ fun OperationField(
         modifier = modifier,
         singleLine = true,
         shape = RoundedCornerShape(12.dp),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+        enabled = enabled
     )
 }

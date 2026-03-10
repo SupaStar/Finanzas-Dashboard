@@ -6,6 +6,7 @@ import com.frontend.finanzasdashfront.dto.operation.GetAllOperationsPortfolioRes
 import com.frontend.finanzasdashfront.dto.request.AddOperationRequestDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -16,6 +17,8 @@ import io.ktor.http.contentType
 class OperationService(private val client: HttpClient) {
     private val operationsPortfolioUrl = "/operation/all"
     private val operationsPortfolioAddUrl = "/operation/add"
+    private val operationDeleteUrl = "/operation/delete"
+    
     suspend fun getAllOperations(idPortfolio: Long): GetAllOperationsPortfolioResponseDto {
         val response = client.get("${Constants.BaseUrl}${operationsPortfolioUrl}/${idPortfolio}") {
             contentType(ContentType.Application.Json)
@@ -41,6 +44,13 @@ class OperationService(private val client: HttpClient) {
         } else {
             val errorMsg = responseDto.errors?.joinToString("\n") ?: "Error desconocido"
             throw Exception("Error desconocido: $errorMsg")
+        }
+    }
+
+    suspend fun deleteOperation(operationId: Long) {
+        val response = client.delete("${Constants.BaseUrl}${operationDeleteUrl}/${operationId}")
+        if (response.status != HttpStatusCode.OK && response.status != HttpStatusCode.NoContent) {
+            throw Exception("Error al eliminar la operación: ${response.status}")
         }
     }
 }

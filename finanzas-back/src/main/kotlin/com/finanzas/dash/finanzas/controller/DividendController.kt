@@ -5,6 +5,7 @@ import com.finanzas.dash.finanzas.dto.response.dividend.AddDividendResponseDto
 import com.finanzas.dash.finanzas.dto.response.dividend.DividendsPortfolioResponseDto
 import com.finanzas.dash.finanzas.service.DividendService
 import jakarta.validation.Valid
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -26,5 +27,10 @@ class DividendController(private val dividendService: DividendService) {
         @RequestBody @Valid request: AddDividendPortfolioRequestDto
     ): AddDividendResponseDto {
         return dividendService.addDividend(idPortfolio, request)
+    }
+
+    @DeleteMapping("/delete/{dividendId}")
+    fun delete(@PathVariable dividendId: Long) {
+        dividendService.deleteDividend(dividendId)
     }
 }

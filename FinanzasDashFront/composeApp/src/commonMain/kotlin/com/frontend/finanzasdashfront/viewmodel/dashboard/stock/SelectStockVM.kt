@@ -32,25 +32,27 @@ class SelectStockVM(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
-                val stocksDefered = async { stockService.getStocks() }
-                val brokerDefered = async { brokerService.getBrokers() }
-
-                val stocksRasponse = stocksDefered.await()
-                val brokerResponse = brokerDefered.await()
-
-                if (stocksRasponse != null && brokerResponse != null) {
-                    val stocks = stocksRasponse.message
-                    val brokers = brokerResponse.message
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = null,
-                            stocks = stocks,
-                            brokers = brokers
-                        )
+                kotlinx.coroutines.coroutineScope {
+                    val stocksDefered = async { stockService.getStocks() }
+                    val brokerDefered = async { brokerService.getBrokers() }
+    
+                    val stocksRasponse = stocksDefered.await()
+                    val brokerResponse = brokerDefered.await()
+    
+                    if (stocksRasponse != null && brokerResponse != null) {
+                        val stocks = stocksRasponse.message
+                        val brokers = brokerResponse.message
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = null,
+                                stocks = stocks,
+                                brokers = brokers
+                            )
+                        }
+                    } else {
+                        _uiState.update { it.copy(isLoading = false, errorMessage = "Datos no encontrados") }
                     }
-                } else {
-                    _uiState.update { it.copy(isLoading = false, errorMessage = "Datos no encontrados") }
                 }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }

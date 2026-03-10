@@ -1,6 +1,7 @@
 package com.frontend.finanzasdashfront.views.dashboard
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -98,44 +99,50 @@ fun DashboardScreen(
                         viewModel = viewModelModal
                     )
                 }
-                Column(
+                LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-                        .padding(16.dp)
                 ) {
-                    TotalValueCard(state.totalValue)
-                    if (state.chartData.data.isNotEmpty()) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                        ) {
-                            PortfolioPieChart(
-                                uiState = state,
-                                modifier = Modifier.height(220.dp).padding(8.dp)
-                            )
-                        }
-                    }
-                    TabRow(selectedTabIndex = state.selectedTabIndex) {
-                        state.optionsTabs.forEachIndexed { index, title ->
-                            Tab(
-                                selected = state.selectedTabIndex == index,
-                                onClick = { viewModel.onTabIndexChanged(index) },
-                                text = {
-                                    Text(title, style = MaterialTheme.typography.titleSmall)
+                    item {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            TotalValueCard(state.totalValue)
+                            if (state.chartData.data.isNotEmpty()) {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                                ) {
+                                    PortfolioPieChart(
+                                        uiState = state,
+                                        modifier = Modifier.height(220.dp).padding(8.dp)
+                                    )
                                 }
-                            )
+                            }
+                            TabRow(selectedTabIndex = state.selectedTabIndex) {
+                                state.optionsTabs.forEachIndexed { index, title ->
+                                    Tab(
+                                        selected = state.selectedTabIndex == index,
+                                        onClick = { viewModel.onTabIndexChanged(index) },
+                                        text = {
+                                            Text(title, style = MaterialTheme.typography.titleSmall)
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
+
                     when (state.selectedTabIndex) {
                         0 -> StockListTab(state, viewModel)
                         1 -> InfoTabDash(state)
                     }
 
-                    Spacer(modifier = Modifier.height(80.dp))
+                    item {
+                        Spacer(modifier = Modifier.height(80.dp))
+                    }
                 }
             }
         }

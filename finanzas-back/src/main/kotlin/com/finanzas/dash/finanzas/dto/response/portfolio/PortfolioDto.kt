@@ -9,5 +9,6 @@ data class PortfolioDto(
     var Stock: StockDto,
     var avgPrice: BigDecimal,
     var totalQuantity: BigDecimal,
-    var dividends: List<DividendDto> = emptyList(),
+    var nOperations: Int,
+    var generalInformation: List<PortfolioGeneralInformationDto> = emptyList(),
 )

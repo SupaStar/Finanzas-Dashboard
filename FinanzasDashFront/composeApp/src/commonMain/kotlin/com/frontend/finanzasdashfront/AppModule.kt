@@ -94,7 +94,7 @@ object AppModule {
     fun provideDashboardViewModel() = DashboardViewModel(tokenManager, portfolioService, dashboardRouter)
 
     fun provideSelectStockVM() = SelectStockVM(stockService, brokerService, portfolioService)
-    fun providePortfolioViewModel(idPortfolio:Long) = PortfolioViewModel(idPortfolio, operationService, dividendService)
+    fun providePortfolioViewModel(idPortfolio:Long) = PortfolioViewModel(idPortfolio, operationService, dividendService, portfolioService)
     fun provideAddOperationVM() = AddOperationModalVM(operationService)
     fun provideAddDividendVM() = AddDividendModalVM(dividendService)
 }

@@ -10,6 +10,7 @@ import com.finanzas.dash.finanzas.entity.Portfolio
 import com.finanzas.dash.finanzas.repository.DividendRepository
 import com.finanzas.dash.finanzas.repository.PortfolioRepository
 import com.finanzas.dash.finanzas.utils.extension.toDto
+import jakarta.transaction.Transactional
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -58,5 +59,16 @@ class DividendService(
                 HttpStatus.INTERNAL_SERVER_ERROR
             )
         }
+    }
+
+    @Transactional
+    fun deleteDividend(dividendId: Long) {
+        val dividend = dividendRepository.findById(dividendId).orElseThrow { 
+            GeneralRequestException(listOf("Dividend not found"), HttpStatus.NOT_FOUND) 
+        }
+        val portfolio = dividend.portfolio!!
+        portfolio.dividends.remove(dividend)
+        dividendRepository.delete(dividend)
+        portfolioService.updatePortfolioData(portfolio.portfolioId!!)
     }
 }

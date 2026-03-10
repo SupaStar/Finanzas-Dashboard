@@ -67,26 +67,42 @@ class AddDividendModalVM(private val dividendService: DividendService) : ViewMod
 
     fun onDividendTypeChange(dividendType: String, dividendValue: String) {
         _uiState.update {
-            it.copy(
+            val newState = it.copy(
                 isExpandedDividendTypeSelected = false,
                 dividendTypeSelectedText = dividendType,
                 dividendTypeValue = dividendValue
             )
+            calculateTaxIfApplicable(newState)
         }
     }
 
     fun onCurrencyTypeChange(currencyType: String, currencyValue: String) {
         _uiState.update {
-            it.copy(
+            val newState = it.copy(
                 isExpandedCurrencyCodeSelected = false,
                 currencyCodeSelectedText = currencyType,
                 currencyCodeSelected = currencyValue
             )
+            calculateTaxIfApplicable(newState)
         }
     }
 
     fun onValueChange(newValue: String) {
-        _uiState.update { it.copy(value = newValue) }
+        _uiState.update {
+            val newState = it.copy(value = newValue)
+            calculateTaxIfApplicable(newState)
+        }
+    }
+
+    private fun calculateTaxIfApplicable(state: AddDividendModalUiState): AddDividendModalUiState {
+        if (state.dividendTypeValue.lowercase() == "cash" && state.currencyCodeSelected.uppercase() == "MXN") {
+            val valueDouble = state.value.toDoubleOrNull() ?: 0.0
+            val taxValue = valueDouble * 0.30
+            if (valueDouble > 0) {
+                return state.copy(tax = taxValue.toString())
+            }
+        }
+        return state
     }
 
     fun onDateChange(newValue: String) {

@@ -29,6 +29,20 @@ class PortfolioService(private val client: HttpClient) {
         }
     }
 
+    suspend fun getPortfolioById(id: Long): PortfolioGetAllResponseDto {
+        val response = client.get("${Constants.BaseUrl}${urlGetPortfolio}/$id") {
+            contentType(ContentType.Application.Json)
+        }
+        val responseDto = response.body<PortfolioGetAllResponseDto>()
+
+        if (response.status == HttpStatusCode.OK) {
+            return responseDto
+        } else {
+            val errorMsg = responseDto.errors?.joinToString("\n") ?: "Error desconocido"
+            throw Exception("Error al obtener el portafolio: $errorMsg")
+        }
+    }
+
     suspend fun addStockToPortfolio(request: AddStockPortfolioRequestDto): PortfolioResponseDto {
         val response = client.post("${Constants.BaseUrl}${urlAddStockPortfolio}") {
             contentType(ContentType.Application.Json)

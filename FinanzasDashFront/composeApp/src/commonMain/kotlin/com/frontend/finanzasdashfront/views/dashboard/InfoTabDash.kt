@@ -9,46 +9,49 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.frontend.finanzasdashfront.model.dashboard.DashboardUiState
-import com.frontend.finanzasdashfront.ui.component.DividendBarChart
+import com.frontend.finanzasdashfront.ui.component.GeneralInfoBarChart
 
-@Composable
-fun InfoTabDash(state: DashboardUiState) {
-    val dividends = state.items.flatMap { it.dividends }
+import androidx.compose.foundation.lazy.LazyListScope
 
-    Card (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+fun LazyListScope.InfoTabDash(state: DashboardUiState) {
+    item {
+        val generalInfo = state.items.flatMap { it.generalInformation }
+
+        Card (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
-            Text(
-                text = "Dividendos totales por año",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            HorizontalDivider(
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (dividends.isEmpty()) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
                 Text(
-                    text = "No hay datos disponibles",
-                    style = MaterialTheme.typography.bodyMedium
+                    text = "Dividendos totales por año",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold
                 )
-            } else {
-                DividendBarChart(dividends)
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (generalInfo.isEmpty()) {
+                    Text(
+                        text = "No hay datos disponibles",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                } else {
+                    GeneralInfoBarChart(generalInfo)
+                }
             }
         }
     }

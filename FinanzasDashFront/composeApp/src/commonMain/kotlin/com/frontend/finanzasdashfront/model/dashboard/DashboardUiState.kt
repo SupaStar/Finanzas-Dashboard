@@ -14,5 +14,6 @@ data class DashboardUiState (
     val filterStock: String = "",
     val filteredStocks: List<PortfolioDto> = emptyList(),
     val optionsTabs: List<String> = listOf("Acciones", "Info"),
-    val selectedTabIndex: Int = 0
+    val selectedTabIndex: Int = 0,
+    val showUsdAsMxn: Boolean = false
 )

@@ -15,7 +15,11 @@ import com.frontend.finanzasdashfront.dto.operation.OperationDto
 import com.frontend.finanzasdashfront.utils.formatCurrency
 
 @Composable
-fun OperationTab(operations: List<OperationDto>) {
+fun OperationTab(
+    operations: List<OperationDto>,
+    onEdit: (OperationDto) -> Unit = {},
+    onDelete: (OperationDto) -> Unit = {}
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -24,14 +28,22 @@ fun OperationTab(operations: List<OperationDto>) {
         if (operations.isEmpty()) {
             item { Text("No hay operaciones", Modifier.padding(16.dp)) }
         }
-        items(operations) { operation ->
-            OperationCard(operation)
+        items(operations, key = { it.operationId ?: it.hashCode() }) { operation ->
+            OperationCard(
+                operation = operation,
+                onEdit = onEdit,
+                onDelete = onDelete
+            )
         }
     }
 }
 
 @Composable
-fun DividendTab(dividends: List<DividendDto>) {
+fun DividendTab(
+    dividends: List<DividendDto>,
+    onEdit: (DividendDto) -> Unit = {},
+    onDelete: (DividendDto) -> Unit = {}
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -53,8 +65,12 @@ fun DividendTab(dividends: List<DividendDto>) {
         if (dividends.isEmpty()) {
             item { Text("No hay dividendos", Modifier.padding(16.dp)) }
         }
-        items(dividends) { dividend ->
-            DividendCard(dividend)
+        items(dividends, key = { it.dividendId ?: it.hashCode() }) { dividend ->
+            DividendCard(
+                dividend = dividend,
+                onEdit = onEdit,
+                onDelete = onDelete
+            )
         }
     }
 }
