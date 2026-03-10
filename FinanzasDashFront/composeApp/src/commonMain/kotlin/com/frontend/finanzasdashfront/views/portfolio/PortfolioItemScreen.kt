@@ -67,7 +67,11 @@ fun PortfolioItemScreen(
             ExpandableFabMenu(
                 expanded = expanded,
                 onExpandClick = { expanded = !expanded },
-                onAddOperation = { showOperationModal = true; expanded = false },
+                onAddOperation = { 
+                    addOperationVM.initModal(state.stockCurrency == "USD")
+                    showOperationModal = true
+                    expanded = false 
+                },
                 onAddDividend = { showDividendModal = true; expanded = false }
             )
         }

@@ -48,6 +48,7 @@ class PortfolioViewModel(
                         _uiState.update {
                             it.copy(
                                 stockName = opsData.stock.symbol,
+                                stockCurrency = opsData.stock.currency,
                                 operations = opsData.operations,
                                 dividends = divData.dividends,
                                 isLoading = false,
