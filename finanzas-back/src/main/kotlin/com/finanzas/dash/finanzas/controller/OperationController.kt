@@ -6,6 +6,7 @@ import com.finanzas.dash.finanzas.dto.response.operation.OperationDto
 import com.finanzas.dash.finanzas.dto.response.operation.OperationsPortfolioResponseDto
 import com.finanzas.dash.finanzas.service.OperationService
 import jakarta.validation.Valid
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -24,5 +25,10 @@ class OperationController(private val operationService: OperationService) {
     @PostMapping("/add")
     fun addOperation(@RequestBody @Valid requestDto: AddOperationRequestDto): OperationAddResponseDto {
         return operationService.addOperation(requestDto)
+    }
+
+    @DeleteMapping("/delete/{operationId}")
+    fun deleteOperation(@PathVariable operationId: Long) {
+        operationService.deleteOperation(operationId)
     }
 }

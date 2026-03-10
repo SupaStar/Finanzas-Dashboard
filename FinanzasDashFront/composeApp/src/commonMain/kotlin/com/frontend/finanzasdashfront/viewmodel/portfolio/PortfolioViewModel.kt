@@ -74,4 +74,32 @@ class PortfolioViewModel(
     fun onYearSelectedChanged(year: String) {
         _uiState.update { it.copy(yearDividendsSelected = year) }
     }
+
+    fun deleteOperation(operationId: Long) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            try {
+                operationService.deleteOperation(operationId)
+                loadPortfolioData()
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(isLoading = false, errorMessage = "Error al eliminar la operación")
+                }
+            }
+        }
+    }
+
+    fun deleteDividend(dividendId: Long) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            try {
+                dividendService.deleteDividend(dividendId)
+                loadPortfolioData()
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(isLoading = false, errorMessage = "Error al eliminar el dividendo")
+                }
+            }
+        }
+    }
 }

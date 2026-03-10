@@ -61,4 +61,15 @@ class OperationService(
             )
         }
     }
+
+    @Transactional
+    fun deleteOperation(operationId: Long) {
+        val operation = operationRepository.findById(operationId).orElseThrow { 
+            GeneralRequestException(listOf("Operation not found"), HttpStatus.NOT_FOUND) 
+        }
+        val portfolio = operation.portfolio!!
+        portfolio.operations.remove(operation)
+        operationRepository.delete(operation)
+        portfolioService.updatePortfolioData(portfolio.portfolioId!!)
+    }
 }

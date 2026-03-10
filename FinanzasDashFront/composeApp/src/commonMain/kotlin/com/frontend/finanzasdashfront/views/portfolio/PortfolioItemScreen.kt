@@ -14,6 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.frontend.finanzasdashfront.dto.dividend.DividendDto
+import com.frontend.finanzasdashfront.dto.operation.OperationDto
 import com.frontend.finanzasdashfront.viewmodel.portfolio.PortfolioViewModel
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddDividendModalVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddOperationModalVM
@@ -32,6 +34,9 @@ fun PortfolioItemScreen(
     var expanded by remember { mutableStateOf(false) }
     var showOperationModal by remember { mutableStateOf(false) }
     var showDividendModal by remember { mutableStateOf(false) }
+    
+    var operationToDelete by remember { mutableStateOf<OperationDto?>(null) }
+    var dividendToDelete by remember { mutableStateOf<DividendDto?>(null) }
 
     Scaffold(
         topBar = {
@@ -79,8 +84,14 @@ fun PortfolioItemScreen(
                     CircularProgressIndicator(Modifier.align(Alignment.Center))
                 } else {
                     when (state.selectedTabIndex) {
-                        0 -> OperationTab(state.operations)
-                        1 -> DividendTab(state.dividends)
+                        0 -> OperationTab(
+                            operations = state.operations,
+                            onDelete = { operationToDelete = it }
+                        )
+                        1 -> DividendTab(
+                            dividends = state.dividends,
+                            onDelete = { dividendToDelete = it }
+                        )
                         2 -> InfoTab(uiState = state, viewModel::onYearSelectedChanged)
                     }
                 }
@@ -96,6 +107,48 @@ fun PortfolioItemScreen(
                 AddDividendModal(
                     viewModel = addDividendVm, onClose = { showDividendModal = false },
                     reloadDividends = { viewModel.loadPortfolioData() }, idPorfolio = state.portfolioid
+                )
+            }
+            
+            operationToDelete?.let { operation ->
+                AlertDialog(
+                    onDismissRequest = { operationToDelete = null },
+                    title = { Text("Eliminar Operación") },
+                    text = { Text("¿Estás seguro de que deseas eliminar esta operación?") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            operation.operationId?.let { viewModel.deleteOperation(it) }
+                            operationToDelete = null
+                        }) {
+                            Text("Eliminar")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { operationToDelete = null }) {
+                            Text("Cancelar")
+                        }
+                    }
+                )
+            }
+
+            dividendToDelete?.let { dividend ->
+                AlertDialog(
+                    onDismissRequest = { dividendToDelete = null },
+                    title = { Text("Eliminar Dividendo") },
+                    text = { Text("¿Estás seguro de que deseas eliminar este dividendo?") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            dividend.dividendId?.let { viewModel.deleteDividend(it) }
+                            dividendToDelete = null
+                        }) {
+                            Text("Eliminar")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { dividendToDelete = null }) {
+                            Text("Cancelar")
+                        }
+                    }
                 )
             }
         }
