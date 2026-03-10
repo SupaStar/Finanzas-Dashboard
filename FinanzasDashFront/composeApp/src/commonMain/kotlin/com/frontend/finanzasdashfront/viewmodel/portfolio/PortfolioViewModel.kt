@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.frontend.finanzasdashfront.api.services.DividendService
 import com.frontend.finanzasdashfront.api.services.OperationService
+import com.frontend.finanzasdashfront.api.services.PortfolioService
 import com.frontend.finanzasdashfront.model.portfolio.PortfolioDetailUiState
 import com.frontend.finanzasdashfront.utils.year
 import kotlinx.coroutines.async
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
 class PortfolioViewModel(
     private val idPortfolio: Long,
     private val operationService: OperationService,
-    private val dividendService: DividendService
+    private val dividendService: DividendService,
+    private val portfolioService: PortfolioService
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PortfolioDetailUiState(isLoading = true, portfolioid = idPortfolio))
@@ -33,16 +35,21 @@ class PortfolioViewModel(
                 kotlinx.coroutines.coroutineScope {
                     val operationsDeferred = async { operationService.getAllOperations(idPortfolio) }
                     val dividendsDeferred = async { dividendService.getDividends(idPortfolio) }
+                    val portfolioDeferred = async { portfolioService.getPortfolioById(idPortfolio) }
     
                     val operationsResponse = operationsDeferred.await()
                     val dividendsResponse = dividendsDeferred.await()
+                    val portfolioResponse = portfolioDeferred.await()
     
                     val opsData = operationsResponse.message
                     val divData = dividendsResponse.message
+                    // getPortfolioById returns a list with a single element
+                    val currentPortfolio = portfolioResponse.message?.firstOrNull()
+                    val genInfo = currentPortfolio?.generalInformation ?: emptyList()
     
-                    val yearsDividends = divData.dividends.map { it.year().toString() }
-                        .distinct()
-                        .sortedDescending()
+                    val yearsDividends = divData?.dividends?.map { it.year().toString() }
+                        ?.distinct()
+                        ?.sortedDescending() ?: emptyList()
     
                     if (opsData != null && divData != null) {
                         _uiState.update {
@@ -51,6 +58,7 @@ class PortfolioViewModel(
                                 stockCurrency = opsData.stock.currency,
                                 operations = opsData.operations,
                                 dividends = divData.dividends,
+                                generalInformation = genInfo,
                                 isLoading = false,
                                 yearsDividends = yearsDividends,
                             )

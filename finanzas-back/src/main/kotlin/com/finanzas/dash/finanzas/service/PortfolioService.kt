@@ -58,6 +58,28 @@ class PortfolioService(
         return PortfolioGetAllResponseDto(message = portfolio.map { it.toDto() }, usdPrice = usdPrice.USD_MXN)
     }
 
+    fun getSingleUserPortfolio(portfolioId: Long): PortfolioGetAllResponseDto {
+        val usdPrice = utilService.getUsdValue()
+        val user = securityService.currentUser()
+        val portfolioInfo = portfolioRepository.findByIdWithGeneralInformation(portfolioId)
+            ?: throw GeneralRequestException(
+                listOf("Portafolio no encontrado"),
+                HttpStatus.NOT_FOUND
+            )
+
+        if (portfolioInfo.user?.userId != user.userId) {
+            throw GeneralRequestException(
+                listOf("No tienes permisos para ver este portafolio"),
+                HttpStatus.FORBIDDEN
+            )
+        }
+
+        return PortfolioGetAllResponseDto(
+            message = listOf(portfolioInfo.toDto()),
+            usdPrice = usdPrice.USD_MXN
+        )
+    }
+
     @Transactional
     fun updatePortfolioData(portfolioId: Long) {
         val portfolio =
