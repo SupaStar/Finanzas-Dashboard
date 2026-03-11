@@ -72,4 +72,42 @@ class OperationService(
         operationRepository.delete(operation)
         portfolioService.updatePortfolioData(portfolio.portfolioId!!)
     }
+
+    @Transactional
+    fun editOperation(operationId: Long, requestDto: AddOperationRequestDto): OperationAddResponseDto {
+        val operation = operationRepository.findById(operationId).orElseThrow {
+            GeneralRequestException(listOf("Operation not found"), HttpStatus.NOT_FOUND)
+        }
+        
+        val totalNet = requestDto.price!! * requestDto.quantity!!
+        val total = totalNet + requestDto.tax!! + requestDto.fee!!
+        
+        try {
+            operation.apply {
+                this.operationType = requestDto.operationType
+                this.quantity = requestDto.quantity
+                this.price = requestDto.price
+                this.fee = requestDto.fee
+                this.tax = requestDto.tax
+                this.total = totalNet
+                val dateStr = requestDto.operationDate!!
+                this.operationDate = if (dateStr.contains("T")) {
+                    java.time.OffsetDateTime.parse(dateStr)
+                } else {
+                    java.time.LocalDate.parse(dateStr).atStartOfDay().atOffset(java.time.ZoneOffset.UTC)
+                }
+            }
+            
+            val updatedOperation = operationRepository.save(operation)
+            portfolioService.updatePortfolioData(operation.portfolio!!.portfolioId!!)
+            return OperationAddResponseDto(message = updatedOperation.toDto())
+            
+        } catch (e: Exception) {
+            System.err.println("Error al editar operation " + e.message)
+            throw GeneralRequestException(
+                errors = listOf("Ocurrio un error al intentar editar la operacion."),
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
+        }
+    }
 }

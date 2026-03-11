@@ -33,4 +33,12 @@ class DividendController(private val dividendService: DividendService) {
     fun delete(@PathVariable dividendId: Long) {
         dividendService.deleteDividend(dividendId)
     }
+
+    @org.springframework.web.bind.annotation.PutMapping("/edit/{dividendId}")
+    fun edit(
+        @PathVariable dividendId: Long,
+        @RequestBody @Valid request: AddDividendPortfolioRequestDto
+    ): AddDividendResponseDto {
+        return dividendService.editDividend(dividendId, request)
+    }
 }

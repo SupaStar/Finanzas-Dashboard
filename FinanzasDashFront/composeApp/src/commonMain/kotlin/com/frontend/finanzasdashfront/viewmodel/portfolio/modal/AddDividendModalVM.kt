@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.frontend.finanzasdashfront.api.services.DividendService
 import com.frontend.finanzasdashfront.dto.request.AddDividendPortfolioRequestDto
 import com.frontend.finanzasdashfront.model.portfolio.modal.AddDividendModalUiState
-import com.frontend.finanzasdashfront.model.portfolio.modal.EnumOperationTypeDropdown
+import com.frontend.finanzasdashfront.utils.toLabel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -24,6 +24,32 @@ class AddDividendModalVM(private val dividendService: DividendService) : ViewMod
     val reloadDividendsEvent: SharedFlow<Unit> = _reloadDividendsEvent.asSharedFlow()
 
 
+    fun initModal() {
+        _uiState.update {
+            it.copy(
+                isEditMode = false,
+                dividendId = null
+            )
+        }
+    }
+
+    fun initModalForEdit(dividend: com.frontend.finanzasdashfront.dto.dividend.DividendDto) {
+        _uiState.update {
+            it.copy(
+                isEditMode = true,
+                dividendId = dividend.dividendId,
+                dividendTypeSelectedText = dividend.dividendType.toLabel(),
+                dividendTypeValue = dividend.dividendType.name.lowercase(),
+                value = dividend.value.toString(),
+                currencyCodeSelected = dividend.currencyCode,
+                currencyCodeSelectedText = dividend.currencyCode, // Assuming it's the same
+                paidDateSelected = dividend.paidDate,
+                tax = dividend.tax.toString(),
+                exchangeRate = dividend.exchangeRate.toString(),
+            )
+        }
+    }
+    
     fun saveDividend(idPortfolio: Long) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -36,7 +62,13 @@ class AddDividendModalVM(private val dividendService: DividendService) : ViewMod
                     tax = uiState.value.tax.toDouble(),
                     exchangeRate = uiState.value.exchangeRate.toDouble()
                 )
-                val response = dividendService.addDividend(idPortfolio,request)
+                
+                val response = if (_uiState.value.isEditMode && _uiState.value.dividendId != null) {
+                    dividendService.editDividend(_uiState.value.dividendId!!, request)
+                } else {
+                    dividendService.addDividend(idPortfolio, request)
+                }
+
                 if (response.estado) {
                     resetState()
                     _reloadDividendsEvent.emit(Unit)

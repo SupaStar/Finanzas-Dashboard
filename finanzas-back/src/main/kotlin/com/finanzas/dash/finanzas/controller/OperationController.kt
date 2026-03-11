@@ -31,4 +31,12 @@ class OperationController(private val operationService: OperationService) {
     fun deleteOperation(@PathVariable operationId: Long) {
         operationService.deleteOperation(operationId)
     }
+
+    @org.springframework.web.bind.annotation.PutMapping("/edit/{operationId}")
+    fun editOperation(
+        @PathVariable operationId: Long,
+        @RequestBody @Valid requestDto: AddOperationRequestDto
+    ): OperationAddResponseDto {
+        return operationService.editOperation(operationId, requestDto)
+    }
 }

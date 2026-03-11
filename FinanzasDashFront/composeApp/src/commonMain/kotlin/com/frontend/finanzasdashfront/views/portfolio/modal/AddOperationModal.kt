@@ -59,7 +59,7 @@ fun AddOperationModal(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        "Nueva Operación",
+                        if (state.isEditMode) "Editar Operación" else "Nueva Operación",
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -165,7 +165,7 @@ fun AddOperationModal(
                         shape = RoundedCornerShape(12.dp),
                         // enabled = state.isFormValid // Descomenta cuando valides en el VM
                     ) {
-                        Text("Guardar Transacción", style = MaterialTheme.typography.titleMedium)
+                        Text(if (state.isEditMode) "Actualizar Transacción" else "Guardar Transacción", style = MaterialTheme.typography.titleMedium)
                     }
                 }
             }

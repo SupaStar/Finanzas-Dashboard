@@ -71,4 +71,40 @@ class DividendService(
         dividendRepository.delete(dividend)
         portfolioService.updatePortfolioData(portfolio.portfolioId!!)
     }
+
+    @Transactional
+    fun editDividend(dividendId: Long, request: AddDividendPortfolioRequestDto): AddDividendResponseDto {
+        val dividend = dividendRepository.findById(dividendId).orElseThrow {
+            GeneralRequestException(listOf("Dividend not found"), HttpStatus.NOT_FOUND)
+        }
+
+        try {
+            dividend.apply {
+                this.dividendType = request.dividendType
+                this.value = request.value
+                this.modifiedAt = OffsetDateTime.now()
+                val dateStr = request.paidDate!!
+                this.paidDate = if (dateStr.contains("T")) {
+                    java.time.OffsetDateTime.parse(dateStr)
+                } else {
+                    java.time.LocalDate.parse(dateStr).atStartOfDay().atOffset(java.time.ZoneOffset.UTC)
+                }
+                this.currencyCode = request.currencyCode
+                this.tax = request.tax!!
+                this.netValue = request.value!! * request.exchangeRate!! - request.tax
+                this.exchangeRate = request.exchangeRate!!
+            }
+
+            val updatedDividend = dividendRepository.save(dividend)
+            portfolioService.updatePortfolioData(dividend.portfolio!!.portfolioId!!)
+            return AddDividendResponseDto(message = updatedDividend.toDto())
+
+        } catch (ex: Exception) {
+            System.err.println("Error al editar dividendo " + ex.message)
+            throw GeneralRequestException(
+                errors = listOf("Ocurrio un error al intentar editar el dividendo."),
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
+        }
+    }
 }

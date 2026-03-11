@@ -9,15 +9,17 @@ import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-
 class OperationService(private val client: HttpClient) {
     private val operationsPortfolioUrl = "/operation/all"
     private val operationsPortfolioAddUrl = "/operation/add"
     private val operationDeleteUrl = "/operation/delete"
+    private val operationEditUrl = "/operation/edit"
+
     
     suspend fun getAllOperations(idPortfolio: Long): GetAllOperationsPortfolioResponseDto {
         val response = client.get("${Constants.BaseUrl}${operationsPortfolioUrl}/${idPortfolio}") {
@@ -51,6 +53,20 @@ class OperationService(private val client: HttpClient) {
         val response = client.delete("${Constants.BaseUrl}${operationDeleteUrl}/${operationId}")
         if (response.status != HttpStatusCode.OK && response.status != HttpStatusCode.NoContent) {
             throw Exception("Error al eliminar la operación: ${response.status}")
+        }
+    }
+
+    suspend fun editOperation(operationId: Long, request: AddOperationRequestDto): AddOperationResponseDto {
+        val response = client.put("${Constants.BaseUrl}${operationEditUrl}/${operationId}") {
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }
+        val responseDto = response.body<AddOperationResponseDto>()
+        if (response.status == HttpStatusCode.OK) {
+            return responseDto
+        } else {
+            val errorMsg = responseDto.errors?.joinToString("\n") ?: "Error desconocido"
+            throw Exception("Error desconocido: $errorMsg")
         }
     }
 }
