@@ -60,7 +60,7 @@ fun AddDividendModal(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        "Nueva Dividendo",
+                        if (state.isEditMode) "Editar Dividendo" else "Nuevo Dividendo",
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -176,7 +176,7 @@ fun AddDividendModal(
                         modifier = Modifier.fillMaxWidth().height(50.dp),
                         shape = RoundedCornerShape(12.dp),
                     ) {
-                        Text("Guardar dividendo", style = MaterialTheme.typography.titleMedium)
+                        Text(if (state.isEditMode) "Actualizar Dividendo" else "Guardar dividendo", style = MaterialTheme.typography.titleMedium)
                     }
                 }
             }

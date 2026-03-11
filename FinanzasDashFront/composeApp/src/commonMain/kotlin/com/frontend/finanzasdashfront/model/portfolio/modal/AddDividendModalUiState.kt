@@ -13,4 +13,6 @@ data class AddDividendModalUiState(
     val errorMessage: String = "",
     val isExpandedDividendTypeSelected: Boolean = false,
     val isExpandedCurrencyCodeSelected: Boolean = false,
+    val isEditMode: Boolean = false,
+    val dividendId: Long? = null
 )

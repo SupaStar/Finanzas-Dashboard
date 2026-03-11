@@ -21,16 +21,28 @@ jobs:
           oauth-secret: ${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}
           tags: tag:github-ci
 
-      - name: Deploy
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
-          ssh -o StrictHostKeyChecking=no \
-            servertanuko@${{ secrets.SERVER_IP }} << 'EOF'
-            set -e
-            cd /home/servertanuko/Proyectos/Finanzas-Dashboard
+      - name: Backup Database
+        run: |
+          ssh -o StrictHostKeyChecking=no servertanuko@${{ secrets.SERVER_IP }} << 'EOF'
+          set -e
+          cd /home/servertanuko/Proyectos/Finanzas-Dashboard
+          
+          echo "Iniciando backup de la base de datos..."
+          mkdir -p backups
+          docker exec finanzas-dash-postgres pg_dump -U finanzas_admin finanzas > backups/backup_$(date +%Y%m%d_%H%M%S).sql || echo "Advertencia: El backup falló (tal vez el contenedor no está corriendo)."
+          EOF
+
+      - name: Deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no servertanuko@${{ secrets.SERVER_IP }} << 'EOF'
+          set -e
+          cd /home/servertanuko/Proyectos/Finanzas-Dashboard
           git fetch origin
           git checkout release/testing
           git pull origin release/testing

@@ -12,4 +12,6 @@ data class AddOperationModalUiState(
     val isExpandedSelect: Boolean = false,
     val errorMessage: String = "",
     val isUsd: Boolean = false,
+    val isEditMode: Boolean = false,
+    val operationId: Long? = null
 )

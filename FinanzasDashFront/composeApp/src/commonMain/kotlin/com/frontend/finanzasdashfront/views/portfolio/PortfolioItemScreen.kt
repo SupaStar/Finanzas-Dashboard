@@ -72,7 +72,11 @@ fun PortfolioItemScreen(
                     showOperationModal = true
                     expanded = false 
                 },
-                onAddDividend = { showDividendModal = true; expanded = false }
+                onAddDividend = { 
+                    addDividendVm.initModal()
+                    showDividendModal = true
+                    expanded = false 
+                }
             )
         }
     ) { paddingValues ->
@@ -90,10 +94,18 @@ fun PortfolioItemScreen(
                     when (state.selectedTabIndex) {
                         0 -> OperationTab(
                             operations = state.operations,
+                            onEdit = {
+                                addOperationVM.initModalForEdit(it, state.stockCurrency == "USD")
+                                showOperationModal = true
+                            },
                             onDelete = { operationToDelete = it }
                         )
                         1 -> DividendTab(
                             dividends = state.dividends,
+                            onEdit = {
+                                addDividendVm.initModalForEdit(it)
+                                showDividendModal = true
+                            },
                             onDelete = { dividendToDelete = it }
                         )
                         2 -> InfoTab(uiState = state, viewModel::onYearSelectedChanged)
