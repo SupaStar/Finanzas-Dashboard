@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.frontend.finanzasdashfront.viewmodel.dashboard.DashboardViewModel
 import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
 import com.frontend.finanzasdashfront.views.dashboard.stock.SelectStockModal
+import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddFixedPortfolioModalVM
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalKoalaPlotApi::class)
@@ -22,9 +23,12 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 fun DashboardScreen(
     viewModel: DashboardViewModel,
     viewModelModal: SelectStockVM,
+    addFixedPortfolioModalVM: AddFixedPortfolioModalVM
 ) {
     val state by viewModel.uiState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
+    var showFixedDialog by remember { mutableStateOf(false) }
+    var fabExpanded by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -51,21 +55,18 @@ fun DashboardScreen(
             )
         },
         floatingActionButton = {
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                FloatingActionButton(
-                    onClick = { showDialog = true },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Menu",
-                    )
+            DashboardFabMenu(
+                expanded = fabExpanded,
+                onExpandClick = { fabExpanded = !fabExpanded },
+                onAddStock = { 
+                    fabExpanded = false
+                    showDialog = true 
+                },
+                onAddFixed = {
+                    fabExpanded = false
+                    showFixedDialog = true
                 }
-            }
+            )
         }
     ) { paddingValues ->
         when {
@@ -97,6 +98,13 @@ fun DashboardScreen(
                         onClose = { showDialog = false },
                         reloadData = { viewModel.loadData() },
                         viewModel = viewModelModal
+                    )
+                }
+                if (showFixedDialog) {
+                    AddFixedPortfolioModal(
+                        onClose = { showFixedDialog = false },
+                        reloadData = { viewModel.loadData() },
+                        viewModel = addFixedPortfolioModalVM
                     )
                 }
                 LazyColumn(

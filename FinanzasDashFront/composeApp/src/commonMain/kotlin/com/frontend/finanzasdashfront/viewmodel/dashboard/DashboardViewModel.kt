@@ -3,6 +3,7 @@ package com.frontend.finanzasdashfront.viewmodel.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.frontend.finanzasdashfront.api.services.PortfolioService
+import com.frontend.finanzasdashfront.api.services.FixedPortfolioService
 import com.frontend.finanzasdashfront.config.TokenManager
 import com.frontend.finanzasdashfront.dto.charts.DataPieChart
 import com.frontend.finanzasdashfront.dto.charts.DataPieChartDashboard
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 class DashboardViewModel(
     private val tokenManager: TokenManager,
     private val portfolioService: PortfolioService,
+    private val fixedPortfolioService: FixedPortfolioService,
     private val router: DashboardRouter
 ) :
     ViewModel() {
@@ -36,13 +38,24 @@ class DashboardViewModel(
                 val response = portfolioService.getPortfolio()
                 val items = response.message
                 val usdExchangeRate = response.usdPrice.toDouble()
+                
+                // Fetch fixed portfolios
+                val fixedPortfolios = try {
+                    fixedPortfolioService.getAllByUser()
+                } catch (e: Exception) {
+                    emptyList() // Fallback if it fails, or handle properly
+                }
 
-                val totalValue = items.sumOf { item ->
+                val totalValueStocks = items.sumOf { item ->
                     val stock = item.Stock
                     val subtotal = stock.closeDay.toDouble() * item.totalQuantity.toDouble()
 
                     if (stock.currency != "MXN") subtotal * usdExchangeRate else subtotal
                 }
+                
+                val totalValueFixed = fixedPortfolios.sumOf { it.amount }
+                val totalValue = totalValueStocks + totalValueFixed
+                
                 val groupedByCurrency = items.groupBy { it.Stock.currency }.mapValues { entry ->
                     entry.value.sumOf { it.totalQuantity.toDouble() * it.Stock.closeDay.toDouble() }
                 }
@@ -53,6 +66,7 @@ class DashboardViewModel(
                     it.copy(
                         isLoading = false,
                         items = items,
+                        fixedPortfolios = fixedPortfolios,
                         totalValue = totalValue,
                         errorMessage = null,
                         usdValue = response.usdPrice,
@@ -76,6 +90,11 @@ class DashboardViewModel(
     fun goToDetail(idPortfolio: Long) {
         println("Clicked $idPortfolio")
         router.goTo(DashboardScreens.PortfolioDetail(idPortfolio))
+    }
+
+    fun goToFixedDetail(idPortfolio: Long) {
+        println("Clicked fixed $idPortfolio")
+        router.goTo(DashboardScreens.FixedPortfolioDetail(idPortfolio))
     }
 
     fun logout() {

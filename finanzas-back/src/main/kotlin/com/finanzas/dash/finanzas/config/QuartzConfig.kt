@@ -1,6 +1,7 @@
 package com.finanzas.dash.finanzas.config
 
 import com.finanzas.dash.finanzas.config.job.ActualizarPrecios
+import com.finanzas.dash.finanzas.config.job.DailyFixedPortfolioInterestJob
 import com.finanzas.dash.finanzas.config.job.PortfolioGeneralInformationJob
 import org.quartz.CronScheduleBuilder
 import org.quartz.JobBuilder
@@ -44,6 +45,23 @@ class QuartzConfig {
             .forJob(portfolioInfoJobDetail)
             .withIdentity("triggerCalculoDiario", "portfolio")
             .withSchedule(CronScheduleBuilder.cronSchedule("0 0 2 * * ?")) // 2:00 AM every day
+            .build()
+    }
+
+    @Bean
+    fun dailyInterestJobDetail(): JobDetail {
+        return JobBuilder.newJob(DailyFixedPortfolioInterestJob::class.java)
+            .withIdentity("tareaCalculoInteresDiario", "portfolio")
+            .storeDurably()
+            .build()
+    }
+
+    @Bean
+    fun dailyInterestJobTrigger(dailyInterestJobDetail: JobDetail): Trigger {
+        return TriggerBuilder.newTrigger()
+            .forJob(dailyInterestJobDetail)
+            .withIdentity("triggerCalculoInteresDiario", "portfolio")
+            .withSchedule(CronScheduleBuilder.cronSchedule("0 30 0 * * ?")) // 12:30 AM every day
             .build()
     }
 }
