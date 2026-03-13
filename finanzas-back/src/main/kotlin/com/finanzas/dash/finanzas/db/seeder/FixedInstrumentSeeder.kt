@@ -28,7 +28,7 @@ class FixedInstrumentSeeder(private val fixedInstrumentRepository: FixedInstrume
             })
             fixedInstrumentRepository.save(FixedInstrument().apply {
                 this.name = "Revolut Parejas"
-                this.anualRate = BigDecimal.valueOf(15.00)
+                this.anualRate = BigDecimal.valueOf(7.00)
             })
             fixedInstrumentRepository.save(FixedInstrument().apply {
                 this.name = "OpenBank"
