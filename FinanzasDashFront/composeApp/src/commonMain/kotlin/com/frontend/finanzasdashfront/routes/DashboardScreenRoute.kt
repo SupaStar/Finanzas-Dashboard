@@ -2,6 +2,7 @@ package com.frontend.finanzasdashfront.routes
 
 import androidx.compose.runtime.Composable
 import com.frontend.finanzasdashfront.views.dashboard.DashboardScreen
+import com.frontend.finanzasdashfront.viewmodel.dashboard.ChangePasswordVM
 import com.frontend.finanzasdashfront.viewmodel.dashboard.DashboardViewModel
 import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddFixedPortfolioModalVM
@@ -10,11 +11,13 @@ import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddFixedPortfoli
 fun DashboardScreenRoute(
     viewModel: DashboardViewModel, 
     selectStockVM: SelectStockVM,
-    addFixedPortfolioModalVM: AddFixedPortfolioModalVM
+    addFixedPortfolioModalVM: AddFixedPortfolioModalVM,
+    changePasswordVM: ChangePasswordVM
 ) {
     DashboardScreen(
         viewModel = viewModel,
         viewModelModal = selectStockVM,
-        addFixedPortfolioModalVM = addFixedPortfolioModalVM
+        addFixedPortfolioModalVM = addFixedPortfolioModalVM,
+        changePasswordVM = changePasswordVM
     )
 }
