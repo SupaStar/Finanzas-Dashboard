@@ -3,8 +3,10 @@ package com.finanzas.dash.finanzas.service
 import com.finanzas.dash.finanzas.config.Encrypter
 import com.finanzas.dash.finanzas.config.exception.GeneralRequestException
 import com.finanzas.dash.finanzas.config.security.JwtUtil
+import com.finanzas.dash.finanzas.dto.request.auth.ChangePasswordRequestDto
 import com.finanzas.dash.finanzas.dto.request.auth.LoginRequestDto
 import com.finanzas.dash.finanzas.dto.request.auth.RegisterRequestDto
+import com.finanzas.dash.finanzas.dto.response.ChangePasswordResponseDto
 import com.finanzas.dash.finanzas.dto.response.JwtResponseDto
 import com.finanzas.dash.finanzas.dto.response.AuthResponseDto
 import com.finanzas.dash.finanzas.entity.AuthDevice
@@ -27,7 +29,8 @@ class AuthService(
     private val userAuthRepository: UserAuthRepository,
     private val authDeviceRepository: AuthDeviceRepository,
     private val encrypter: Encrypter,
-    private val jwtUtil: JwtUtil
+    private val jwtUtil: JwtUtil,
+    private val securityService: SecurityService
 ) {
     @Transactional
     fun register(request: RegisterRequestDto): AuthResponseDto {
@@ -60,6 +63,26 @@ class AuthService(
             })
         val jwt = jwtUtil.generateToken(user.userId!!)
         return AuthResponseDto(true, JwtResponseDto(jwt, authDevice))
+    }
+
+    @Transactional
+    fun changePassword(request: ChangePasswordRequestDto): ChangePasswordResponseDto {
+        if (request.newPassword != request.newPasswordConfirmation) {
+            throw GeneralRequestException(listOf("Las nuevas contraseñas no coinciden"), HttpStatus.BAD_REQUEST)
+        }
+        val user = securityService.currentUser()
+        val userAuth = userAuthRepository.findByUserUserId(user.userId!!)
+            ?: throw GeneralRequestException(listOf("Usuario no encontrado"), HttpStatus.NOT_FOUND)
+
+        if (!encrypter.matches(request.currentPassword, userAuth.passwordHash!!)) {
+            throw GeneralRequestException(listOf("La contraseña actual es incorrecta"), HttpStatus.UNAUTHORIZED)
+        }
+
+        userAuth.passwordHash = encrypter.encrypt(request.newPassword)
+        userAuth.passwordUpdatedAt = OffsetDateTime.now()
+        userAuthRepository.save(userAuth)
+
+        return ChangePasswordResponseDto(true, "Contraseña actualizada correctamente")
     }
 
     fun login(requestDto: LoginRequestDto): AuthResponseDto {

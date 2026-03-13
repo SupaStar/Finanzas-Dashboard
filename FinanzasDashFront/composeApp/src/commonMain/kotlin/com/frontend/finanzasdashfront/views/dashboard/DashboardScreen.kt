@@ -6,15 +6,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.frontend.finanzasdashfront.viewmodel.dashboard.ChangePasswordVM
 import com.frontend.finanzasdashfront.viewmodel.dashboard.DashboardViewModel
 import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
 import com.frontend.finanzasdashfront.views.dashboard.stock.SelectStockModal
+import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddFixedPortfolioModalVM
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalKoalaPlotApi::class)
@@ -22,14 +25,26 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 fun DashboardScreen(
     viewModel: DashboardViewModel,
     viewModelModal: SelectStockVM,
+    addFixedPortfolioModalVM: AddFixedPortfolioModalVM,
+    changePasswordVM: ChangePasswordVM
 ) {
     val state by viewModel.uiState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
+    var showFixedDialog by remember { mutableStateOf(false) }
+    var showChangePasswordModal by remember { mutableStateOf(false) }
+    var fabExpanded by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("Mi Portafolio", style = MaterialTheme.typography.headlineSmall) },
                 actions = {
+                    IconButton(onClick = { showChangePasswordModal = true }) {
+                        Icon(
+                            Icons.Default.Lock,
+                            contentDescription = "Cambiar contraseña",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                     IconButton(onClick = { viewModel.logout() }) {
                         Icon(
                             Icons.Default.ExitToApp,
@@ -51,21 +66,18 @@ fun DashboardScreen(
             )
         },
         floatingActionButton = {
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                FloatingActionButton(
-                    onClick = { showDialog = true },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Menu",
-                    )
+            DashboardFabMenu(
+                expanded = fabExpanded,
+                onExpandClick = { fabExpanded = !fabExpanded },
+                onAddStock = { 
+                    fabExpanded = false
+                    showDialog = true 
+                },
+                onAddFixed = {
+                    fabExpanded = false
+                    showFixedDialog = true
                 }
-            }
+            )
         }
     ) { paddingValues ->
         when {
@@ -92,11 +104,24 @@ fun DashboardScreen(
             }
 
             else -> {
+                if (showChangePasswordModal) {
+                    ChangePasswordModal(
+                        viewModel = changePasswordVM,
+                        onClose = { showChangePasswordModal = false }
+                    )
+                }
                 if (showDialog) {
                     SelectStockModal(
                         onClose = { showDialog = false },
                         reloadData = { viewModel.loadData() },
                         viewModel = viewModelModal
+                    )
+                }
+                if (showFixedDialog) {
+                    AddFixedPortfolioModal(
+                        onClose = { showFixedDialog = false },
+                        reloadData = { viewModel.loadData() },
+                        viewModel = addFixedPortfolioModalVM
                     )
                 }
                 LazyColumn(
@@ -106,7 +131,7 @@ fun DashboardScreen(
                 ) {
                     item {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            TotalValueCard(state.totalValue)
+                            TotalValueCard(state.totalValue, state.totalValueFixed)
                             if (state.chartData.data.isNotEmpty()) {
                                 Card(
                                     modifier = Modifier

@@ -77,4 +77,22 @@ fun LazyListScope.StockListTab(state: DashboardUiState, viewModel: DashboardView
             }
         }
     }
+
+    if (state.fixedPortfolios.isNotEmpty()) {
+        item {
+            Text(
+                text = "Renta Fija / Instrumentos",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
+            )
+        }
+        items(state.fixedPortfolios) { fixedPortfolio ->
+            Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)) {
+                FixedPortfolioRow(
+                    item = fixedPortfolio,
+                    onClick = { viewModel.goToFixedDetail(fixedPortfolio.id) }
+                )
+            }
+        }
+    }
 }
