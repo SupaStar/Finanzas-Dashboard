@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.frontend.finanzasdashfront.utils.formatCurrency
 import com.frontend.finanzasdashfront.viewmodel.portfolio.FibraDividendCalculatorVM
 
 @Composable
@@ -111,7 +112,7 @@ fun FibraDividendCalculatorModal(
                             )
                             Column(modifier = Modifier.weight(1.5f)) {
                                 Text(
-                                    "- ${"%.2f".format(state.impuestos)}",
+                                    "- ${state.impuestos.formatCurrency()}",
                                     style = MaterialTheme.typography.bodyLarge,
                                     color = MaterialTheme.colorScheme.error,
                                     fontWeight = FontWeight.Medium
@@ -185,7 +186,7 @@ fun FibraDividendCalculatorModal(
                             )
                             Spacer(Modifier.height(4.dp))
                             Text(
-                                "${"%.2f".format(state.netoPago)}",
+                                "${state.netoPago.formatCurrency()}",
                                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold),
                                 color = MaterialTheme.colorScheme.primary,
                                 textAlign = TextAlign.Center
@@ -270,7 +271,7 @@ private fun ResultRow(
             fontWeight = if (bold) FontWeight.SemiBold else FontWeight.Normal
         )
         Text(
-            "${"%.2f".format(amount)}",
+            amount.formatCurrency(),
             style = MaterialTheme.typography.bodyMedium,
             color = color,
             fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal
@@ -287,7 +288,7 @@ private fun SummaryChip(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
         Text(
-            "${"%.2f".format(amount)}",
+            amount.formatCurrency(),
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
             color = color
         )
