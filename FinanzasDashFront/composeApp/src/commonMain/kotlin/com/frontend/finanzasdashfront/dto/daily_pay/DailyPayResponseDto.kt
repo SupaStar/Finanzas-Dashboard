@@ -7,5 +7,6 @@ data class DailyPayResponseDto(
     val id: Long,
     val fixedPortfolioId: Long,
     val amount: Double,
-    val anualRateCalculated: Double
+    val anualRateCalculated: Double,
+    val payDate: String = ""
 )

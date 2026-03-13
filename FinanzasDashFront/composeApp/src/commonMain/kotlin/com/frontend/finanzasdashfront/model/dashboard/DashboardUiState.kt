@@ -11,6 +11,7 @@ data class DashboardUiState (
     val fixedPortfolios: List<FixedPortfolioResponseDto> = emptyList(),
     val errorMessage: String? = null,
     val totalValue: Double = 0.0,
+    val totalValueFixed: Double = 0.0,
     val usdValue: Float = 1.0f,
     val chartData: DataPieChartDashboard = DataPieChartDashboard(),
     val filterStock: String = "",

@@ -54,20 +54,25 @@ class DashboardViewModel(
                 }
                 
                 val totalValueFixed = fixedPortfolios.sumOf { it.amount }
-                val totalValue = totalValueStocks + totalValueFixed
                 
                 val groupedByCurrency = items.groupBy { it.Stock.currency }.mapValues { entry ->
                     entry.value.sumOf { it.totalQuantity.toDouble() * it.Stock.closeDay.toDouble() }
                 }
-                val pieChart = groupedByCurrency.map { (currency, total) ->
+                val pieChartItems = groupedByCurrency.map { (currency, total) ->
                     DataPieChart(total.toFloat(), currency)
+                }.toMutableList()
+                // Add fixed portfolio as its own slice if non-zero
+                if (totalValueFixed > 0.0) {
+                    pieChartItems.add(DataPieChart(totalValueFixed.toFloat(), "Fija"))
                 }
+                val pieChart = pieChartItems.toList()
                 _uiState.update {
                     it.copy(
                         isLoading = false,
                         items = items,
                         fixedPortfolios = fixedPortfolios,
-                        totalValue = totalValue,
+                        totalValue = totalValueStocks,
+                        totalValueFixed = totalValueFixed,
                         errorMessage = null,
                         usdValue = response.usdPrice,
                         chartData = DataPieChartDashboard(

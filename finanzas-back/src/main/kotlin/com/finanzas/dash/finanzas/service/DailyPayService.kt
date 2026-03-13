@@ -23,12 +23,15 @@ class DailyPayService(
             throw GeneralRequestException(listOf("No tienes permisos para ver este portafolio"), HttpStatus.FORBIDDEN)
         }
 
-        return dailyPayRepository.findAllByFixedPortfolio(portfolio).map {
+        return dailyPayRepository.findAllByFixedPortfolio(portfolio)
+            .sortedByDescending { it.payDate }
+            .map {
             DailyPayResponseDto(
                 id = it.id!!,
                 fixedPortfolioId = portfolio.id!!,
                 amount = it.amount!!,
-                anualRateCalculated = it.anualRateCalculated!!
+                anualRateCalculated = it.anualRateCalculated!!,
+                payDate = it.payDate
             )
         }
     }

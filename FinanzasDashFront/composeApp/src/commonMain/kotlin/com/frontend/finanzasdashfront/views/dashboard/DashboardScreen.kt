@@ -131,7 +131,7 @@ fun DashboardScreen(
                 ) {
                     item {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            TotalValueCard(state.totalValue)
+                            TotalValueCard(state.totalValue, state.totalValueFixed)
                             if (state.chartData.data.isNotEmpty()) {
                                 Card(
                                     modifier = Modifier
