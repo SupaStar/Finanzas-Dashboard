@@ -1,8 +1,10 @@
 package com.frontend.finanzasdashfront.views.dashboard
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -10,40 +12,74 @@ import com.frontend.finanzasdashfront.utils.formatCurrency
 
 @Composable
 fun TotalValueCard(totalValue: Double, totalValueFixed: Double = 0.0) {
+    val netPortfolio = totalValue + totalValueFixed
+
     Card(
-        modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(vertical = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
         )
     ) {
-        Column(Modifier.padding(12.dp)) {
+        Column(
+            modifier = Modifier.padding(20.dp)
+        ) {
+            // Sección 1: Patrimonio Neto (Protagonista)
             Text(
-                "Acciones / ETFs",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                text = "Patrimonio Neto",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
             )
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "$${totalValue.toFloat().formatCurrency()}",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Black,
-                color = MaterialTheme.colorScheme.onPrimary
+                text = "$${netPortfolio.toFloat().formatCurrency()}",
+                style = MaterialTheme.typography.headlineLarge, // Más grande para destacar
+                fontWeight = FontWeight.Black
             )
-            if (totalValueFixed > 0.0) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
-                )
-                Text(
-                    "Renta Fija",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                )
-                Text(
-                    text = "$${totalValueFixed.toFloat().formatCurrency()}",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Sección 2: Desglose en Columnas
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                // Renta Variable (Izquierda)
+                Column {
+                    Text(
+                        text = "Acciones / ETFs",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "$${totalValue.toFloat().formatCurrency()}",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                // Renta Fija (Derecha - Condicional)
+                if (totalValueFixed > 0.0) {
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(
+                            text = "Renta Fija",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "$${totalValueFixed.toFloat().formatCurrency()}",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
         }
     }
