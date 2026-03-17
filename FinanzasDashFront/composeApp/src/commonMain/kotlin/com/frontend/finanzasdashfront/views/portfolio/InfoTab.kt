@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.frontend.finanzasdashfront.model.portfolio.PortfolioDetailUiState
-import com.frontend.finanzasdashfront.ui.component.DividendBarChart
+import com.frontend.finanzasdashfront.ui.component.GeneralInfoBarChart
 import com.frontend.finanzasdashfront.ui.component.GenericExposedDropdown
 import com.frontend.finanzasdashfront.utils.formatCurrency
 import com.frontend.finanzasdashfront.utils.year
@@ -42,11 +42,14 @@ fun InfoTab(
             fontWeight = FontWeight.Bold
         )
         if (uiState.dividends.isNotEmpty()) {
+            val dropdownOptions = listOf("Todos") + uiState.yearsDividends
             GenericExposedDropdown(
                 label = "Año a filtrar",
-                options = uiState.yearsDividends,
-                selectedOption = uiState.yearDividendsSelected,
-                onOptionSelected = { year -> onYearSelected(year) },
+                options = dropdownOptions,
+                selectedOption = uiState.yearDividendsSelected.ifEmpty { "Todos" },
+                onOptionSelected = { year -> 
+                    onYearSelected(if (year == "Todos") "" else year) 
+                },
                 leadingIcon = Icons.Default.DateRange
             )
         }
@@ -94,8 +97,14 @@ fun InfoTab(
             }
         }
 
-        if (uiState.dividends.isNotEmpty()) {
-            DividendBarChart(uiState.dividends)
+        if (uiState.dividends.isNotEmpty() && uiState.generalInformation.isNotEmpty()) {
+            val chartData = if (uiState.yearDividendsSelected.isNotEmpty()) {
+                val yearInt = uiState.yearDividendsSelected.toIntOrNull() ?: 0
+                uiState.generalInformation.filter { it.year == yearInt }
+            } else {
+                uiState.generalInformation
+            }
+            GeneralInfoBarChart(chartData)
         }
     }
 }

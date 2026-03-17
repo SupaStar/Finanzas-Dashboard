@@ -7,6 +7,9 @@ import com.frontend.finanzasdashfront.api.services.DividendService
 import com.frontend.finanzasdashfront.api.services.OperationService
 import com.frontend.finanzasdashfront.api.services.PortfolioService
 import com.frontend.finanzasdashfront.api.services.StockService
+import com.frontend.finanzasdashfront.api.services.FixedInstrumentService
+import com.frontend.finanzasdashfront.api.services.FixedPortfolioService
+import com.frontend.finanzasdashfront.api.services.DailyPayService
 import com.frontend.finanzasdashfront.config.SecurityManager
 import com.frontend.finanzasdashfront.config.TokenManager
 import com.frontend.finanzasdashfront.routes.routers.AuthRouter
@@ -18,6 +21,9 @@ import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.PortfolioViewModel
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddDividendModalVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddOperationModalVM
+import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddFixedPortfolioModalVM
+import com.frontend.finanzasdashfront.viewmodel.portfolio.PortfolioFixedItemVM
+import com.frontend.finanzasdashfront.viewmodel.dashboard.ChangePasswordVM
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpResponseValidator
@@ -86,15 +92,21 @@ object AppModule {
     val dividendService = DividendService(httpClient)
     val stockService = StockService(httpClient)
     val brokerService = BrokerService(httpClient)
+    val fixedInstrumentService = FixedInstrumentService(httpClient)
+    val fixedPortfolioService = FixedPortfolioService(httpClient)
+    val dailyPayService = DailyPayService(httpClient)
     val dashboardRouter = DashboardRouter()
     val authRouter = AuthRouter()
     // 3. Proveemos el ViewModel
     fun provideLoginViewModel() = LoginViewModel(authService, tokenManager, authRouter)
     fun provideRegisterViewModel() = RegisterViewModel(authService, tokenManager, authRouter)
-    fun provideDashboardViewModel() = DashboardViewModel(tokenManager, portfolioService, dashboardRouter)
+    fun provideDashboardViewModel() = DashboardViewModel(tokenManager, portfolioService, fixedPortfolioService, dashboardRouter)
 
     fun provideSelectStockVM() = SelectStockVM(stockService, brokerService, portfolioService)
-    fun providePortfolioViewModel(idPortfolio:Long) = PortfolioViewModel(idPortfolio, operationService, dividendService)
+    fun providePortfolioViewModel(idPortfolio:Long) = PortfolioViewModel(idPortfolio, operationService, dividendService, portfolioService)
     fun provideAddOperationVM() = AddOperationModalVM(operationService)
     fun provideAddDividendVM() = AddDividendModalVM(dividendService)
+    fun provideAddFixedPortfolioModalVM() = AddFixedPortfolioModalVM(fixedInstrumentService, fixedPortfolioService)
+    fun providePortfolioFixedItemVM(idPortfolio: Long) = PortfolioFixedItemVM(idPortfolio, dailyPayService, fixedPortfolioService)
+    fun provideChangePasswordVM() = ChangePasswordVM(authService)
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -26,5 +27,10 @@ class PortfolioController(private val portfolioService: PortfolioService) {
     @GetMapping("/get")
     fun getPortfolio(): PortfolioGetAllResponseDto {
         return portfolioService.getUserPortfolio()
+    }
+
+    @GetMapping("/get/{id}")
+    fun getSinglePortfolio(@PathVariable id: Long): PortfolioGetAllResponseDto {
+        return portfolioService.getSingleUserPortfolio(id)
     }
 }

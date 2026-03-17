@@ -6,6 +6,7 @@ import com.frontend.finanzasdashfront.AppModule.operationService
 import com.frontend.finanzasdashfront.api.services.OperationService
 import com.frontend.finanzasdashfront.model.portfolio.modal.AddOperationModalUiState
 import com.frontend.finanzasdashfront.dto.request.AddOperationRequestDto
+import com.frontend.finanzasdashfront.utils.toLabel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -22,6 +23,35 @@ class AddOperationModalVM(private val operationService: OperationService) : View
     val uiState: StateFlow<AddOperationModalUiState> = _uiState.asStateFlow()
     val reloadOperationsEvent: SharedFlow<Unit> = _reloadOperationsEvent.asSharedFlow()
     val closeEvent: SharedFlow<Unit> = _closeModalsEvent.asSharedFlow()
+
+    fun initModal(isUsd: Boolean) {
+        _uiState.update { 
+            it.copy(
+                isUsd = isUsd,
+                fee = if (isUsd) "0" else "",
+                tax = if (isUsd) "0" else "",
+                isEditMode = false,
+                operationId = null
+            ) 
+        }
+    }
+
+    fun initModalForEdit(operation: com.frontend.finanzasdashfront.dto.operation.OperationDto, isUsd: Boolean) {
+        _uiState.update {
+            it.copy(
+                isUsd = isUsd,
+                operationTypeSelectedText = operation.operationType.toLabel(),
+                operationTypeValue = operation.operationType.name.lowercase(),
+                quantity = operation.quantity.toString(),
+                price = operation.price.toString(),
+                fee = operation.fee.toString(),
+                tax = operation.tax.toString(),
+                operationDate = operation.operationDate,
+                isEditMode = true,
+                operationId = operation.operationId
+            )
+        }
+    }
 
     fun onExpandedSelectOperationType(newValue: Boolean) {
         _uiState.update { it.copy(isExpandedSelect = newValue) }
@@ -71,7 +101,13 @@ class AddOperationModalVM(private val operationService: OperationService) : View
                     portfolioId = idPortfolio,
                     operationDate = _uiState.value.operationDate,
                 )
-                val response = operationService.addOperation(request)
+                
+                val response = if (_uiState.value.isEditMode && _uiState.value.operationId != null) {
+                    operationService.editOperation(_uiState.value.operationId!!, request)
+                } else {
+                    operationService.addOperation(request)
+                }
+
                 if (response.estado) {
                     resetState()
                     _reloadOperationsEvent.emit(Unit)

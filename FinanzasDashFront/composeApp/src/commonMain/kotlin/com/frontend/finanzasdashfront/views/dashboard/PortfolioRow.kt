@@ -26,16 +26,41 @@ import com.frontend.finanzasdashfront.ui.theme.Surface
 import com.frontend.finanzasdashfront.utils.formatCurrency
 
 @Composable
-fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float) {
-    var valorCompra = 0f
-    var valorActual = 0f
+fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float, showUsdAsMxn: Boolean) {
+    // Si la acción es extranjera o se compro originalmente en dólares:
+    // avgPrice refleja el costo histórico en MXN en el backend (ver PortfolioService), o en la misma moneda. 
+    // Para no errar con el promedio y el USD actual, siempre calcularemos basado en la preferencia de vista.
+
+    val valorCompraFinal: Float
+    val valorActualFinal: Float
+
     if (item.Stock.currency == "MXN") {
-        valorActual = (item.totalQuantity * item.Stock.closeDay)
-        valorCompra = (item.avgPrice * item.totalQuantity)
+        valorCompraFinal = item.avgPrice * item.totalQuantity
+        valorActualFinal = item.Stock.closeDay * item.totalQuantity
     } else {
-        valorActual = (item.totalQuantity * item.Stock.closeDay)
+        // Es USD. Si NO showUsdAsMxn, se asume ver los valores crudos en USD.
+        // Ojo: Si item.avgPrice viene en MXN desde backend (como usualmente sucede por tipo de cambio de la operacion),
+        // habría que dividir por usdValue para mostrarlo en dólares puros.
+        // Asumiendo que item.avgPrice e item.Stock.closeDay vienen en la moneda nativa de la Acción (USD en este caso):
+        
+        if (showUsdAsMxn) {
+            valorCompraFinal = (item.avgPrice * item.totalQuantity) * usdValue
+            valorActualFinal = (item.Stock.closeDay * item.totalQuantity) * usdValue
+        } else {
+            valorCompraFinal = item.avgPrice * item.totalQuantity
+            valorActualFinal = item.Stock.closeDay * item.totalQuantity
+        }
     }
-    val plusMinus = (valorActual - valorCompra) / valorCompra * 100
+
+    val plusMinus = if (valorCompraFinal > 0f) {
+        (valorActualFinal - valorCompraFinal) / valorCompraFinal * 100
+    } else {
+        Float.NaN
+    }
+    
+    // Obtener símbolo a mostrar
+    val monedaSimbolo = if (item.Stock.currency == "MXN" || showUsdAsMxn) "MXN" else item.Stock.currency
+
     OutlinedCard(
         onClick = { onClick(item.portfolioId) },
         modifier = Modifier.fillMaxWidth(),
@@ -52,19 +77,18 @@ fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float) {
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                if (item.Stock.currency == "MXN") {
-                    Text(
-                        "Precio actual: ${item.Stock.closeDay.formatCurrency()}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                
+                val pActualLabel = if (item.Stock.currency == "MXN" || !showUsdAsMxn) {
+                    item.Stock.closeDay.formatCurrency()
                 } else {
-                    Text(
-                        "Precio actual: ${(item.Stock.closeDay * usdValue).formatCurrency()}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                    (item.Stock.closeDay * usdValue).formatCurrency()
                 }
+
+                Text(
+                    "Precio actual ($monedaSimbolo): $pActualLabel",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
 
                 Surface(
                     color = MaterialTheme.colorScheme.secondaryContainer,
@@ -83,17 +107,17 @@ fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float) {
             Row(Modifier.fillMaxWidth()) {
                 if (item.Stock.currency == "MXN") {
                     InfoColumn(
-                        "Invertido",
+                        "Invertido ($monedaSimbolo)",
                         "$${
-                            valorCompra
+                            valorCompraFinal
                                 .formatCurrency()
                         }",
                         Modifier.weight(1f)
                     )
                     InfoColumn(
-                        "Valor Actual",
+                        "Valor Actual ($monedaSimbolo)",
                         "$${
-                            valorActual
+                            valorActualFinal
                                 .formatCurrency()
                         }",
                         Modifier.weight(1f),
@@ -111,9 +135,9 @@ fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float) {
                     }
                 } else {
                     InfoColumn(
-                        "Valor Actual",
+                        "Valor Actual ($monedaSimbolo)",
                         "$${
-                            (valorActual * usdValue)
+                            valorActualFinal
                                 .formatCurrency()
                         }",
                         Modifier.weight(1f),

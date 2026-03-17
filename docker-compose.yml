@@ -46,25 +46,29 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-  
+
   py-stock:
     build:
       context: ./py-stock
       dockerfile: Dockerfile
     container_name: finanzas-dash-pystock
     restart: always
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     expose:
       - "8001"
     depends_on:
       - redis
     networks:
       - finanzas-network
-  
+
   redis:
     image: redis:7
     # ports:
     #   - "6379:6379"
     container_name: finanzas-dash-redis
+    restart: always
     networks:
       - finanzas-network
 
@@ -83,6 +87,7 @@ services:
 
 volumes:
   bd_finanzas:
+
 
 networks:
   finanzas-network:

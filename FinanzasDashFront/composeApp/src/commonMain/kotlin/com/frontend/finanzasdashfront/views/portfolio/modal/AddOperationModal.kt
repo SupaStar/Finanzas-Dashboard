@@ -59,7 +59,7 @@ fun AddOperationModal(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        "Nueva Operación",
+                        if (state.isEditMode) "Editar Operación" else "Nueva Operación",
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -138,13 +138,15 @@ fun AddOperationModal(
                             label = "Comisión",
                             value = state.fee,
                             onValueChange = viewModel::onFeeChange,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            enabled = !state.isUsd
                         )
                         OperationField(
                             label = "Impuestos",
                             value = state.tax,
                             onValueChange = viewModel::onTaxChange,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            enabled = !state.isUsd
                         )
                     }
 
@@ -163,7 +165,7 @@ fun AddOperationModal(
                         shape = RoundedCornerShape(12.dp),
                         // enabled = state.isFormValid // Descomenta cuando valides en el VM
                     ) {
-                        Text("Guardar Transacción", style = MaterialTheme.typography.titleMedium)
+                        Text(if (state.isEditMode) "Actualizar Transacción" else "Guardar Transacción", style = MaterialTheme.typography.titleMedium)
                     }
                 }
             }
@@ -179,7 +181,8 @@ fun OperationField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     OutlinedTextField(
         value = value,
@@ -188,6 +191,7 @@ fun OperationField(
         modifier = modifier,
         singleLine = true,
         shape = RoundedCornerShape(12.dp),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+        enabled = enabled
     )
 }

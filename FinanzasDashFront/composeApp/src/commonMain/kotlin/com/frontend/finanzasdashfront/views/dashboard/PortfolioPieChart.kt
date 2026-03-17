@@ -59,10 +59,9 @@ fun PortfolioPieChart(
                         Spacer(modifier = Modifier.width(8.dp))
                         Column {
                             Text(item.label, style = MaterialTheme.typography.labelSmall)
-                            val displayValue = if (item.label == "USD") {
-                                (item.value.toDouble() * uiState.usdValue).toFloat()
-                            } else {
-                                item.value
+                            val displayValue = when (item.label) {
+                                "USD" -> (item.value.toDouble() * uiState.usdValue).toFloat()
+                                else -> item.value  // MXN and Fija are already in MXN
                             }
                             Text(
                                 displayValue.formatCurrency(),

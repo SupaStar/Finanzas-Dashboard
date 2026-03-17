@@ -10,7 +10,8 @@ import com.finanzas.dash.finanzas.entity.Dividend
 import com.finanzas.dash.finanzas.entity.Operation
 import com.finanzas.dash.finanzas.entity.Portfolio
 import com.finanzas.dash.finanzas.entity.Stock
-
+import com.finanzas.dash.finanzas.dto.response.portfolio.PortfolioGeneralInformationDto
+import com.finanzas.dash.finanzas.entity.PortfolioGeneralInformation
 fun Stock.toDto() = StockDto(
     stockId = this.stockId!!,
     symbol = this.symbol!!,
@@ -21,19 +22,28 @@ fun Stock.toDto() = StockDto(
     name = this.name!!,
 )
 
+fun PortfolioGeneralInformation.toDto() = PortfolioGeneralInformationDto(
+    portfolioGeneralInformationId = this.portfolioGeneralInformationId!!,
+    year = this.year!!,
+    month = this.month!!,
+    dividendsTotal = this.dividendsTotal!!,
+)
+
 fun Portfolio.toDto() = PortfolioDto(
     portfolioId = this.portfolioId!!,
     Stock = this.stock!!.toDto(),
     avgPrice = this.avgPrice!!,
     totalQuantity = this.totalQuantity!!,
-    dividends = this.dividends.map { it.toDto() },
+    nOperations = this.nOperations ?: 0,
+    generalInformation = this.generalInformation.map { it.toDto() },
 )
 
 fun Portfolio.toDtoLight() = PortfolioDto(
     portfolioId = this.portfolioId!!,
     Stock = this.stock!!.toDto(),
     avgPrice = this.avgPrice!!,
-    totalQuantity = this.totalQuantity!!
+    totalQuantity = this.totalQuantity!!,
+    nOperations = this.nOperations ?: 0
 )
 
 fun Broker.toDto() = BrokerDto(

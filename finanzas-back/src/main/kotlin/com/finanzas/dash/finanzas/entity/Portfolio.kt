@@ -25,9 +25,15 @@ class Portfolio {
     @Column(nullable = false, precision = 15, scale = 6)
     var totalQuantity: BigDecimal? = null
 
+    @Column
+    var nOperations: Int? = 0
+
     @OneToMany(mappedBy = "portfolio", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var dividends: MutableList<Dividend> = mutableListOf()
 
     @OneToMany(mappedBy = "portfolio", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var operations: MutableList<Operation> = mutableListOf()
+
+    @OneToMany(mappedBy = "portfolio", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var generalInformation: MutableList<PortfolioGeneralInformation> = mutableListOf()
 }

@@ -7,6 +7,8 @@ import com.frontend.finanzasdashfront.routes.DashboardScreenRoute
 import com.frontend.finanzasdashfront.routes.routers.DashboardRouter
 import com.frontend.finanzasdashfront.routes.routers.DashboardScreens
 import com.frontend.finanzasdashfront.views.portfolio.PortfolioItemScreen
+import com.frontend.finanzasdashfront.views.portfolio.PortfolioFixedItemScreen
+import com.frontend.finanzasdashfront.viewmodel.portfolio.FibraDividendCalculatorVM
 
 @Composable
 fun DashboardNavigationFlow() {
@@ -16,18 +18,30 @@ fun DashboardNavigationFlow() {
         is DashboardScreens.Dashboard -> {
             val viewModel = remember { AppModule.provideDashboardViewModel() }
             val viewModelSelectStock = remember { AppModule.provideSelectStockVM() }
-            DashboardScreenRoute(viewModel, viewModelSelectStock)
+            val addFixedPortfolioModalVM = remember { AppModule.provideAddFixedPortfolioModalVM() }
+            val changePasswordVM = remember { AppModule.provideChangePasswordVM() }
+            DashboardScreenRoute(viewModel, viewModelSelectStock, addFixedPortfolioModalVM, changePasswordVM)
         }
 
         is DashboardScreens.PortfolioDetail -> {
             val viewModel = remember { AppModule.providePortfolioViewModel(screen.idPortfolio) }
             val addOperationModalVM = remember { AppModule.provideAddOperationVM() }
             val addDividendModalVM = remember { AppModule.provideAddDividendVM() }
+            val fibraCalculatorVM = remember { FibraDividendCalculatorVM() }
             PortfolioItemScreen(
                 onBack = { router.goTo(DashboardScreens.Dashboard) },
                 viewModel,
                 addOperationVM = addOperationModalVM,
-                addDividendVm = addDividendModalVM
+                addDividendVm = addDividendModalVM,
+                fibraCalculatorVM = fibraCalculatorVM
+            )
+        }
+
+        is DashboardScreens.FixedPortfolioDetail -> {
+            val viewModel = remember { AppModule.providePortfolioFixedItemVM(screen.idPortfolio) }
+            PortfolioFixedItemScreen(
+                onBack = { router.goTo(DashboardScreens.Dashboard) },
+                viewModel = viewModel
             )
         }
     }
