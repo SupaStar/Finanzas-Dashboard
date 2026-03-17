@@ -53,6 +53,9 @@ services:
       dockerfile: Dockerfile
     container_name: finanzas-dash-pystock
     restart: always
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     expose:
       - "8001"
     depends_on:
