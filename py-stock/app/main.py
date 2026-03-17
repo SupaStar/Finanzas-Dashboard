@@ -12,7 +12,7 @@ redis_client = redis.Redis(
     decode_responses=True
 )
 
-CACHE_TTL = 300  # 5 minutos
+CACHE_TTL = 1200  # 20 minutos
 
 @app.get("/stock/{ticker}")
 def get_stock_info(ticker: str):

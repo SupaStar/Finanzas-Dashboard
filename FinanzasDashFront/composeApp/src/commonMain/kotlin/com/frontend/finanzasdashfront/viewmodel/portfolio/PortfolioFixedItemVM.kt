@@ -6,6 +6,8 @@ import com.frontend.finanzasdashfront.api.services.DailyPayService
 import com.frontend.finanzasdashfront.api.services.FixedPortfolioService
 import com.frontend.finanzasdashfront.dto.daily_pay.DailyPayResponseDto
 import com.frontend.finanzasdashfront.dto.fixed_portfolio.FixedPortfolioResponseDto
+import com.frontend.finanzasdashfront.dto.fixed_portfolio.FixedPortfolioOperationDto
+import com.frontend.finanzasdashfront.dto.request.AddFixedPortfolioOperationDto
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,9 +16,13 @@ import kotlinx.coroutines.launch
 
 data class PortfolioFixedItemUiState(
     val isLoading: Boolean = true,
+    val isDeleting: Boolean = false,
+    val isAddingOperation: Boolean = false,
     val portfolio: FixedPortfolioResponseDto? = null,
     val dailyPays: List<DailyPayResponseDto> = emptyList(),
-    val errorMessage: String? = null
+    val operations: List<FixedPortfolioOperationDto> = emptyList(),
+    val errorMessage: String? = null,
+    val deleteSuccess: Boolean = false
 )
 
 class PortfolioFixedItemVM(
@@ -50,11 +56,19 @@ class PortfolioFixedItemVM(
                 // Fetch the daily pays
                 val dailyPays = dailyPayService.getByPortfolio(portfolioId)
 
+                // Fetch the operations
+                val operations = try {
+                    fixedPortfolioService.getOperations(portfolioId)
+                } catch (e: Exception) {
+                    emptyList() // It's okay if it fails or there are none initially
+                }
+
                 _uiState.update { 
                     it.copy(
                         isLoading = false, 
                         portfolio = portfolio, 
-                        dailyPays = dailyPays
+                        dailyPays = dailyPays,
+                        operations = operations
                     ) 
                 }
             } catch (e: Exception) {
@@ -62,6 +76,52 @@ class PortfolioFixedItemVM(
                     it.copy(
                         isLoading = false, 
                         errorMessage = e.message ?: "Error al cargar los datos del portafolio fijo."
+                    )
+                }
+            }
+        }
+    }
+
+    fun addOperation(request: AddFixedPortfolioOperationDto) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isAddingOperation = true, errorMessage = null) }
+            try {
+                val updatedPortfolio = fixedPortfolioService.addOperation(portfolioId, request)
+                val operations = fixedPortfolioService.getOperations(portfolioId)
+                _uiState.update {
+                    it.copy(
+                        isAddingOperation = false,
+                        portfolio = updatedPortfolio,
+                        operations = operations
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isAddingOperation = false,
+                        errorMessage = e.message ?: "Error al registrar la operación."
+                    )
+                }
+            }
+        }
+    }
+
+    fun deletePortfolio() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isDeleting = true, errorMessage = null) }
+            try {
+                fixedPortfolioService.delete(portfolioId)
+                _uiState.update {
+                    it.copy(
+                        isDeleting = false,
+                        deleteSuccess = true
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isDeleting = false,
+                        errorMessage = e.message ?: "Error al eliminar el portafolio fijo."
                     )
                 }
             }
