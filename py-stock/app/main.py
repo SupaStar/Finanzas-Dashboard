@@ -95,6 +95,7 @@ def get_dolar_value():
         cached = redis_client.get(cache_key)
         print(f"Cached USD to MXN rate: {cached}")
         if cached:
+            print("Cache hit for USD to MXN rate")
             return {"USD_MXN": cached}
 
         change = yf.Ticker("USDMXN=X")
@@ -105,6 +106,7 @@ def get_dolar_value():
             CACHE_TTL,
             str(last_price)
         )
+        print("Data cached for USD to MXN rate")
         return {"USD_MXN": float(last_price)}
     except Exception as e:
         print(f"Error fetching USD to MXN rate: {e}")
