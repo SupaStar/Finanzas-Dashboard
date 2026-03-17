@@ -5,10 +5,12 @@ import com.frontend.finanzasdashfront.dto.fixed_portfolio.FixedPortfolioResponse
 import com.frontend.finanzasdashfront.dto.fixed_portfolio.FixedPortfolioOperationDto
 import com.frontend.finanzasdashfront.dto.request.CreateFixedPortfolioRequestDto
 import com.frontend.finanzasdashfront.dto.request.AddFixedPortfolioOperationDto
+import com.frontend.finanzasdashfront.dto.request.UpdateFixedPortfolioAmountDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.delete
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -65,6 +67,19 @@ class FixedPortfolioService(private val client: HttpClient) {
             return response.body<List<FixedPortfolioOperationDto>>()
         } else {
             throw Exception("Error al obtener el historial de operaciones: ${response.status}")
+        }
+    }
+
+    suspend fun updateAmount(id: Long, request: UpdateFixedPortfolioAmountDto): FixedPortfolioResponseDto {
+        val response = client.put("${Constants.BaseUrl}${urlPrefix}/$id") {
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }
+
+        if (response.status == HttpStatusCode.OK) {
+            return response.body<FixedPortfolioResponseDto>()
+        } else {
+            throw Exception("Error al actualizar el portafolio fijo: ${response.status}")
         }
     }
 

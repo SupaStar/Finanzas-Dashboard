@@ -8,6 +8,7 @@ import com.frontend.finanzasdashfront.dto.daily_pay.DailyPayResponseDto
 import com.frontend.finanzasdashfront.dto.fixed_portfolio.FixedPortfolioResponseDto
 import com.frontend.finanzasdashfront.dto.fixed_portfolio.FixedPortfolioOperationDto
 import com.frontend.finanzasdashfront.dto.request.AddFixedPortfolioOperationDto
+import com.frontend.finanzasdashfront.dto.request.UpdateFixedPortfolioAmountDto
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,6 +19,7 @@ data class PortfolioFixedItemUiState(
     val isLoading: Boolean = true,
     val isDeleting: Boolean = false,
     val isAddingOperation: Boolean = false,
+    val isUpdatingAmount: Boolean = false,
     val portfolio: FixedPortfolioResponseDto? = null,
     val dailyPays: List<DailyPayResponseDto> = emptyList(),
     val operations: List<FixedPortfolioOperationDto> = emptyList(),
@@ -100,6 +102,28 @@ class PortfolioFixedItemVM(
                     it.copy(
                         isAddingOperation = false,
                         errorMessage = e.message ?: "Error al registrar la operación."
+                    )
+                }
+            }
+        }
+    }
+
+    fun updateAmount(amount: Float) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isUpdatingAmount = true, errorMessage = null) }
+            try {
+                val updatedPortfolio = fixedPortfolioService.updateAmount(portfolioId, UpdateFixedPortfolioAmountDto(amount))
+                _uiState.update {
+                    it.copy(
+                        isUpdatingAmount = false,
+                        portfolio = updatedPortfolio
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isUpdatingAmount = false,
+                        errorMessage = e.message ?: "Error al actualizar el monto."
                     )
                 }
             }

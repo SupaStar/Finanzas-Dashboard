@@ -26,6 +26,8 @@ import androidx.compose.runtime.setValue
 import com.frontend.finanzasdashfront.enum.FixedPortfolioOperationTypeEnum
 import com.frontend.finanzasdashfront.dto.request.AddFixedPortfolioOperationDto
 import com.frontend.finanzasdashfront.views.portfolio.modal.FixedPortfolioOperationModal
+import com.frontend.finanzasdashfront.views.portfolio.modal.EditFixedPortfolioAmountModal
+import androidx.compose.material.icons.filled.Edit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,6 +38,7 @@ fun PortfolioFixedItemScreen(
     val state by viewModel.uiState.collectAsState()
     
     var showOperationModal by remember { mutableStateOf(false) }
+    var showEditAmountModal by remember { mutableStateOf(false) }
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
     var operationType by remember { mutableStateOf(FixedPortfolioOperationTypeEnum.deposit) }
 
@@ -61,6 +64,9 @@ fun PortfolioFixedItemScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = { showEditAmountModal = true }) {
+                        Icon(Icons.Default.Edit, contentDescription = "Editar monto")
+                    }
                     IconButton(onClick = { showDeleteConfirmDialog = true }) {
                         Icon(Icons.Default.Delete, contentDescription = "Eliminar portafolio", tint = MaterialTheme.colorScheme.error)
                     }
@@ -311,6 +317,17 @@ fun PortfolioFixedItemScreen(
                     showOperationModal = false
                 },
                 operationType = operationType
+            )
+        }
+
+        if (showEditAmountModal && state.portfolio != null) {
+            EditFixedPortfolioAmountModal(
+                initialAmount = state.portfolio!!.amount.toFloat(),
+                onDismissRequest = { showEditAmountModal = false },
+                onConfirm = { amount ->
+                    viewModel.updateAmount(amount)
+                    showEditAmountModal = false
+                }
             )
         }
 
