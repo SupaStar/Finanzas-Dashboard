@@ -15,6 +15,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.frontend.finanzasdashfront.viewmodel.portfolio.PortfolioFixedItemVM
 import com.frontend.finanzasdashfront.utils.formatCurrency
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.frontend.finanzasdashfront.enum.FixedPortfolioOperationTypeEnum
+import com.frontend.finanzasdashfront.dto.request.AddFixedPortfolioOperationDto
+import com.frontend.finanzasdashfront.views.portfolio.modal.FixedPortfolioOperationModal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,6 +34,16 @@ fun PortfolioFixedItemScreen(
     viewModel: PortfolioFixedItemVM
 ) {
     val state by viewModel.uiState.collectAsState()
+    
+    var showOperationModal by remember { mutableStateOf(false) }
+    var showDeleteConfirmDialog by remember { mutableStateOf(false) }
+    var operationType by remember { mutableStateOf(FixedPortfolioOperationTypeEnum.deposit) }
+
+    LaunchedEffect(state.deleteSuccess) {
+        if (state.deleteSuccess) {
+            onBack()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -38,8 +59,45 @@ fun PortfolioFixedItemScreen(
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, "Volver")
                     }
+                },
+                actions = {
+                    IconButton(onClick = { showDeleteConfirmDialog = true }) {
+                        Icon(Icons.Default.Delete, contentDescription = "Eliminar portafolio", tint = MaterialTheme.colorScheme.error)
+                    }
                 }
             )
+        },
+        floatingActionButton = {
+            if (state.portfolio != null) {
+                var expanded by remember { mutableStateOf(false) }
+                Column(horizontalAlignment = Alignment.End) {
+                    if (expanded) {
+                        SmallFloatingActionButton(
+                            onClick = {
+                                operationType = FixedPortfolioOperationTypeEnum.deposit
+                                showOperationModal = true
+                                expanded = false
+                            },
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        ) {
+                            Icon(Icons.Default.KeyboardArrowUp, "Abonar")
+                        }
+                        SmallFloatingActionButton(
+                            onClick = {
+                                operationType = FixedPortfolioOperationTypeEnum.withdrawal
+                                showOperationModal = true
+                                expanded = false
+                            },
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        ) {
+                            Icon(Icons.Default.KeyboardArrowDown, "Retirar")
+                        }
+                    }
+                    FloatingActionButton(onClick = { expanded = !expanded }) {
+                        Icon(if (expanded) Icons.Default.Add else Icons.Default.Add, "Operaciones") // Using Add for both for simplicity, or could use different icon when expanded
+                    }
+                }
+            }
         }
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
@@ -193,9 +251,91 @@ fun PortfolioFixedItemScreen(
                         }
                     }
 
+                    // ── Operations Section ─────────────────────────────────────
+                    if (state.operations.isNotEmpty()) {
+                        item {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Historial de Abonos y Retiros",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                            )
+                        }
+
+                        items(state.operations) { op ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                )
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column {
+                                        Text(
+                                            text = if (op.operationType == FixedPortfolioOperationTypeEnum.deposit) "Abono" else "Retiro",
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = if (op.operationType == FixedPortfolioOperationTypeEnum.deposit) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                                        )
+                                        Text(
+                                            text = op.operationDate,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                    Text(
+                                        text = "${if (op.operationType == FixedPortfolioOperationTypeEnum.deposit) "+" else "-"}$${op.amount.formatCurrency()}",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (op.operationType == FixedPortfolioOperationTypeEnum.deposit) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
+                        }
+                    }
+
                     item { Spacer(modifier = Modifier.height(80.dp)) }
                 }
             }
+        }
+        
+        if (showOperationModal) {
+            FixedPortfolioOperationModal(
+                onDismissRequest = { showOperationModal = false },
+                onConfirm = { amount, type ->
+                    viewModel.addOperation(AddFixedPortfolioOperationDto(amount, type))
+                    showOperationModal = false
+                },
+                operationType = operationType
+            )
+        }
+
+        if (showDeleteConfirmDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteConfirmDialog = false },
+                title = { Text("Eliminar Portafolio") },
+                text = { Text("¿Estás seguro de que deseas eliminar este portafolio de Renta Fija? Esta acción no se puede deshacer.") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            viewModel.deletePortfolio()
+                            showDeleteConfirmDialog = false
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Text("Eliminar")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteConfirmDialog = false }) {
+                        Text("Cancelar")
+                    }
+                }
+            )
         }
     }
 }

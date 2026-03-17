@@ -11,17 +11,24 @@ import com.finanzas.dash.finanzas.repository.FixedPortfolioRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import com.finanzas.dash.finanzas.enum.FixedPortfolioOperationTypeEnum
+import com.finanzas.dash.finanzas.entity.FixedPortfolioOperation
+import com.finanzas.dash.finanzas.dto.request.fixed_portfolio.AddFixedPortfolioOperationDto
+import com.finanzas.dash.finanzas.dto.response.fixed_portfolio.FixedPortfolioOperationDto
+import com.finanzas.dash.finanzas.repository.FixedPortfolioOperationRepository
 import com.finanzas.dash.finanzas.entity.DailyPay
 import com.finanzas.dash.finanzas.repository.DailyPayRepository
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.time.format.DateTimeFormatter
 
 @Service
 class FixedPortfolioService(
     private val securityService: SecurityService,
     private val fixedPortfolioRepository: FixedPortfolioRepository,
     private val fixedInstrumentRepository: FixedInstrumentRepository,
-    private val dailyPayRepository: DailyPayRepository
+    private val dailyPayRepository: DailyPayRepository,
+    private val fixedPortfolioOperationRepository: FixedPortfolioOperationRepository
 ) {
 
     fun getAllFixedPortfoliosByUser(): List<FixedPortfolioResponseDto> {
@@ -132,6 +139,74 @@ class FixedPortfolioService(
                     fixedPortfolioRepository.save(portfolio)
                 }
             }
+        }
+    }
+
+    @Transactional
+    fun addOperation(id: Long, dto: AddFixedPortfolioOperationDto): FixedPortfolioResponseDto {
+        val user = securityService.currentUser()
+        val portfolio = fixedPortfolioRepository.findById(id)
+            .orElseThrow { GeneralRequestException(listOf("FixedPortfolio not found"), HttpStatus.NOT_FOUND) }
+
+        if (portfolio.user?.userId != user.userId) {
+            throw GeneralRequestException(listOf("No tienes permisos para editar este portafolio"), HttpStatus.FORBIDDEN)
+        }
+
+        val operationAmount = dto.amount ?: BigDecimal.ZERO
+        val currentAmount = portfolio.amount ?: BigDecimal.ZERO
+
+        if (dto.operationType == FixedPortfolioOperationTypeEnum.withdrawal && currentAmount < operationAmount) {
+            throw GeneralRequestException(listOf("No tienes suficientes fondos para realizar este retiro"), HttpStatus.BAD_REQUEST)
+        }
+
+        // Create operation
+        val operation = FixedPortfolioOperation().apply {
+            this.fixedPortfolio = portfolio
+            this.amount = operationAmount
+            this.operationType = dto.operationType
+            // operationDate defaults to now()
+        }
+        fixedPortfolioOperationRepository.save(operation)
+
+        // Update portfolio amount
+        if (dto.operationType == FixedPortfolioOperationTypeEnum.deposit) {
+            portfolio.amount = currentAmount.add(operationAmount)
+        } else if (dto.operationType == FixedPortfolioOperationTypeEnum.withdrawal) {
+            portfolio.amount = currentAmount.subtract(operationAmount)
+        }
+
+        val saved = fixedPortfolioRepository.save(portfolio)
+
+        return FixedPortfolioResponseDto(
+            id = saved.id!!,
+            fixedInstrument = FixedInstrumentResponseDto(
+                id = saved.fixedInstrument!!.id!!,
+                name = saved.fixedInstrument!!.name!!,
+                anualRate = saved.fixedInstrument!!.anualRate!!
+            ),
+            amount = saved.amount!!
+        )
+    }
+
+    fun getOperations(id: Long): List<FixedPortfolioOperationDto> {
+        val user = securityService.currentUser()
+        val portfolio = fixedPortfolioRepository.findById(id)
+            .orElseThrow { GeneralRequestException(listOf("FixedPortfolio not found"), HttpStatus.NOT_FOUND) }
+
+        if (portfolio.user?.userId != user.userId) {
+            throw GeneralRequestException(listOf("No tienes permisos para ver este portafolio"), HttpStatus.FORBIDDEN)
+        }
+
+        val operations = fixedPortfolioOperationRepository.findAllByFixedPortfolioOrderByOperationDateDesc(portfolio)
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        return operations.map {
+            FixedPortfolioOperationDto(
+                id = it.id!!,
+                amount = it.amount!!,
+                operationType = it.operationType!!,
+                operationDate = it.operationDate.format(formatter)
+            )
         }
     }
 }
