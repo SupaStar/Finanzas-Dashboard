@@ -98,8 +98,8 @@ android {
         applicationId = "com.frontend.finanzasdashfront"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0.2"
     }
     packaging {
         resources {
@@ -128,7 +128,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Exe)
             packageName = "Finanzas Dashboard"
-            packageVersion = "1.0.1"
+            packageVersion = "1.0.2"
             includeAllModules = true
 //
 //            buildTypes.release.proguard {
