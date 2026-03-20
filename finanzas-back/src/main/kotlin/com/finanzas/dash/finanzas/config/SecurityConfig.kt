@@ -20,7 +20,7 @@ class SecurityConfig(private val jwtAuthFilter: JwtAuthFilter) {
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                it.requestMatchers("/auth/**").permitAll()
+                it.requestMatchers("/auth/**", "/api/auth/**").permitAll()
                 it.requestMatchers("/actuator/**").permitAll()
                 it.anyRequest().authenticated()
             }
