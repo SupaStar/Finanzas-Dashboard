@@ -61,6 +61,9 @@ services:
       - "8001"
     depends_on:
       - redis
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     networks:
       - finanzas-network
 
