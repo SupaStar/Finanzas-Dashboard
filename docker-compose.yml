@@ -36,9 +36,6 @@ services:
       JWT_EXPIRATION: ${JWT_EXPIRATION:-180000}
       STOCK_PY_SERVICE_URL: ${STOCK_PY:-http://py-stock:8001}
       TZ: America/Mexico_City
-    dns:
-      - 8.8.8.8
-      - 1.1.1.1
     depends_on:
       postgres:
         condition: service_healthy
@@ -57,9 +54,6 @@ services:
       dockerfile: Dockerfile
     container_name: finanzas-dash-pystock
     restart: always
-    dns:
-      - 8.8.8.8
-      - 1.1.1.1
     expose:
       - "8001"
     depends_on:
@@ -86,9 +80,6 @@ services:
       - "8082:3999"
     networks:
       - finanzas-network
-    dns:
-      - 8.8.8.8
-      - 1.1.1.1
     environment:
       TZ: America/Mexico_City
     depends_on:
