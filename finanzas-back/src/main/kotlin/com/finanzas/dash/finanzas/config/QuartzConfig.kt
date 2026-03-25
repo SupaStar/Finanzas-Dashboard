@@ -10,6 +10,7 @@ import org.quartz.Trigger
 import org.quartz.TriggerBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import java.util.TimeZone
 
 @Configuration
 class QuartzConfig {
@@ -27,7 +28,8 @@ class QuartzConfig {
         return TriggerBuilder.newTrigger()
             .forJob(jobDetail)
             .withIdentity("triggerHorarioOficina", "stock")
-            .withSchedule(CronScheduleBuilder.cronSchedule("0 0/10 7-16 ? * MON-FRI"))
+            .withSchedule(CronScheduleBuilder.cronSchedule("0 0/10 7-16 ? * MON-FRI")
+                .inTimeZone(TimeZone.getTimeZone("America/Mexico_City")))
             .build()
     }
 
@@ -44,7 +46,8 @@ class QuartzConfig {
         return TriggerBuilder.newTrigger()
             .forJob(portfolioInfoJobDetail)
             .withIdentity("triggerCalculoDiario", "portfolio")
-            .withSchedule(CronScheduleBuilder.cronSchedule("0 0 2 * * ?")) // 2:00 AM every day
+            .withSchedule(CronScheduleBuilder.cronSchedule("0 0 2 * * ?")
+                .inTimeZone(TimeZone.getTimeZone("America/Mexico_City"))) // 2:00 AM every day
             .build()
     }
 
@@ -61,7 +64,8 @@ class QuartzConfig {
         return TriggerBuilder.newTrigger()
             .forJob(dailyInterestJobDetail)
             .withIdentity("triggerCalculoInteresDiario", "portfolio")
-            .withSchedule(CronScheduleBuilder.cronSchedule("0 30 0 * * ?")) // 12:30 AM every day
+            .withSchedule(CronScheduleBuilder.cronSchedule("0 30 0 * * ?")
+                .inTimeZone(TimeZone.getTimeZone("America/Mexico_City"))) // 12:30 AM every day
             .build()
     }
 }
