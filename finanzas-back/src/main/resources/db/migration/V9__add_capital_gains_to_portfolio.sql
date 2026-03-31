@@ -1,0 +1,2 @@
+ALTER TABLE portfolio
+ADD COLUMN capital_gains DECIMAL(15, 6) DEFAULT 0.0;

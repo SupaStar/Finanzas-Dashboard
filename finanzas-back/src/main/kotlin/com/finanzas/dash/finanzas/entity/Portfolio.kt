@@ -25,6 +25,9 @@ class Portfolio {
     @Column(nullable = false, precision = 15, scale = 6)
     var totalQuantity: BigDecimal? = null
 
+    @Column(precision = 15, scale = 6)
+    var capitalGains: BigDecimal? = BigDecimal.ZERO
+
     @Column
     var nOperations: Int? = 0
 

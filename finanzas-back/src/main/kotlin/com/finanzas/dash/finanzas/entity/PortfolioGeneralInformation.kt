@@ -22,4 +22,7 @@ class PortfolioGeneralInformation {
 
     @Column(precision = 15, scale = 6)
     var dividendsTotal: BigDecimal? = BigDecimal.ZERO
+
+    @Column(precision = 15, scale = 6)
+    var capitalGains: BigDecimal? = BigDecimal.ZERO
 }

@@ -3,6 +3,7 @@ package com.finanzas.dash.finanzas.service
 import com.finanzas.dash.finanzas.client.StockClientConfig
 import com.finanzas.dash.finanzas.config.exception.GeneralRequestException
 import com.finanzas.dash.finanzas.dto.request.stocks.StockInfoRequestDto
+import com.finanzas.dash.finanzas.dto.request.stocks.StockHistoricalRequestDto
 import com.finanzas.dash.finanzas.dto.response.stock.StockApiResponseDto
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
@@ -36,6 +37,16 @@ class StockApiService(private val stockClient: StockClientConfig) {
             .bodyToMono(object : ParameterizedTypeReference<List<StockApiResponseDto>>() {})
             .block() // <--- Importante: Espera el resultado y lo convierte en List
             ?: throw GeneralRequestException(listOf("Error encontrando las acciones"), HttpStatus.BAD_REQUEST)
+    }
+
+    fun getHistoricalPrices(request: StockHistoricalRequestDto): Map<String, Map<String, Double>> {
+        return stockClient.stockClient().post()
+            .uri("/historical/")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .retrieve()
+            .bodyToMono(object : ParameterizedTypeReference<Map<String, Map<String, Double>>>() {})
+            .block() ?: emptyMap()
     }
 }
 

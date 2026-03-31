@@ -123,7 +123,7 @@ class FixedPortfolioService(
                 // Determine interest
                 val rateDecimal = anualRate.divide(BigDecimal("100"), 6, RoundingMode.HALF_UP)
                 val annualInterest = amount.multiply(rateDecimal)
-                val dailyInterest = annualInterest.divide(BigDecimal("365"), 6, RoundingMode.HALF_UP)
+                val dailyInterest = annualInterest.divide(BigDecimal("360"), 6, RoundingMode.HALF_UP)
                 
                 if (dailyInterest > BigDecimal.ZERO) {
                     // Record daily pay
