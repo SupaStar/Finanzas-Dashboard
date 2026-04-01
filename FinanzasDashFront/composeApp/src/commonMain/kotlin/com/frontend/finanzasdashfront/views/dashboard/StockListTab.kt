@@ -37,20 +37,10 @@ fun LazyListScope.StockListTab(state: DashboardUiState, viewModel: DashboardView
                 onValueChange = { viewModel.onFilterChanged(newValue = it) },
                 label = { Text("Buscar") },
                 singleLine = true,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
-            
-            Spacer(modifier = Modifier.width(16.dp))
-            
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("USD en MXN", style = MaterialTheme.typography.labelSmall)
-                Switch(
-                    checked = state.showUsdAsMxn,
-                    onCheckedChange = { viewModel.toggleUsdDisplay() }
-                )
-            }
         }
     }
 

@@ -6,17 +6,21 @@ import com.frontend.finanzasdashfront.api.services.BrokerService
 import com.frontend.finanzasdashfront.api.services.DividendService
 import com.frontend.finanzasdashfront.api.services.OperationService
 import com.frontend.finanzasdashfront.api.services.PortfolioService
+import com.frontend.finanzasdashfront.api.services.StatementService
 import com.frontend.finanzasdashfront.api.services.StockService
 import com.frontend.finanzasdashfront.api.services.FixedInstrumentService
 import com.frontend.finanzasdashfront.api.services.FixedPortfolioService
 import com.frontend.finanzasdashfront.api.services.DailyPayService
 import com.frontend.finanzasdashfront.config.SecurityManager
 import com.frontend.finanzasdashfront.config.TokenManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import com.frontend.finanzasdashfront.routes.routers.AuthRouter
 import com.frontend.finanzasdashfront.routes.routers.DashboardRouter
 import com.frontend.finanzasdashfront.viewmodel.auth.LoginViewModel
 import com.frontend.finanzasdashfront.viewmodel.auth.RegisterViewModel
 import com.frontend.finanzasdashfront.viewmodel.dashboard.DashboardViewModel
+import com.frontend.finanzasdashfront.viewmodel.dashboard.statements.StatementsViewModel
 import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.PortfolioViewModel
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddDividendModalVM
@@ -39,6 +43,14 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 expect fun isDebugBuild(): Boolean
+
+class ThemeManager {
+    private val _isDark = MutableStateFlow(false)
+    val isDark = _isDark.asStateFlow()
+    fun toggleTheme() {
+        _isDark.value = !_isDark.value
+    }
+}
 
 object AppModule {
     private val httpClient = HttpClient(getEngine()) { // getEngine() es el expect/actual de motores
@@ -85,6 +97,7 @@ object AppModule {
     }
 
 
+    val themeManager = ThemeManager()
     val tokenManager = TokenManager(SecurityManager())
     val authService = AuthService(httpClient)
     val portfolioService = PortfolioService(httpClient)
@@ -95,12 +108,14 @@ object AppModule {
     val fixedInstrumentService = FixedInstrumentService(httpClient)
     val fixedPortfolioService = FixedPortfolioService(httpClient)
     val dailyPayService = DailyPayService(httpClient)
+    val statementService = StatementService(httpClient)
     val dashboardRouter = DashboardRouter()
     val authRouter = AuthRouter()
     // 3. Proveemos el ViewModel
     fun provideLoginViewModel() = LoginViewModel(authService, tokenManager, authRouter)
     fun provideRegisterViewModel() = RegisterViewModel(authService, tokenManager, authRouter)
     fun provideDashboardViewModel() = DashboardViewModel(tokenManager, portfolioService, fixedPortfolioService, dashboardRouter)
+    fun provideStatementsViewModel() = StatementsViewModel(statementService)
 
     fun provideSelectStockVM() = SelectStockVM(stockService, brokerService, portfolioService)
     fun providePortfolioViewModel(idPortfolio:Long) = PortfolioViewModel(idPortfolio, operationService, dividendService, portfolioService)

@@ -68,13 +68,21 @@ fun PortfolioItemScreen(
                         }
                     }
                 )
-                TabRow(selectedTabIndex = state.selectedTabIndex) {
+                TabRow(
+                    selectedTabIndex = state.selectedTabIndex,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha=0.5f),
+                    contentColor = MaterialTheme.colorScheme.primary
+                ) {
                     state.optionsTabs.forEachIndexed { index, title ->
                         Tab(
                             selected = state.selectedTabIndex == index,
                             onClick = { viewModel.onTabIndexChanged(index) },
                             text = {
-                                Text(title, style = MaterialTheme.typography.titleSmall)
+                                Text(
+                                    title,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = if (state.selectedTabIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                )
                             }
                         )
                     }

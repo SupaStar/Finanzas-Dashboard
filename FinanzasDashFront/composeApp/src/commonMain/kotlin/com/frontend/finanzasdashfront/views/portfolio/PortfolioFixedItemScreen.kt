@@ -202,7 +202,8 @@ fun PortfolioFixedItemScreen(
                         Text(
                             text = "Historial de Rendimientos Diarios",
                             style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -264,7 +265,8 @@ fun PortfolioFixedItemScreen(
                             Text(
                                 text = "Historial de Abonos y Retiros",
                                 style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
 

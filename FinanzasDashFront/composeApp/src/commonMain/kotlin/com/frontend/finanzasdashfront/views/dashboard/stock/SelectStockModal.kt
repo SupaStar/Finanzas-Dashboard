@@ -91,8 +91,8 @@ fun SelectStockModal(
                                 }
                                 items(state.stocks) { stock ->
                                     ListItem(
-                                        headlineContent = { Text(stock.symbol, fontWeight = FontWeight.Bold) },
-                                        supportingContent = { Text(stock.broker) },
+                                        headlineContent = { Text(stock.symbol, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface) },
+                                        supportingContent = { Text(stock.broker, color = MaterialTheme.colorScheme.onSurfaceVariant) },
                                         trailingContent = {
                                             Text(
                                                 "$${stock.closeDay}",
@@ -125,7 +125,7 @@ fun SelectStockModal(
                         modifier = Modifier.padding(20.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Text("¿No la encuentras? Regístrala", style = MaterialTheme.typography.titleMedium)
+                        Text("¿No la encuentras? Regístrala", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
 
                         OutlinedTextField(
                             value = state.stockName,

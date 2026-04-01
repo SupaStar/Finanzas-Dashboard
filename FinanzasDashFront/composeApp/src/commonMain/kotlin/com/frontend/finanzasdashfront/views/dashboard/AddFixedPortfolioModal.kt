@@ -66,7 +66,8 @@ fun AddFixedPortfolioModal(
                     Text(
                         text = "Seleccione el Instrumento:",
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.align(Alignment.Start)
+                        modifier = Modifier.align(Alignment.Start),
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -93,7 +94,8 @@ fun AddFixedPortfolioModal(
                                     Text(
                                         text = instrument.name,
                                         style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
                                         text = "Tasa Anual: ${instrument.anualRate}%",

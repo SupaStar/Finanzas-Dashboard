@@ -21,11 +21,18 @@ class JwtAuthFilter(private val jwtUtil: JwtUtil) : OncePerRequestFilter() {
         filterChain: FilterChain
     ) {
         val authHeader = request.getHeader("Authorization")
+        val tokenParam = request.getParameter("token")
+        
         var username: String? = null
         var jwt: String? = null
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7)
+        } else if (!tokenParam.isNullOrEmpty()) {
+            jwt = tokenParam
+        }
+
+        if (jwt != null) {
             if (jwtUtil.validateToken(jwt)) {
                 username = jwtUtil.extractUserId(jwt)
             }
