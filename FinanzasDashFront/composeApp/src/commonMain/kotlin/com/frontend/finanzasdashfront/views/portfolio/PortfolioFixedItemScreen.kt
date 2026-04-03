@@ -202,7 +202,8 @@ fun PortfolioFixedItemScreen(
                         Text(
                             text = "Historial de Rendimientos Diarios",
                             style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -264,7 +265,8 @@ fun PortfolioFixedItemScreen(
                             Text(
                                 text = "Historial de Abonos y Retiros",
                                 style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
 
@@ -334,8 +336,8 @@ fun PortfolioFixedItemScreen(
         if (showDeleteConfirmDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteConfirmDialog = false },
-                title = { Text("Eliminar Portafolio") },
-                text = { Text("¿Estás seguro de que deseas eliminar este portafolio de Renta Fija? Esta acción no se puede deshacer.") },
+                title = { Text("Eliminar Portafolio", color = MaterialTheme.colorScheme.onSurface) },
+                text = { Text("¿Estás seguro de que deseas eliminar este portafolio de Renta Fija? Esta acción no se puede deshacer.", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                 confirmButton = {
                     Button(
                         onClick = {

@@ -3,6 +3,8 @@ package com.finanzas.dash.finanzas.config
 import com.finanzas.dash.finanzas.config.job.ActualizarPrecios
 import com.finanzas.dash.finanzas.config.job.DailyFixedPortfolioInterestJob
 import com.finanzas.dash.finanzas.config.job.PortfolioGeneralInformationJob
+import com.finanzas.dash.finanzas.config.job.PortfolioMonthlyCapitalGainsJob
+import com.finanzas.dash.finanzas.config.job.PortfolioHistoricalCapitalGainsJob
 import org.quartz.CronScheduleBuilder
 import org.quartz.JobBuilder
 import org.quartz.JobDetail
@@ -66,6 +68,47 @@ class QuartzConfig {
             .withIdentity("triggerCalculoInteresDiario", "portfolio")
             .withSchedule(CronScheduleBuilder.cronSchedule("0 30 0 * * ?")
                 .inTimeZone(TimeZone.getTimeZone("America/Mexico_City"))) // 12:30 AM every day
+            .build()
+    }
+
+    @Bean
+    fun monthlyCapitalGainsJobDetail(): JobDetail {
+        return JobBuilder.newJob(PortfolioMonthlyCapitalGainsJob::class.java)
+            .withIdentity("tareaCalculoMensualPlusvalia", "portfolio")
+            .storeDurably()
+            .build()
+    }
+
+    @Bean
+    fun monthlyCapitalGainsJobTrigger(monthlyCapitalGainsJobDetail: JobDetail): Trigger {
+        return TriggerBuilder.newTrigger()
+            .forJob(monthlyCapitalGainsJobDetail)
+            .withIdentity("triggerCalculoMensualPlusvalia", "portfolio")
+            // CRON TEMPORAL: Para pruebas ejecutará cada minuto. 
+            // Vuelve a cambiarlo a "0 0 1 1 * ?" cuando pases a producción
+            .withSchedule(CronScheduleBuilder.cronSchedule("0 0 1 1 * ?")
+                .inTimeZone(TimeZone.getTimeZone("America/Mexico_City"))) 
+                .startNow()
+            .build()
+    }
+
+    @Bean
+    fun historicalCapitalGainsJobDetail(): JobDetail {
+        return JobBuilder.newJob(PortfolioHistoricalCapitalGainsJob::class.java)
+            .withIdentity("tareaCalculoHistoricoPlusvalia", "portfolio")
+            .storeDurably()
+            .build()
+    }
+
+    @Bean
+    fun historicalCapitalGainsJobTrigger(historicalCapitalGainsJobDetail: JobDetail): Trigger {
+        return TriggerBuilder.newTrigger()
+            .forJob(historicalCapitalGainsJobDetail)
+            .withIdentity("triggerCalculoHistoricoPlusvalia", "portfolio")
+            // Temporarily every minute for testing, like the monthly one
+            .withSchedule(CronScheduleBuilder.cronSchedule("0 0 1 1 * ?")
+                .inTimeZone(TimeZone.getTimeZone("America/Mexico_City"))) 
+                .startNow()
             .build()
     }
 }

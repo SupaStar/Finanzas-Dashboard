@@ -26,13 +26,17 @@ fun LoginScreen(viewModel: LoginViewModel) {
 
     val isFormValid = state.username.isNotBlank() && state.password.length >= 6
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
         Text(
             text = "Bienvenido",
             style = MaterialTheme.typography.displaySmall,
@@ -125,4 +129,5 @@ fun LoginScreen(viewModel: LoginViewModel) {
             Text("¿No tienes cuenta? Regístrate")
         }
     }
+  }
 }

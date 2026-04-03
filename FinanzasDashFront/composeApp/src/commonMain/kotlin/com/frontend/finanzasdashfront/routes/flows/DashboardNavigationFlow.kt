@@ -1,5 +1,6 @@
 package com.frontend.finanzasdashfront.routes.flows
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.frontend.finanzasdashfront.AppModule
@@ -9,6 +10,8 @@ import com.frontend.finanzasdashfront.routes.routers.DashboardScreens
 import com.frontend.finanzasdashfront.views.portfolio.PortfolioItemScreen
 import com.frontend.finanzasdashfront.views.portfolio.PortfolioFixedItemScreen
 import com.frontend.finanzasdashfront.viewmodel.portfolio.FibraDividendCalculatorVM
+import com.frontend.finanzasdashfront.views.dashboard.statements.StatementsScreen
+import androidx.compose.material3.Surface
 
 @Composable
 fun DashboardNavigationFlow() {
@@ -43,6 +46,13 @@ fun DashboardNavigationFlow() {
                 onBack = { router.goTo(DashboardScreens.Dashboard) },
                 viewModel = viewModel
             )
+        }
+
+        is DashboardScreens.Statements -> {
+            val viewModel = remember { AppModule.provideStatementsViewModel() }
+            Surface(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
+                StatementsScreen(viewModel)
+            }
         }
     }
 }

@@ -39,37 +39,21 @@ fun AddOperationModal(
         launch { viewModel.reloadOperationsEvent.collect { reloadOperations() } }
     }
 
-    Dialog(onDismissRequest = onClose) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 3.dp
-        ) {
+    AlertDialog(
+        onDismissRequest = onClose,
+        title = {
+            Text(
+                text = if (state.isEditMode) "Editar Operación" else "Nueva Operación",
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        },
+        text = {
             Column(
                 modifier = Modifier
-                    .padding(20.dp)
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        if (state.isEditMode) "Editar Operación" else "Nueva Operación",
-                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    IconButton(onClick = onClose) {
-                        Icon(Icons.Default.Close, contentDescription = "Cerrar")
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
                 if (state.isLoading) {
                     Box(Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
@@ -156,21 +140,24 @@ fun AddOperationModal(
                         selectedDate = state.operationDate,
                         onDateSelected = { viewModel.onDateChange(it) }
                     )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Button(
-                        onClick = { viewModel.saveOperation(idPortfolio = idPorfolio) },
-                        modifier = Modifier.fillMaxWidth().height(50.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        // enabled = state.isFormValid // Descomenta cuando valides en el VM
-                    ) {
-                        Text(if (state.isEditMode) "Actualizar Transacción" else "Guardar Transacción", style = MaterialTheme.typography.titleMedium)
-                    }
                 }
             }
+        },
+        confirmButton = {
+            if (!state.isLoading) {
+                Button(
+                    onClick = { viewModel.saveOperation(idPortfolio = idPorfolio) },
+                ) {
+                    Text(if (state.isEditMode) "Actualizar Transacción" else "Guardar Transacción")
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onClose) {
+                Text("Cancelar")
+            }
         }
-    }
+    )
 }
 
 /**

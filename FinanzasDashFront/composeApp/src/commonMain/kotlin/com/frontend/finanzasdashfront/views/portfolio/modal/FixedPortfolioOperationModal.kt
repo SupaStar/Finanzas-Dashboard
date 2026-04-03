@@ -28,11 +28,11 @@ fun FixedPortfolioOperationModal(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = {
-            Text(text = title)
+            Text(text = title, color = MaterialTheme.colorScheme.onSurface)
         },
         text = {
             Column {
-                Text(text = description)
+                Text(text = description, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 OutlinedTextField(

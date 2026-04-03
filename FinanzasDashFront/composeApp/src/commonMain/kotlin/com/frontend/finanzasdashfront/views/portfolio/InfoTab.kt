@@ -39,7 +39,8 @@ fun InfoTab(
         Text(
             text = "Resumen Financiero",
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
         )
         if (uiState.dividends.isNotEmpty()) {
             val dropdownOptions = listOf("Todos") + uiState.yearsDividends
@@ -93,7 +94,7 @@ fun InfoTab(
         } else {
             // Estado vacío o instrucción
             Box(Modifier.fillMaxWidth().padding(top = 32.dp), contentAlignment = Alignment.Center) {
-                Text("Selecciona un año para ver el desglose", style = MaterialTheme.typography.bodyMedium)
+                Text("Selecciona un año para ver el desglose", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
             }
         }
 

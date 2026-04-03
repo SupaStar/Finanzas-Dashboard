@@ -22,7 +22,8 @@ fun LazyListScope.StockListTab(state: DashboardUiState, viewModel: DashboardView
         Text(
             text = "Detalle de Activos",
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
+            modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Row(
@@ -37,20 +38,10 @@ fun LazyListScope.StockListTab(state: DashboardUiState, viewModel: DashboardView
                 onValueChange = { viewModel.onFilterChanged(newValue = it) },
                 label = { Text("Buscar") },
                 singleLine = true,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
-            
-            Spacer(modifier = Modifier.width(16.dp))
-            
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("USD en MXN", style = MaterialTheme.typography.labelSmall)
-                Switch(
-                    checked = state.showUsdAsMxn,
-                    onCheckedChange = { viewModel.toggleUsdDisplay() }
-                )
-            }
         }
     }
 
@@ -83,7 +74,8 @@ fun LazyListScope.StockListTab(state: DashboardUiState, viewModel: DashboardView
             Text(
                 text = "Renta Fija / Instrumentos",
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         items(state.fixedPortfolios) { fixedPortfolio ->

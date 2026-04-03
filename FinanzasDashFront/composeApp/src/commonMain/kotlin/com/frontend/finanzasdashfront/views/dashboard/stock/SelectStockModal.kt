@@ -35,38 +35,20 @@ fun SelectStockModal(
         launch { viewModel.reloadDash.collect { reloadData() } }
     }
 
-    Dialog(onDismissRequest = onClose) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.9f), // Ocupa el 90% de la pantalla
-            shape = RoundedCornerShape(28.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
-        ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        "Agregar Acción",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    IconButton(onClick = onClose) {
-                        Icon(Icons.Default.Close, contentDescription = "Cerrar")
-                    }
-                }
-
-                HorizontalDivider()
-
+    AlertDialog(
+        onDismissRequest = onClose,
+        title = {
+            Text(
+                "Agregar Acción",
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        },
+        text = {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Box(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(1f, fill = false)
+                        .heightIn(max = 250.dp)
                         .fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
@@ -85,14 +67,14 @@ fun SelectStockModal(
                                     Text(
                                         "Acciones Disponibles",
                                         style = MaterialTheme.typography.labelLarge,
-                                        modifier = Modifier.padding(16.dp),
+                                        modifier = Modifier.padding(bottom = 8.dp),
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                 }
                                 items(state.stocks) { stock ->
                                     ListItem(
-                                        headlineContent = { Text(stock.symbol, fontWeight = FontWeight.Bold) },
-                                        supportingContent = { Text(stock.broker) },
+                                        headlineContent = { Text(stock.symbol, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface) },
+                                        supportingContent = { Text(stock.broker, color = MaterialTheme.colorScheme.onSurfaceVariant) },
                                         trailingContent = {
                                             Text(
                                                 "$${stock.closeDay}",
@@ -101,13 +83,12 @@ fun SelectStockModal(
                                         },
                                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                                         modifier = Modifier
-                                            .fillMaxSize()
+                                            .fillMaxWidth()
                                             .clickable { viewModel.onStockSelected(stock.stockId) }
                                             .padding(vertical = 4.dp)
                                     )
 
                                     HorizontalDivider(
-                                        modifier = Modifier.padding(horizontal = 16.dp),
                                         thickness = 0.5.dp
                                     )
                                 }
@@ -116,65 +97,65 @@ fun SelectStockModal(
                     }
                 }
 
-                Surface(
-                    tonalElevation = 12.dp,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    Text("¿No la encuentras? Regístrala", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+
+                    OutlinedTextField(
+                        value = state.stockName,
+                        onValueChange = { viewModel.onStockNameChange(it) },
+                        label = { Text("Símbolo (ej: AAPL)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    ExposedDropdownMenuBox(
+                        expanded = state.expanded,
+                        onExpandedChange = { viewModel.onExpanded(!state.expanded) },
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("¿No la encuentras? Regístrala", style = MaterialTheme.typography.titleMedium)
-
                         OutlinedTextField(
-                            value = state.stockName,
-                            onValueChange = { viewModel.onStockNameChange(it) },
-                            label = { Text("Símbolo (ej: AAPL)") },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
+                            value = state.selectedOptionText,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Broker") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.expanded) },
+                            modifier = Modifier.menuAnchor().fillMaxWidth()
                         )
-
-                        ExposedDropdownMenuBox(
+                        ExposedDropdownMenu(
                             expanded = state.expanded,
-                            onExpandedChange = { viewModel.onExpanded(!state.expanded) },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            OutlinedTextField(
-                                value = state.selectedOptionText,
-                                onValueChange = {},
-                                readOnly = true,
-                                label = { Text("Broker") },
-                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.expanded) },
-                                modifier = Modifier.menuAnchor().fillMaxWidth()
-                            )
-                            ExposedDropdownMenu(
-                                expanded = state.expanded,
-                                onDismissRequest = { viewModel.onExpanded(false) }) {
-                                state.brokers.forEach { broker ->
-                                    DropdownMenuItem(
-                                        text = { Text(broker.name) },
-                                        onClick = {
-                                            viewModel.onBrokerSelected(broker.brokerId, broker.name)
-                                        }
-                                    )
-                                }
+                            onDismissRequest = { viewModel.onExpanded(false) }) {
+                            state.brokers.forEach { broker ->
+                                DropdownMenuItem(
+                                    text = { Text(broker.name) },
+                                    onClick = {
+                                        viewModel.onBrokerSelected(broker.brokerId, broker.name)
+                                    }
+                                )
                             }
-                        }
-
-                        Button(
-                            onClick = { viewModel.saveStock(state.stockName, state.selectedOptionId) },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            enabled = state.stockName.isNotBlank() && state.selectedOptionId != 0L
-                        ) {
-                            Text("Guardar Acción")
                         }
                     }
                 }
             }
+        },
+        confirmButton = {
+            Button(
+                onClick = { viewModel.saveStock(state.stockName, state.selectedOptionId) },
+                enabled = state.stockName.isNotBlank() && state.selectedOptionId != 0L
+            ) {
+                Text("Guardar Acción")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onClose) {
+                Text("Cerrar")
+            }
         }
-    }
+    )
 }
 
 @Composable

@@ -47,7 +47,8 @@ fun LazyListScope.InfoTabDash(state: DashboardUiState) {
                 if (generalInfo.isEmpty()) {
                     Text(
                         text = "No hay datos disponibles",
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 } else {
                     GeneralInfoBarChart(generalInfo)

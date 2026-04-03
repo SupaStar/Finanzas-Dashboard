@@ -17,7 +17,9 @@ fun App() {
         val token = tokenManager.getToken()
         startDestination = if (token != null) "dashboard" else "login"
     }
-    MaterialTheme {
+    val isDark by AppModule.themeManager.isDark.collectAsState()
+    
+    FinanzasDashTheme(darkTheme = isDark) {
         if (currentToken == null) {
             AuthNavigationFlow()
         } else {

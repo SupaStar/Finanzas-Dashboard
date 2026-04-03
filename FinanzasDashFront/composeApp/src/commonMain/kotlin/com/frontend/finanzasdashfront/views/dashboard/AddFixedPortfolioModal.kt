@@ -30,28 +30,20 @@ fun AddFixedPortfolioModal(
         }
     }
 
-    Dialog(onDismissRequest = onClose) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            shape = MaterialTheme.shapes.large,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-        ) {
+    AlertDialog(
+        onDismissRequest = onClose,
+        title = {
+            Text(
+                text = "Añadir Instrumento Fijo",
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        },
+        text = {
             Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
             ) {
-                Text(
-                    text = "Añadir Instrumento Fijo",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
                 if (state.isLoading) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 } else if (state.errorMessage != null) {
                     Text(
                         text = state.errorMessage!!,
@@ -59,14 +51,14 @@ fun AddFixedPortfolioModal(
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Button(onClick = { viewModel.clearError() }) {
+                    Button(onClick = { viewModel.clearError() }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                         Text("Reintentar")
                     }
                 } else {
                     Text(
                         text = "Seleccione el Instrumento:",
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.align(Alignment.Start)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -81,7 +73,7 @@ fun AddFixedPortfolioModal(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable { viewModel.selectInstrument(instrument) }
-                                    .padding(vertical = 8.dp, horizontal = 4.dp),
+                                    .padding(vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 RadioButton(
@@ -93,7 +85,8 @@ fun AddFixedPortfolioModal(
                                     Text(
                                         text = instrument.name,
                                         style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
                                         text = "Tasa Anual: ${instrument.anualRate}%",
@@ -114,26 +107,23 @@ fun AddFixedPortfolioModal(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         modifier = Modifier.fillMaxWidth()
                     )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        TextButton(onClick = onClose) {
-                            Text("Cancelar")
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(
-                            onClick = { viewModel.savePortfolio() },
-                            enabled = state.selectedInstrument != null && state.amount.isNotEmpty()
-                        ) {
-                            Text("Guardar")
-                        }
-                    }
                 }
             }
+        },
+        confirmButton = {
+            if (!state.isLoading && state.errorMessage == null) {
+                Button(
+                    onClick = { viewModel.savePortfolio() },
+                    enabled = state.selectedInstrument != null && state.amount.isNotEmpty()
+                ) {
+                    Text("Guardar")
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onClose) {
+                Text("Cancelar")
+            }
         }
-    }
+    )
 }
