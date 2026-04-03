@@ -26,7 +26,7 @@ fun OperationTab(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (operations.isEmpty()) {
-            item { Text("No hay operaciones", Modifier.padding(16.dp)) }
+            item { Text("No hay operaciones", Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onSurface) }
         }
         items(operations, key = { it.operationId ?: it.hashCode() }) { operation ->
             OperationCard(
@@ -63,7 +63,7 @@ fun DividendTab(
             }
         }
         if (dividends.isEmpty()) {
-            item { Text("No hay dividendos", Modifier.padding(16.dp)) }
+            item { Text("No hay dividendos", Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onSurface) }
         }
         items(dividends, key = { it.dividendId ?: it.hashCode() }) { dividend ->
             DividendCard(

@@ -20,11 +20,14 @@ fun EditFixedPortfolioAmountModal(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = {
-            Text(text = "Editar Monto Base")
+            Text(text = "Editar Monto Base", color = MaterialTheme.colorScheme.onSurface)
         },
         text = {
             Column {
-                Text(text = "Modifica el monto base de este portafolio. Ten en cuenta que esto cambiará el saldo total directamente.")
+                Text(
+                    text = "Modifica el monto base de este portafolio. Ten en cuenta que esto cambiará el saldo total directamente.",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 OutlinedTextField(

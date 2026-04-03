@@ -2,15 +2,14 @@ package com.frontend.finanzasdashfront.views.dashboard
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -72,7 +71,7 @@ fun DashboardScreen(
                     onClick = { viewModel.toggleUsdDisplay() }
                 )
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Refresh, contentDescription = null) },
+                    icon = { Icon(Icons.Default.Star, contentDescription = null) },
                     label = { Text(if (isDark) "Tema Claro" else "Tema Oscuro") },
                     selected = false,
                     onClick = { AppModule.themeManager.toggleTheme() }

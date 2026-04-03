@@ -336,8 +336,8 @@ fun PortfolioFixedItemScreen(
         if (showDeleteConfirmDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteConfirmDialog = false },
-                title = { Text("Eliminar Portafolio") },
-                text = { Text("¿Estás seguro de que deseas eliminar este portafolio de Renta Fija? Esta acción no se puede deshacer.") },
+                title = { Text("Eliminar Portafolio", color = MaterialTheme.colorScheme.onSurface) },
+                text = { Text("¿Estás seguro de que deseas eliminar este portafolio de Renta Fija? Esta acción no se puede deshacer.", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                 confirmButton = {
                     Button(
                         onClick = {

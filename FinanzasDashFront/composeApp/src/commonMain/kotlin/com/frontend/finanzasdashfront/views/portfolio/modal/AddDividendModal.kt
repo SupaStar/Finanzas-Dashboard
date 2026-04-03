@@ -40,35 +40,21 @@ fun AddDividendModal(
         launch { viewModel.reloadDividendsEvent.collect { reloadDividends() } }
     }
 
-    Dialog(onDismissRequest = onClose) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 3.dp
-        ) {
+    AlertDialog(
+        onDismissRequest = onClose,
+        title = {
+            Text(
+                text = if (state.isEditMode) "Editar Dividendo" else "Nuevo Dividendo",
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        },
+        text = {
             Column(
                 modifier = Modifier
-                    .padding(20.dp)
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        if (state.isEditMode) "Editar Dividendo" else "Nuevo Dividendo",
-                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    IconButton(onClick = onClose) {
-                        Icon(Icons.Default.Close, contentDescription = "Cerrar")
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
                 if (state.isLoading) {
                     Box(Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
@@ -170,18 +156,24 @@ fun AddDividendModal(
                             modifier = Modifier.weight(1f),
                         )
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Button(
-                        onClick = { viewModel.saveDividend(idPortfolio = idPorfolio) },
-                        modifier = Modifier.fillMaxWidth().height(50.dp),
-                        shape = RoundedCornerShape(12.dp),
-                    ) {
-                        Text(if (state.isEditMode) "Actualizar Dividendo" else "Guardar dividendo", style = MaterialTheme.typography.titleMedium)
-                    }
                 }
             }
+        },
+        confirmButton = {
+            if (!state.isLoading) {
+                Button(
+                    onClick = { viewModel.saveDividend(idPortfolio = idPorfolio) }
+                ) {
+                    Text(if (state.isEditMode) "Actualizar Dividendo" else "Guardar dividendo")
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onClose) {
+                Text("Cancelar")
+            }
         }
-    }
+    )
 }
 
 @Composable

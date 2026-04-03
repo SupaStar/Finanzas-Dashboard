@@ -22,7 +22,8 @@ fun LazyListScope.StockListTab(state: DashboardUiState, viewModel: DashboardView
         Text(
             text = "Detalle de Activos",
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
+            modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Row(
@@ -73,7 +74,8 @@ fun LazyListScope.StockListTab(state: DashboardUiState, viewModel: DashboardView
             Text(
                 text = "Renta Fija / Instrumentos",
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         items(state.fixedPortfolios) { fixedPortfolio ->

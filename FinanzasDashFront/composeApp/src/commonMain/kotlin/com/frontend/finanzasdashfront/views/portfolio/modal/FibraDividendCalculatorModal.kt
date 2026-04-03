@@ -29,51 +29,29 @@ fun FibraDividendCalculatorModal(
 ) {
     val state by viewModel.uiState.collectAsState()
 
-    Dialog(onDismissRequest = onClose) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 3.dp
-        ) {
+    AlertDialog(
+        onDismissRequest = onClose,
+        title = {
+            Column {
+                Text(
+                    "Calculadora rentas FIBRA",
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    "Títulos: ${state.numeroTitulos.toInt()}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        text = {
             Column(
                 modifier = Modifier
-                    .padding(20.dp)
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // ── Header ──────────────────────────────────────────────
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column {
-                        Text(
-                            "Calculadora rentas FIBRA",
-                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            "Títulos: ${state.numeroTitulos.toInt()}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Row {
-                        IconButton(onClick = { viewModel.reset() }) {
-                            Icon(Icons.Default.Refresh, contentDescription = "Resetear", tint = MaterialTheme.colorScheme.secondary)
-                        }
-                        IconButton(onClick = onClose) {
-                            Icon(Icons.Default.Close, contentDescription = "Cerrar")
-                        }
-                    }
-                }
-
-                HorizontalDivider()
-
                 // ── Sección Resultado ────────────────────────────────────
                 SectionCard(
                     title = "Resultado",
@@ -207,8 +185,18 @@ fun FibraDividendCalculatorModal(
                     }
                 }
             }
+        },
+        confirmButton = {
+            Button(onClick = { viewModel.reset() }) {
+                Text("Resetear")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onClose) {
+                Text("Cerrar")
+            }
         }
-    }
+    )
 }
 
 @Composable

@@ -163,8 +163,8 @@ fun PortfolioItemScreen(
             operationToDelete?.let { operation ->
                 AlertDialog(
                     onDismissRequest = { operationToDelete = null },
-                    title = { Text("Eliminar Operación") },
-                    text = { Text("¿Estás seguro de que deseas eliminar esta operación?") },
+                    title = { Text("Eliminar Operación", color = MaterialTheme.colorScheme.onSurface) },
+                    text = { Text("¿Estás seguro de que deseas eliminar esta operación?", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     confirmButton = {
                         TextButton(onClick = {
                             operation.operationId?.let { viewModel.deleteOperation(it) }
@@ -184,8 +184,8 @@ fun PortfolioItemScreen(
             dividendToDelete?.let { dividend ->
                 AlertDialog(
                     onDismissRequest = { dividendToDelete = null },
-                    title = { Text("Eliminar Dividendo") },
-                    text = { Text("¿Estás seguro de que deseas eliminar este dividendo?") },
+                    title = { Text("Eliminar Dividendo", color = MaterialTheme.colorScheme.onSurface) },
+                    text = { Text("¿Estás seguro de que deseas eliminar este dividendo?", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     confirmButton = {
                         TextButton(onClick = {
                             dividend.dividendId?.let { viewModel.deleteDividend(it) }
