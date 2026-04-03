@@ -111,4 +111,22 @@ class QuartzConfig {
                 .startNow()
             .build()
     }
+
+    @Bean
+    fun masDividendosSyncJobDetail(): JobDetail {
+        return JobBuilder.newJob(com.finanzas.dash.finanzas.config.job.MasDividendosSyncJob::class.java)
+            .withIdentity("tareaSincronizacionMasDividendos", "dividendos")
+            .storeDurably()
+            .build()
+    }
+
+    @Bean
+    fun masDividendosSyncJobTrigger(masDividendosSyncJobDetail: JobDetail): Trigger {
+        return TriggerBuilder.newTrigger()
+            .forJob(masDividendosSyncJobDetail)
+            .withIdentity("triggerSincronizacionMasDividendos", "dividendos")
+            .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0/2 * * ?")
+                .inTimeZone(TimeZone.getTimeZone("America/Mexico_City")))
+            .build()
+    }
 }
