@@ -10,18 +10,18 @@ import java.time.LocalDate
 data class DividendAnnouncement(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    val id: Int = 0,
 
-    val sourceId: Long,
-    val ticker: String,
-    val company: String?,
-    val amount: BigDecimal,
-    val comment: String?,
+    val sourceId: Long = 0L,
+    val ticker: String = "",
+    val company: String? = null,
+    val amount: BigDecimal = BigDecimal.ZERO,
+    val comment: String? = null,
     
     @Enumerated(EnumType.STRING)
-    val type: DividendTypeEnum,
+    val type: DividendTypeEnum = DividendTypeEnum.UNDEFINED,
     
-    val payDate: LocalDate?,
-    val exDate: LocalDate?,
-    val link: String?
+    val payDate: LocalDate? = null,
+    val exDate: LocalDate? = null,
+    val link: String? = null
 )

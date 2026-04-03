@@ -8,7 +8,7 @@ import jakarta.persistence.Table
 @Table(name = "sync_state")
 data class SyncState(
     @Id
-    val syncKey: String,
+    val syncKey: String = "",
     
-    var lastIdProcessed: Long
+    var lastIdProcessed: Long = 0L
 )

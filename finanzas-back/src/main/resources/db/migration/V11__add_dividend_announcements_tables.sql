@@ -15,3 +15,13 @@ CREATE TABLE dividend_announcements (
     ex_date DATE,
     link VARCHAR(1000)
 );
+
+CREATE TABLE notifications (
+    id SERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    message TEXT NOT NULL,
+    link VARCHAR(1000),
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_notification_user FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
+);

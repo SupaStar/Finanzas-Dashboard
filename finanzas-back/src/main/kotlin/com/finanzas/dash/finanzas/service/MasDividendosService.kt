@@ -5,6 +5,7 @@ import com.finanzas.dash.finanzas.entity.DividendAnnouncement
 import com.finanzas.dash.finanzas.entity.SyncState
 import com.finanzas.dash.finanzas.enum.DividendTypeEnum
 import com.finanzas.dash.finanzas.repository.DividendAnnouncementRepository
+import com.finanzas.dash.finanzas.repository.PortfolioRepository
 import com.finanzas.dash.finanzas.repository.SyncStateRepository
 import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
@@ -19,7 +20,9 @@ import java.time.format.DateTimeParseException
 @Service
 class MasDividendosService(
     private val syncStateRepository: SyncStateRepository,
-    private val dividendAnnouncementRepository: DividendAnnouncementRepository
+    private val dividendAnnouncementRepository: DividendAnnouncementRepository,
+    private val portfolioRepository: PortfolioRepository,
+    private val notificationService: NotificationService
 ) {
     private val log = LoggerFactory.getLogger(MasDividendosService::class.java)
     private val restTemplate = RestTemplate()
@@ -43,7 +46,6 @@ class MasDividendosService(
 
             var maxIdProcessed = lastIdProcessed
 
-            // If it's the first time running, we don't care about old historical items. We will only store records whose payment date is >= today.
             val isFirstRun = (lastIdProcessed == 0L)
             val today = LocalDate.now()
 
@@ -53,27 +55,22 @@ class MasDividendosService(
                 val sourceIdStr = dto.id ?: continue
                 val sourceId = sourceIdStr.toLongOrNull() ?: continue
 
-                // Check if we should process this entry
                 if (sourceId <= lastIdProcessed) {
                     continue
                 }
 
-                // If first run, check if fecha_pago is before today
                 val parsedPayDate = parseDate(dto.fechaPago)
                 if (isFirstRun && parsedPayDate != null && parsedPayDate.isBefore(today)) {
-                    // Update maxIdProcessed so we don't re-process it, but don't save it
                     if (sourceId > maxIdProcessed) {
                         maxIdProcessed = sourceId
                     }
                     continue
                 }
 
-                // Transform logic
                 val type = determineDividendType(dto.comentario)
                 val cleanAmount = cleanAmountStr(dto.monto)
 
                 if (cleanAmount == null || dto.ticker.isNullOrBlank()) {
-                    // Update maxIdProcessed but ignore invalid items
                     if (sourceId > maxIdProcessed) {
                         maxIdProcessed = sourceId
                     }
@@ -93,6 +90,8 @@ class MasDividendosService(
                 )
 
                 newDividendsToSave.add(entity)
+                
+                notifyUsersForTicker(entity)
 
                 if (sourceId > maxIdProcessed) {
                     maxIdProcessed = sourceId
@@ -115,6 +114,37 @@ class MasDividendosService(
 
         } catch (e: Exception) {
             log.error("Error occurred while syncing MasDividendos API", e)
+            throw e
+        }
+    }
+
+    private fun notifyUsersForTicker(announcement: DividendAnnouncement) {
+        val portfolios = portfolioRepository.findByStockSymbol(announcement.ticker)
+        for (portfolio in portfolios) {
+            val user = portfolio.user ?: continue
+            val nTitulos = portfolio.totalQuantity ?: BigDecimal.ZERO
+            
+            if (nTitulos <= BigDecimal.ZERO) continue
+
+            val monto = announcement.amount
+            val baseTotal = nTitulos.multiply(monto)
+            
+            val message = when (announcement.type) {
+                DividendTypeEnum.cash -> {
+                    val montoCalculado = baseTotal.multiply(BigDecimal("0.7"))
+                    val impuestoCalculado = baseTotal.multiply(BigDecimal("0.3"))
+                    "Se anunció un nuevo pago para tu acción ${announcement.ticker} de monto ${monto.toPlainString()}, por tus ${nTitulos.toPlainString()} títulos obtendrás un aproximado de ${montoCalculado.toPlainString()}. El impuesto aprox (ISR 30%) es de ${impuestoCalculado.toPlainString()}."
+                }
+                DividendTypeEnum.reinvested -> {
+                    val montoCalculado = baseTotal
+                    "Se anunció un nuevo pago para tu acción ${announcement.ticker} de monto ${monto.toPlainString()}, por tus ${nTitulos.toPlainString()} títulos obtendrás un aproximado de ${montoCalculado.toPlainString()}."
+                }
+                DividendTypeEnum.UNDEFINED -> {
+                    "Se anunció un nuevo pago para tu acción ${announcement.ticker} de monto ${monto.toPlainString()}, el anuncio aún no dice qué concepto tendrá por lo que no se puede calcular un aproximado exacto."
+                }
+            }
+            
+            notificationService.createNotification(user, message, announcement.link)
         }
     }
 
@@ -134,9 +164,12 @@ class MasDividendosService(
     private fun cleanAmountStr(amountStr: String?): BigDecimal? {
         if (amountStr.isNullOrBlank()) return null
         
-        // Remove known currency symbols, whitespace, and commas
-        val cleanStr = amountStr.replace("$", "").replace(",", "").trim()
+        if (amountStr.contains(Regex("[a-zA-Z]"))) {
+            log.warn("Amount contains text, omitting record: {}", amountStr)
+            return null
+        }
         
+        val cleanStr = amountStr.replace("$", "").replace(",", "").trim()
         return try {
             BigDecimal(cleanStr)
         } catch (e: NumberFormatException) {
