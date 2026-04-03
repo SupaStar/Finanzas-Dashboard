@@ -11,6 +11,7 @@ import com.frontend.finanzasdashfront.api.services.StockService
 import com.frontend.finanzasdashfront.api.services.FixedInstrumentService
 import com.frontend.finanzasdashfront.api.services.FixedPortfolioService
 import com.frontend.finanzasdashfront.api.services.DailyPayService
+import com.frontend.finanzasdashfront.api.services.NotificationService
 import com.frontend.finanzasdashfront.config.SecurityManager
 import com.frontend.finanzasdashfront.config.TokenManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,7 @@ import com.frontend.finanzasdashfront.routes.routers.DashboardRouter
 import com.frontend.finanzasdashfront.viewmodel.auth.LoginViewModel
 import com.frontend.finanzasdashfront.viewmodel.auth.RegisterViewModel
 import com.frontend.finanzasdashfront.viewmodel.dashboard.DashboardViewModel
+import com.frontend.finanzasdashfront.viewmodel.dashboard.NotificationViewModel
 import com.frontend.finanzasdashfront.viewmodel.dashboard.statements.StatementsViewModel
 import com.frontend.finanzasdashfront.viewmodel.dashboard.stock.SelectStockVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.PortfolioViewModel
@@ -109,6 +111,8 @@ object AppModule {
     val fixedPortfolioService = FixedPortfolioService(httpClient)
     val dailyPayService = DailyPayService(httpClient)
     val statementService = StatementService(httpClient)
+    val notificationService = NotificationService(httpClient)
+    
     val dashboardRouter = DashboardRouter()
     val authRouter = AuthRouter()
     // 3. Proveemos el ViewModel
@@ -116,6 +120,7 @@ object AppModule {
     fun provideRegisterViewModel() = RegisterViewModel(authService, tokenManager, authRouter)
     fun provideDashboardViewModel() = DashboardViewModel(tokenManager, portfolioService, fixedPortfolioService, dashboardRouter)
     fun provideStatementsViewModel() = StatementsViewModel(statementService)
+    fun provideNotificationViewModel() = NotificationViewModel(notificationService)
 
     fun provideSelectStockVM() = SelectStockVM(stockService, brokerService, portfolioService)
     fun providePortfolioViewModel(idPortfolio:Long) = PortfolioViewModel(idPortfolio, operationService, dividendService, portfolioService)
