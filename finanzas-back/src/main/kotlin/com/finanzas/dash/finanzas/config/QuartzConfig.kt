@@ -88,7 +88,6 @@ class QuartzConfig {
             // Vuelve a cambiarlo a "0 0 1 1 * ?" cuando pases a producción
             .withSchedule(CronScheduleBuilder.cronSchedule("0 0 1 1 * ?")
                 .inTimeZone(TimeZone.getTimeZone("America/Mexico_City"))) 
-                .startNow()
             .build()
     }
 
@@ -108,7 +107,25 @@ class QuartzConfig {
             // Temporarily every minute for testing, like the monthly one
             .withSchedule(CronScheduleBuilder.cronSchedule("0 0 1 1 * ?")
                 .inTimeZone(TimeZone.getTimeZone("America/Mexico_City"))) 
-                .startNow()
+            .build()
+    }
+
+    @Bean
+    fun masDividendosSyncJobDetail(): JobDetail {
+        return JobBuilder.newJob(com.finanzas.dash.finanzas.config.job.MasDividendosSyncJob::class.java)
+            .withIdentity("tareaSincronizacionMasDividendos", "dividendos")
+            .storeDurably()
+            .build()
+    }
+
+    @Bean
+    fun masDividendosSyncJobTrigger(masDividendosSyncJobDetail: JobDetail): Trigger {
+        return TriggerBuilder.newTrigger()
+            .forJob(masDividendosSyncJobDetail)
+            .withIdentity("triggerSincronizacionMasDividendos", "dividendos").startNow()
+            //"0 0 0/2 * * ?"
+            .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0/2 * * ?")
+                .inTimeZone(TimeZone.getTimeZone("America/Mexico_City")))
             .build()
     }
 }

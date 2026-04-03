@@ -158,14 +158,14 @@ fun InfoColumn(label: String, value: String, modifier: Modifier, isHighlight: Bo
         Text(
             label,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.secondary,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
             textAlign = TextAlign.Center
         )
         Text(
             value,
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Normal,
-            color = if (isHighlight) MaterialTheme.colorScheme.primary else Color.Unspecified,
+            fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Medium,
+            color = if (isHighlight) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
             textAlign = TextAlign.Center
         )
     }

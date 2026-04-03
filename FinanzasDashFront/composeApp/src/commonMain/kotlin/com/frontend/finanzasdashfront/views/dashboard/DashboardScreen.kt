@@ -22,8 +22,13 @@ import com.frontend.finanzasdashfront.views.dashboard.stock.SelectStockModal
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddFixedPortfolioModalVM
 import com.frontend.finanzasdashfront.AppModule
 import com.frontend.finanzasdashfront.routes.routers.DashboardScreens
+import com.frontend.finanzasdashfront.viewmodel.dashboard.NotificationViewModel
+import com.frontend.finanzasdashfront.views.dashboard.components.NotificationBell
+import com.frontend.finanzasdashfront.views.dashboard.components.NotificationDrawerContent
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 import kotlinx.coroutines.launch
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalKoalaPlotApi::class)
 @Composable
@@ -31,7 +36,8 @@ fun DashboardScreen(
     viewModel: DashboardViewModel,
     viewModelModal: SelectStockVM,
     addFixedPortfolioModalVM: AddFixedPortfolioModalVM,
-    changePasswordVM: ChangePasswordVM
+    changePasswordVM: ChangePasswordVM,
+    notificationVM: NotificationViewModel
 ) {
     val state by viewModel.uiState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
@@ -39,6 +45,7 @@ fun DashboardScreen(
     var showChangePasswordModal by remember { mutableStateOf(false) }
     var fabExpanded by remember { mutableStateOf(false) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val notificationDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val isDark by AppModule.themeManager.isDark.collectAsState()
 
@@ -96,7 +103,20 @@ fun DashboardScreen(
             }
         }
     ) {
-        Scaffold(
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+            ModalNavigationDrawer(
+                drawerState = notificationDrawerState,
+                drawerContent = {
+                    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                        NotificationDrawerContent(
+                            viewModel = notificationVM,
+                            onCloseDrawer = { scope.launch { notificationDrawerState.close() } }
+                        )
+                    }
+                }
+            ) {
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
                     title = { Text("Mi Portafolio", style = MaterialTheme.typography.headlineSmall) },
@@ -106,6 +126,10 @@ fun DashboardScreen(
                         }
                     },
                     actions = {
+                        NotificationBell(
+                            viewModel = notificationVM,
+                            onClick = { scope.launch { notificationDrawerState.open() } }
+                        )
                         IconButton(onClick = { viewModel.loadData() }) {
                             Icon(Icons.Default.Refresh, contentDescription = "Refresh", tint = MaterialTheme.colorScheme.primary)
                         }
@@ -227,6 +251,9 @@ fun DashboardScreen(
 
                     Spacer(modifier = Modifier.height(80.dp))
                 }
+            }
+        }
+    }
             }
         }
     }

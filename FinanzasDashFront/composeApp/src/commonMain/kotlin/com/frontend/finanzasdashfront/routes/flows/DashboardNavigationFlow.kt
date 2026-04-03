@@ -23,7 +23,8 @@ fun DashboardNavigationFlow() {
             val viewModelSelectStock = remember { AppModule.provideSelectStockVM() }
             val addFixedPortfolioModalVM = remember { AppModule.provideAddFixedPortfolioModalVM() }
             val changePasswordVM = remember { AppModule.provideChangePasswordVM() }
-            DashboardScreenRoute(viewModel, viewModelSelectStock, addFixedPortfolioModalVM, changePasswordVM)
+            val notificationVM = remember { AppModule.provideNotificationViewModel() }
+            DashboardScreenRoute(viewModel, viewModelSelectStock, addFixedPortfolioModalVM, changePasswordVM, notificationVM)
         }
 
         is DashboardScreens.PortfolioDetail -> {

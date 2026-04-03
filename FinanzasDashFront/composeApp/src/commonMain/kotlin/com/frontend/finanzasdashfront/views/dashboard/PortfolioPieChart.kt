@@ -66,7 +66,7 @@ fun PortfolioPieChart(
                             Text(
                                 displayValue.formatCurrency(),
                                 style = MaterialTheme.typography.labelSmall,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                             )
                         }
                     }
