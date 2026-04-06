@@ -1,5 +1,7 @@
 package com.frontend.finanzasdashfront
 
+import kotlinx.browser.window
+
 class JsPlatform : Platform {
     override val name: String = "Web with Kotlin/JS"
 }
@@ -12,4 +14,4 @@ actual fun isDebugBuild(): Boolean {
     return true // TODO: Implementar detección real de modo debug en JS
 }
 
-actual fun getPlatformHost(): String = "http://localhost:8080"
+actual fun getPlatformHost(): String = window.location.origin + "/api"
