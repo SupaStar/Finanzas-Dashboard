@@ -84,8 +84,14 @@ fun PortfolioRow(item: PortfolioDto, onClick: (Long) -> Unit, usdValue: Float, s
                     (item.Stock.closeDay * usdValue).formatCurrency()
                 }
 
+                val pCostoPromLabel = if(item.Stock.currency == "MXN") {
+                    "/ CP: " + item.avgPrice.formatCurrency()
+                }else{
+                    ""
+                }
+
                 Text(
-                    "Precio actual ($monedaSimbolo): $pActualLabel",
+                    "Precio actual ($monedaSimbolo): $pActualLabel $pCostoPromLabel",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
