@@ -35,6 +35,12 @@ services:
       JWT_SIGN: ${JWT_SIGN:-ultra-clave-secreta-obedsosa_de_32_bytes-funcionandoowo}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-180000}
       STOCK_PY_SERVICE_URL: ${STOCK_PY:-http://py-stock:8001}
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-noreply@finanzas.com}
+      MAIL_ENABLED: ${MAIL_ENABLED:-true}
       TZ: America/Mexico_City
     depends_on:
       postgres:

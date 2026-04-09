@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <style>
+        /* Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #1a1a2e;
+            background-color: #f8f9fa;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 28px 24px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .header .period {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .user-info {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            padding: 14px 20px;
+            margin: 18px 0;
+            font-size: 13px;
+            color: #4a5568;
+        }
+
+        .user-info span {
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2d3748;
+            margin: 22px 0 10px 0;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+            background-color: #ffffff;
+        }
+
+        table th {
+            background-color: #667eea;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 12px;
+            color: #2d3748;
+        }
+
+        table tr:nth-child(even) td {
+            background-color: #f7fafc;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        /* Summary Box */
+        .summary-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 20px 24px;
+            margin-top: 22px;
+        }
+
+        .summary-box h2 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .summary-row {
+            display: block;
+            padding: 4px 0;
+            font-size: 13px;
+        }
+
+        .summary-row .label {
+            opacity: 0.85;
+        }
+
+        .summary-row .value {
+            font-weight: 700;
+        }
+
+        .grand-total {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            color: #a0aec0;
+            margin-top: 24px;
+            padding-top: 14px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Positive / Negative colors for amounts */
+        .positive { color: #38a169; }
+        .negative { color: #e53e3e; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Estado de Cuenta Mensual</h1>
+        <div class="period" th:text="${periodLabel}">Enero 2026</div>
+    </div>
+
+    <!-- User info -->
+    <div class="user-info">
+        Usuario: <span th:text="${username}">usuario@ejemplo.com</span>
+    </div>
+
+    <!-- ====== STOCKS SECTION ====== -->
+    <div th:if="${not #lists.isEmpty(stockRows)}">
+        <div class="section-title">Portafolio de Acciones</div>
+        <table>
+            <thead>
+            <tr>
+                <th>Acción</th>
+                <th class="text-right">Invertido</th>
+                <th class="text-right">Valor de Mercado</th>
+                <th class="text-right">Plusvalía del Mes</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${stockRows}">
+                <td th:text="${row.stockName}">AAPL</td>
+                <td class="text-right" th:text="'$' + ${#numbers.formatDecimal(row.totalInvested, 1, 2)}">$1,000.00</td>
+                <td class="text-right" th:text="'$' + ${#numbers.formatDecimal(row.marketValue, 1, 2)}">$1,100.00</td>
+                <td class="text-right"
+                    th:classappend="${row.capitalGains >= 0} ? 'positive' : 'negative'"
+                    th:text="'$' + ${#numbers.formatDecimal(row.capitalGains, 1, 2)}">$100.00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ====== FIXED PORTFOLIO SECTION ====== -->
+    <div th:if="${not #lists.isEmpty(fixedRows)}">
+        <div class="section-title">Portafolio de Renta Fija</div>
+        <table>
+            <thead>
+            <tr>
+                <th>Instrumento</th>
+                <th class="text-right">Invertido</th>
+                <th class="text-right">Interés Generado</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${fixedRows}">
+                <td th:text="${row.instrumentName}">CETES</td>
+                <td class="text-right" th:text="'$' + ${#numbers.formatDecimal(row.investedAmount, 1, 2)}">$5,000.00</td>
+                <td class="text-right positive" th:text="'$' + ${#numbers.formatDecimal(row.monthlyInterestGenerated, 1, 2)}">$50.00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ====== FEES / TAXES / DIVIDENDS ====== -->
+    <div th:if="${totalFees > 0 or totalTaxes > 0 or totalDividends > 0}">
+        <div class="section-title">Comisiones, Impuestos y Dividendos</div>
+        <table>
+            <thead>
+            <tr>
+                <th class="text-right">Comisiones</th>
+                <th class="text-right">Impuestos</th>
+                <th class="text-right">Dividendos Pagados</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="text-right negative" th:text="'$' + ${#numbers.formatDecimal(totalFees, 1, 2)}">$10.00</td>
+                <td class="text-right negative" th:text="'$' + ${#numbers.formatDecimal(totalTaxes, 1, 2)}">$5.00</td>
+                <td class="text-right positive" th:text="'$' + ${#numbers.formatDecimal(totalDividends, 1, 2)}">$20.00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ====== SUMMARY ====== -->
+    <div class="summary-box">
+        <h2>Resumen General</h2>
+        <span class="summary-row">
+            <span class="label">Plusvalía Acciones:</span>
+            <span class="value" th:text="'$' + ${#numbers.formatDecimal(totalCapitalGains, 1, 2)}">$100.00</span>
+        </span>
+        <br/>
+        <span class="summary-row">
+            <span class="label">Intereses Fijos Generados:</span>
+            <span class="value" th:text="'$' + ${#numbers.formatDecimal(totalFixedInterest, 1, 2)}">$50.00</span>
+        </span>
+        <br/>
+        <span class="summary-row grand-total">
+            <span class="label">Balance Neto del Mes:</span>
+            <span class="value" th:text="'$' + ${#numbers.formatDecimal(grandTotal, 1, 2)}">$155.00</span>
+        </span>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Este es un estado de cuenta generado automáticamente. No es necesario responder a este correo.
+    </div>
+
+</div>
+</body>
+</html>

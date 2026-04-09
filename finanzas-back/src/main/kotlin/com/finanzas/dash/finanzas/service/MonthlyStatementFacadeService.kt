@@ -22,7 +22,8 @@ class MonthlyStatementFacadeService(
     private val fixedPortfolioRepository: FixedPortfolioRepository,
     private val dailyPayRepository: DailyPayRepository,
     private val statementPdfService: UserStatementPdfService,
-    private val monthlyStatementRepository: MonthlyStatementRepository
+    private val monthlyStatementRepository: MonthlyStatementRepository,
+    private val emailService: EmailService
 ) {
     private val log = LoggerFactory.getLogger(MonthlyStatementFacadeService::class.java)
 
@@ -155,6 +156,11 @@ class MonthlyStatementFacadeService(
                     }
 
                     log.info("Estado de cuenta generado para usuario ID: ${user.userId}")
+
+                    // Enviar por correo si el username es un email válido
+                    if (emailService.isValidEmail(user.username ?: "")) {
+                        emailService.sendStatementEmail(user, month, year, "$generatedPath/$fileName", stockRows, fixedRows)
+                    }
                 } catch (e: Exception) {
                     log.error("Error al generar PDF para usuario ${user.userId}: ${e.message}")
                 }

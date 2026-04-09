@@ -64,7 +64,11 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 	implementation("com.opencsv:opencsv:5.9")
-	implementation("com.github.librepdf:openpdf:1.4.2")
+	// PDF generation from HTML (Thymeleaf → HTML → PDF)
+	implementation("com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10")
+	// Email
+	implementation("org.springframework.boot:spring-boot-starter-mail")
+	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 }
 
 kotlin {
