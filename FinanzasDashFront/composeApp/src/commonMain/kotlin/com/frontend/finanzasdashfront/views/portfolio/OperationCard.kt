@@ -73,7 +73,7 @@ fun OperationCard(
                 }
                 Divider(Modifier.padding(vertical = 8.dp))
                 val total = if (operation.quantity < 1f) operation.price else operation.total
-                Text("Total: $${total}", style = MaterialTheme.typography.bodyLarge, fontWeight = Bold)
+                Text("Total: $${total.formatCurrency()}", style = MaterialTheme.typography.bodyLarge, fontWeight = Bold)
             }
         }
     }
