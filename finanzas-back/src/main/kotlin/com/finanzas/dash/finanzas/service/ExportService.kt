@@ -103,7 +103,7 @@ class ExportService(
     ) {
         val sheet = workbook.createSheet(sheetName)
         val headerStyle = createHeaderStyle(workbook)
-        val headers = listOf("Tipo", "Cantidad", "Precio", "Impuesto", "Comisión", "Neto", "Fecha", "Símbolo")
+        val headers = listOf("Tipo", "Cantidad", "Precio", "Impuesto", "Comisión", "Neto", "Fecha", "Símbolo", "Moneda")
 
         // Header row
         val headerRow = sheet.createRow(0)
@@ -126,6 +126,7 @@ class ExportService(
             row.createCell(5).setCellValue(op.total?.toDouble() ?: 0.0)
             row.createCell(6).setCellValue(op.operationDate?.format(dateFormatter) ?: "")
             row.createCell(7).setCellValue(stockSymbol)
+            row.createCell(8).setCellValue(portfolio.stock?.currency ?: "")
         }
 
         // Auto-size columns
@@ -170,7 +171,7 @@ class ExportService(
     ) {
         val sheet = workbook.createSheet(sheetName)
         val headerStyle = createHeaderStyle(workbook)
-        val headers = listOf("Tipo", "Cantidad", "Precio", "Impuesto", "Comisión", "Neto", "Fecha", "Símbolo")
+        val headers = listOf("Tipo", "Cantidad", "Precio", "Impuesto", "Comisión", "Neto", "Fecha", "Símbolo", "Moneda")
 
         val headerRow = sheet.createRow(0)
         headers.forEachIndexed { idx, title ->
@@ -189,6 +190,7 @@ class ExportService(
             row.createCell(5).setCellValue(op.total?.toDouble() ?: 0.0)
             row.createCell(6).setCellValue(op.operationDate?.format(dateFormatter) ?: "")
             row.createCell(7).setCellValue(portfolio.stock?.symbol ?: "")
+            row.createCell(8).setCellValue(portfolio.stock?.currency ?: "")
         }
 
         headers.indices.forEach { sheet.autoSizeColumn(it) }
