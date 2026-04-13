@@ -65,6 +65,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 	implementation("com.opencsv:opencsv:5.9")
 	implementation("com.github.librepdf:openpdf:1.4.2")
+	implementation("org.apache.poi:poi-ooxml:5.3.0")
 }
 
 kotlin {

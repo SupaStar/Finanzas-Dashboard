@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.*
@@ -15,6 +16,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
+import com.frontend.finanzasdashfront.AppModule
+import com.frontend.finanzasdashfront.api.Constants
 import com.frontend.finanzasdashfront.dto.dividend.DividendDto
 import com.frontend.finanzasdashfront.dto.enums.OperationTypeEnum
 import com.frontend.finanzasdashfront.dto.operation.OperationDto
@@ -55,6 +59,38 @@ fun PortfolioItemScreen(
                         }
                     },
                     actions = {
+                        val uriHandler = LocalUriHandler.current
+                        var exportMenuExpanded by remember { mutableStateOf(false) }
+
+                        Box {
+                            IconButton(onClick = { exportMenuExpanded = true }) {
+                                Icon(Icons.Default.Download, contentDescription = "Exportar")
+                            }
+                            DropdownMenu(
+                                expanded = exportMenuExpanded,
+                                onDismissRequest = { exportMenuExpanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("Exportar Operaciones") },
+                                    onClick = {
+                                        exportMenuExpanded = false
+                                        val token = AppModule.tokenManager.getToken()
+                                        val url = "${Constants.BaseUrl}/export/operations/${state.portfolioid}?token=$token"
+                                        uriHandler.openUri(url)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("Exportar Dividendos") },
+                                    onClick = {
+                                        exportMenuExpanded = false
+                                        val token = AppModule.tokenManager.getToken()
+                                        val url = "${Constants.BaseUrl}/export/dividends/${state.portfolioid}?token=$token"
+                                        uriHandler.openUri(url)
+                                    }
+                                )
+                            }
+                        }
+
                         IconButton(onClick = {
                             val titulos = state.operations
                                 .sumOf { op ->
