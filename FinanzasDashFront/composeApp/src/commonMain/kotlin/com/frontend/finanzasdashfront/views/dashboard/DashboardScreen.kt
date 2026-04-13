@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,7 +29,9 @@ import com.frontend.finanzasdashfront.views.dashboard.components.NotificationDra
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 import kotlinx.coroutines.launch
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.LayoutDirection
+import com.frontend.finanzasdashfront.api.Constants
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalKoalaPlotApi::class)
 @Composable
@@ -126,6 +129,14 @@ fun DashboardScreen(
                         }
                     },
                     actions = {
+                        val uriHandler = LocalUriHandler.current
+                        IconButton(onClick = { 
+                            val token = AppModule.tokenManager.getToken()
+                            val url = "${Constants.BaseUrl}/export/all?token=$token"
+                            uriHandler.openUri(url)
+                        }) {
+                            Icon(Icons.Default.Download, contentDescription = "Exportar todo", tint = MaterialTheme.colorScheme.primary)
+                        }
                         NotificationBell(
                             viewModel = notificationVM,
                             onClick = { scope.launch { notificationDrawerState.open() } }
