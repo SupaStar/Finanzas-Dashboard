@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
@@ -72,6 +73,15 @@ fun DashboardScreen(
                     onClick = {
                         scope.launch { drawerState.close() }
                         AppModule.dashboardRouter.goTo(DashboardScreens.Statements)
+                    }
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.DateRange, contentDescription = null) },
+                    label = { Text("Calendario de Dividendos") },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        AppModule.dashboardRouter.goTo(DashboardScreens.DividendCalendar)
                     }
                 )
                 NavigationDrawerItem(

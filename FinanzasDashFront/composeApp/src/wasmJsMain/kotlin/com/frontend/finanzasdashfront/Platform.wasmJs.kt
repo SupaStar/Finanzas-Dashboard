@@ -16,3 +16,10 @@ actual fun isDebugBuild(): Boolean {
 
 // Dynamically points to the current origin where Nginx hosts the API
 actual fun getPlatformHost(): String = window.location.origin + "/api"
+
+private fun jsGetMonth(): Int = js("new Date().getMonth() + 1")
+private fun jsGetYear(): Int = js("new Date().getFullYear()")
+
+actual fun getCurrentDateParams(): Pair<Int, Int> {
+    return Pair(jsGetMonth(), jsGetYear())
+}

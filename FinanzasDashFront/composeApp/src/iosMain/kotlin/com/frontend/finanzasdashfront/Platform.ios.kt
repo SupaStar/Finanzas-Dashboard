@@ -13,5 +13,14 @@ actual fun isDebugBuild(): Boolean {
     // Por ahora, retornamos true para desarrollo
     return true // TODO: Implementar detección real de modo debug en iOS
 }
-
 actual fun getPlatformHost(): String = "http://localhost:8080"
+
+actual fun getCurrentDateParams(): Pair<Int, Int> {
+    val date = platform.Foundation.NSDate()
+    val calendar = platform.Foundation.NSCalendar.currentCalendar
+    val components = calendar.components(
+        platform.Foundation.NSCalendarUnitMonth or platform.Foundation.NSCalendarUnitYear,
+        fromDate = date
+    )
+    return Pair(components.month.toInt(), components.year.toInt())
+}

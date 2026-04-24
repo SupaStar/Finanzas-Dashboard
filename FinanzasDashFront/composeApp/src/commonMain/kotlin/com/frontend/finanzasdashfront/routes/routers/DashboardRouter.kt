@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 sealed class DashboardScreens {
     object Dashboard : DashboardScreens()
     object Statements : DashboardScreens()
+    object DividendCalendar : DashboardScreens()
     data class PortfolioDetail(val idPortfolio: Long) : DashboardScreens()
     data class FixedPortfolioDetail(val idPortfolio: Long) : DashboardScreens()
 }

@@ -30,6 +30,7 @@ import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddOperationModa
 import com.frontend.finanzasdashfront.viewmodel.portfolio.modal.AddFixedPortfolioModalVM
 import com.frontend.finanzasdashfront.viewmodel.portfolio.PortfolioFixedItemVM
 import com.frontend.finanzasdashfront.viewmodel.dashboard.ChangePasswordVM
+import com.frontend.finanzasdashfront.viewmodel.dividend.DividendCalendarViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpResponseValidator
@@ -129,4 +130,5 @@ object AppModule {
     fun provideAddFixedPortfolioModalVM() = AddFixedPortfolioModalVM(fixedInstrumentService, fixedPortfolioService)
     fun providePortfolioFixedItemVM(idPortfolio: Long) = PortfolioFixedItemVM(idPortfolio, dailyPayService, fixedPortfolioService)
     fun provideChangePasswordVM() = ChangePasswordVM(authService)
+    fun provideDividendCalendarViewModel() = DividendCalendarViewModel()
 }
