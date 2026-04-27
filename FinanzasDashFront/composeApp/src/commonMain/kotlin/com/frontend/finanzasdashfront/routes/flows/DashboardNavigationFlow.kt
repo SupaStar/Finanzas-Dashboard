@@ -11,6 +11,7 @@ import com.frontend.finanzasdashfront.views.portfolio.PortfolioItemScreen
 import com.frontend.finanzasdashfront.views.portfolio.PortfolioFixedItemScreen
 import com.frontend.finanzasdashfront.viewmodel.portfolio.FibraDividendCalculatorVM
 import com.frontend.finanzasdashfront.views.dashboard.statements.StatementsScreen
+import com.frontend.finanzasdashfront.views.dividend.DividendCalendarScreen
 import androidx.compose.material3.Surface
 
 @Composable
@@ -53,6 +54,13 @@ fun DashboardNavigationFlow() {
             val viewModel = remember { AppModule.provideStatementsViewModel() }
             Surface(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
                 StatementsScreen(viewModel)
+            }
+        }
+
+        is DashboardScreens.DividendCalendar -> {
+            val viewModel = remember { AppModule.provideDividendCalendarViewModel() }
+            Surface(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
+                DividendCalendarScreen(viewModel)
             }
         }
     }

@@ -87,6 +87,9 @@ kotlin {
         iosMain.dependencies {
             implementation("io.ktor:ktor-client-darwin:${ktorVersion}")
         }
+        wasmJsMain.dependencies {
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
+        }
     }
 }
 

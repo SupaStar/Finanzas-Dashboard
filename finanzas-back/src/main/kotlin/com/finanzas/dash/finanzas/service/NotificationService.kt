@@ -13,23 +13,26 @@ class NotificationService(
 ) {
 
     @Transactional(readOnly = true)
-    fun getUnreadNotifications(username: String): List<NotificationDto> {
-        return notificationRepository.findByUserUsernameAndIsReadFalseOrderByCreatedAtDesc(username)
+    fun getUnreadNotifications(userIdString: String): List<NotificationDto> {
+        val userId = userIdString.toLongOrNull() ?: return emptyList()
+        return notificationRepository.findByUserUserIdAndIsReadFalseOrderByCreatedAtDesc(userId)
             .map { it.toDto() }
     }
 
     @Transactional
-    fun markAsRead(id: Int, username: String) {
+    fun markAsRead(id: Int, userIdString: String) {
+        val userId = userIdString.toLongOrNull() ?: return
         val notification = notificationRepository.findById(id).orElse(null)
-        if (notification != null && notification.user?.username == username) {
+        if (notification != null && notification.user?.userId == userId) {
             notification.isRead = true
             notificationRepository.save(notification)
         }
     }
 
     @Transactional
-    fun markAllAsRead(username: String) {
-        notificationRepository.markAllAsReadByUsername(username)
+    fun markAllAsRead(userIdString: String) {
+        val userId = userIdString.toLongOrNull() ?: return
+        notificationRepository.markAllAsReadByUserId(userId)
     }
 
     @Transactional

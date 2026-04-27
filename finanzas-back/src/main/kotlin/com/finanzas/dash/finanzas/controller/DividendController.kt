@@ -13,9 +13,16 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+import org.springframework.web.bind.annotation.RequestParam
+import com.finanzas.dash.finanzas.dto.response.dividend.DividendCalendarResponseDto
+import com.finanzas.dash.finanzas.service.SecurityService
+
 @RestController
 @RequestMapping("/dividend")
-class DividendController(private val dividendService: DividendService) {
+class DividendController(
+    private val dividendService: DividendService,
+    private val securityService: SecurityService
+) {
     @GetMapping("/all/{idPortfolio}")
     fun getAll(@PathVariable idPortfolio: Long): DividendsPortfolioResponseDto {
         return dividendService.getAllDividendsPorfolio(idPortfolio)
@@ -40,5 +47,14 @@ class DividendController(private val dividendService: DividendService) {
         @RequestBody @Valid request: AddDividendPortfolioRequestDto
     ): AddDividendResponseDto {
         return dividendService.editDividend(dividendId, request)
+    }
+
+    @GetMapping("/calendar")
+    fun getCalendar(
+        @RequestParam month: Int,
+        @RequestParam year: Int
+    ): DividendCalendarResponseDto {
+        val user = securityService.currentUser()
+        return dividendService.getDividendCalendar(user.userId!!, month, year)
     }
 }

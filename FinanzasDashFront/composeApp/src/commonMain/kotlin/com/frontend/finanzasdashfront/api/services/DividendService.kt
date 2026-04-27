@@ -2,6 +2,7 @@ package com.frontend.finanzasdashfront.api.services
 
 import com.frontend.finanzasdashfront.api.Constants
 import com.frontend.finanzasdashfront.dto.dividend.AddDividendResponseDto
+import com.frontend.finanzasdashfront.dto.dividend.DividendCalendarResponseDto
 import com.frontend.finanzasdashfront.dto.dividend.DividendsPortfolioResponseDto
 import com.frontend.finanzasdashfront.dto.request.AddDividendPortfolioRequestDto
 import io.ktor.client.HttpClient
@@ -67,6 +68,22 @@ class DividendService(private val client: HttpClient) {
         } else {
             val errorMsg = responseDto.errors?.joinToString("\n") ?: "Error desconocido"
             throw Exception("Error de autenticación: $errorMsg")
+        }
+    }
+
+    suspend fun getDividendCalendar(month: Int, year: Int): DividendCalendarResponseDto {
+        val response = client.get("${Constants.BaseUrl}/dividend/calendar") {
+            contentType(ContentType.Application.Json)
+            url {
+                parameters.append("month", month.toString())
+                parameters.append("year", year.toString())
+            }
+        }
+        
+        if (response.status == HttpStatusCode.OK) {
+            return response.body<DividendCalendarResponseDto>()
+        } else {
+            throw Exception("Error al obtener el calendario: ${response.status}")
         }
     }
 }

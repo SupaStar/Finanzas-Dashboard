@@ -169,10 +169,16 @@ fun NotificationModal(notification: NotificationDto, onDismiss: () -> Unit) {
                 Text(text = notification.message, style = MaterialTheme.typography.bodyLarge)
                 if (!notification.link.isNullOrBlank()) {
                     Spacer(modifier = Modifier.height(16.dp))
+                    val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
                     Text(
-                        text = "Enlace: ${notification.link}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary
+                        text = "Ver documento asociado",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
+                        ),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.clickable {
+                            uriHandler.openUri(notification.link)
+                        }
                     )
                 }
             }
