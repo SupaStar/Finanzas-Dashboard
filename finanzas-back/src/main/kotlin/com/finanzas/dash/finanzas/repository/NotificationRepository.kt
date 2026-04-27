@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 
 interface NotificationRepository : JpaRepository<Notification, Int> {
-    fun findByUserUsernameAndIsReadFalseOrderByCreatedAtDesc(username: String): List<Notification>
+    fun findByUserUserIdAndIsReadFalseOrderByCreatedAtDesc(userId: Long): List<Notification>
 
     @Modifying
-    @Query("UPDATE Notification n SET n.isRead = true WHERE n.user.username = :username AND n.isRead = false")
-    fun markAllAsReadByUsername(username: String)
+    @Query("UPDATE Notification n SET n.isRead = true WHERE n.user.userId = :userId AND n.isRead = false")
+    fun markAllAsReadByUserId(userId: Long)
 }
