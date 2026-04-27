@@ -211,7 +211,7 @@ fun CalendarGrid(month: Int, year: Int, events: List<DividendCalendarEventDto>, 
 
     Column {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            listOf("L", "M", "X", "J", "V", "S", "D").forEach { day ->
+            listOf("L", "M", "Mi", "J", "V", "S", "D").forEach { day ->
                 Text(
                     text = day,
                     modifier = Modifier.weight(1f),
